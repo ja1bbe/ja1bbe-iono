@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 """国分寺(TO536)のイオノゾンデ自動読取値(15分値)をNICTから取得し、
 直近6時間分を docs/iono.json に書き出す（GitHub Actionsから15分ごとに実行）。
@@ -81,12 +82,22 @@ def rows_from(text, now):
 def main():
     now = time.time()
     jst = datetime.now(JST)
-    rows = rows_from(fetch(jst.year), now)
-    if jst.month == 1 and jst.day == 1 and jst.hour < HOURS + 1:       # 年をまたぐ直後は前年分も見る
+    # 年間ファイルは日本時間の年ごと。年明け直後は新しい年のファイルがまだ無いか、
+    # 公開の時間差でまだ値が入っていないことがあるため、1月1〜3日は前年のファイルも合わせて使う
+    rows, err = [], None
+    try:
+        rows = rows_from(fetch(jst.year), now)
+    except Exception as e:
+        err = e
+        print(f'{jst.year}年のファイルを取得できませんでした:', e)
+    if jst.month == 1 and jst.day <= 3:
         try:
             rows = rows_from(fetch(jst.year - 1), now) + rows
+            err = None
         except Exception as e:
-            print('前年分の取得に失敗:', e)
+            print(f'{jst.year - 1}年のファイルを取得できませんでした:', e)
+    if err is not None and not rows:
+        raise err
     if not rows:
         print('有効な観測行が見つかりませんでした。既存のiono.jsonは変更しません。')
         return 1
