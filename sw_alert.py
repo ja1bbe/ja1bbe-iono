@@ -314,24 +314,59 @@ def recipients_from_env(name):
     return [a.strip() for a in raw.replace('\n', ',').split(',') if '@' in a]
 
 
+def _secret(name):
+    return (os.environ.get(name) or '').strip()
+
+
+def _smtp_ssl():
+    return smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context(), timeout=30)
+
+
+def _smtp_starttls():
+    s = smtplib.SMTP('smtp.gmail.com', 587, timeout=30)
+    s.starttls(context=ssl.create_default_context())
+    return s
+
+
 def send_mail(subject, body, rcpts, dry_run=False):
     if dry_run:
         print(f'--- [送信しない確認モード] 宛先 {len(rcpts)}件\n件名: {subject}\n{body}')
         return
-    user, pw = os.environ.get('MAIL_FROM'), os.environ.get('MAIL_PASS')
+    user = _secret('MAIL_FROM')
+    pw = _secret('MAIL_PASS').replace(' ', '').replace('\u3000', '')   # 表示どおりの空白入りでも通るように
+    # 中身は記録に出さず、形だけを確かめる（公開リポジトリの記録は誰でも読める）
+    print(f"[送信の準備] MAIL_FROM: {len(user)}文字・gmail.comで終わる: {'はい' if user.endswith('@gmail.com') else 'いいえ'}"
+          f" / MAIL_PASS: {len(pw)}文字・半角英小文字だけ: {'はい' if pw.isascii() and pw.isalpha() and pw.islower() else 'いいえ'}"
+          f" / 宛先 {len(rcpts)}件")
     if not (user and pw):
         raise SystemExit('MAIL_FROM / MAIL_PASS が設定されていません')
-    ctx = ssl.create_default_context()
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ctx, timeout=30) as s:
-        s.login(user, pw)
-        for i in range(0, len(rcpts), SMTP_CHUNK):
-            msg = EmailMessage()
-            msg['From'] = user
-            msg['To'] = user                  # 宛先欄は自分。配信先は全員BCC（互いに見えない）
-            msg['Subject'] = subject
-            msg.set_content(body)
-            s.send_message(msg, to_addrs=rcpts[i:i + SMTP_CHUNK])
-    print(f'送信: {subject}（宛先 {len(rcpts)}件）')
+    if not rcpts:
+        print('宛先がないため送信しません')
+        return
+    last = None
+    for name, connect in (('SSL 465番', _smtp_ssl), ('STARTTLS 587番', _smtp_starttls)):
+        for attempt in (1, 2):
+            try:
+                with connect() as s:
+                    s.login(user, pw)
+                    for i in range(0, len(rcpts), SMTP_CHUNK):
+                        msg = EmailMessage()
+                        msg['From'] = user
+                        msg['To'] = user          # 宛先欄は自分。配信先は全員BCC（互いに見えない）
+                        msg['Subject'] = subject
+                        msg.set_content(body)
+                        s.send_message(msg, to_addrs=rcpts[i:i + SMTP_CHUNK])
+                print(f'送信: {subject}（宛先 {len(rcpts)}件、{name}）')
+                return
+            except smtplib.SMTPAuthenticationError as e:
+                # Gmailが「パスワードが違う」と答えた場合は、再試行しても同じなので止める
+                raise SystemExit(f'Gmailがログインを拒否しました（{name}、コード {e.smtp_code}）。'
+                                 'MAIL_FROM と MAIL_PASS の組み合わせを確認してください')
+            except (smtplib.SMTPException, OSError) as e:
+                last = e
+                print(f'[送信の再試行] {name} {attempt}回目: {type(e).__name__}: {e}')
+                time.sleep(5)
+    raise SystemExit(f'Gmailに送信できませんでした（最後のエラー: {type(last).__name__}: {last}）')
 
 
 # ---------------------------------------------------------------- メイン
