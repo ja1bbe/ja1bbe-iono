@@ -2,7 +2,9 @@
 """
 sw_alert.py — 宇宙天気の定時通知と、傾向が変わったときの知らせ（GitHub Actions 用）
 
-・定時通知: 日本時間 6・9・12・15・18・21時（= UTC 21・0・3・6・9・12時、Kpの3時間区切りと一致）
+・定時通知: 日本時間 0・3・6・9・12・15・18・21時（Kpの3時間区切りと一致）。
+  既定は 6〜21時の6回。0時・3時は希望者だけ（返信で選ぶ）
+・配信先は、メールへの返信で受け取る知らせを選べる（「受け取る知らせの設定」の節）
 ・国分寺の電離層の値は、同じリポジトリの docs/iono.json（fetch_iono.py が毎時更新）から読む
 ・傾向の知らせ（夜間も送る）:
     悪化の予告  Bz 30分平均 < -10nT かつ 太陽風 30分平均 >= 500km/s（同じ知らせは3時間あける）
@@ -18,12 +20,20 @@ Secrets（Settings → Secrets and variables → Actions）:
   MAIL_FROM    送信用Gmailアドレス
   MAIL_PASS    そのGmailのアプリパスワード（GitHub専用に発行したもの）
   MAIL_OWNER   管理者のアドレス（--test の送り先）
-  SUBSCRIBERS  配信先。カンマまたは改行区切り。全員BCCで送る
+  SUBSCRIBERS  配信先。カンマまたは改行区切り。全員BCCで送る（追加・削除は管理者だけ）
+  PREF_KEY     受け取る知らせの設定を、アドレスではなく番号で保存するための鍵（長い無作為な文字列）
+               未設定のときは返信による設定を行わず、全員に既定の知らせを送る
 公開リポジトリのActionsの記録は誰でも読めるため、メールアドレスは記録に出さない（人数だけ出す）。
 
 標準ライブラリのみで動作（Python 3.8+）
 """
 import argparse
+import email
+import hashlib
+import hmac
+import imaplib
+import re
+import unicodedata
 import gzip
 import json
 import os
@@ -33,10 +43,15 @@ import sys
 import time
 import urllib.request
 from datetime import datetime, timedelta, timezone
+from email import policy
 from email.message import EmailMessage
+from email.utils import parseaddr
 
 JST = timezone(timedelta(hours=9))
-REPORT_HOURS_JST = (6, 9, 12, 15, 18, 21)
+REPORT_HOURS_JST = (0, 3, 6, 9, 12, 15, 18, 21)
+DEFAULT_SLOTS = [6, 9, 12, 15, 18, 21]
+DEFAULT_PREF = {'slots': DEFAULT_SLOTS, 'worse': True, 'better': True, 'stop': False}
+IMAP_MAX_PER_RUN = 50           # 1回に読む返信の上限
 REPORT_WAIT_KP_SEC = 45 * 60    # 区切りのKpが出るのを待つ上限。過ぎたら手元の値で送る
 REPORT_LATE_SEC = 2 * 3600      # GitHubの遅れでこれ以上ずれたら、その回の定時は送らない
 RTSW_STALE_SEC = 30 * 60        # 太陽風・Bzがこれより古ければ判定に使わない（衛星データの途切れ対策）
@@ -60,7 +75,18 @@ FOOTER = (
     'データ元: NOAA Space Weather Prediction Center（services.swpc.noaa.gov）\n'
     '{iono_src}'
     '観測値は自動処理の結果を含みます。運用の目安としてお使いください。\n'
-    '配信の停止・宛先の変更は JA1BBE までご連絡ください。\n'
+    '{howto}'
+)
+
+HOWTO = (
+    '\n■ 受け取る知らせの変更：このメールに返信し、1行目に書いてください\n'
+    '  定時を選ぶ     → 受けたい時刻を数字で　例：6 18 21（0時・3時も選べます）\n'
+    '  定時をやめる   → 定時なし\n'
+    '  悪化の知らせ   → 悪化あり ／ 悪化なし（悪化の予告・地磁気嵐G1以上・プロトン現象）\n'
+    '  改善の知らせ   → 改善あり ／ 改善なし（好転）\n'
+    '  すべて止める   → 停止　　再開するとき → 再開\n'
+    '  今の設定を見る → 設定\n'
+    '  数分〜15分ほどで反映し、確認のメールをお送りします。宛先の変更は JA1BBE までご連絡ください。\n'
 )
 
 
@@ -148,12 +174,22 @@ def jst(t, fmt='%H:%M'):
     return datetime.fromtimestamp(t, JST).strftime(fmt)
 
 
-def kp_str(kp):
-    """2.33 → '2.33（2+）' のように、無線家になじみのある表記も添える"""
+def kp_mark(kp):
+    """2.33 → '2+'、3.67 → '4-'、2.0 → '2'（無線家になじみのある表記）"""
     base = int(round(kp))
     frac = kp - base
-    mark = '+' if frac > 0.15 else '-' if frac < -0.15 else ''
-    return f'{kp:.2f}（{base}{mark}）' if mark else f'{kp:.0f}'
+    return f"{base}{'+' if frac > 0.15 else '-' if frac < -0.15 else ''}"
+
+
+def kp_str(kp):
+    """2.33 → '2.33（2+）'。整数ならそのまま"""
+    m = kp_mark(kp)
+    return f'{kp:.2f}（{m}）' if m[-1] in '+-' else m
+
+
+def g_level(kp):
+    """Kpに相当するNOAA Gスケール（5→G1 … 9→G5）。表記の段階（5-も5とみなす）で数える"""
+    return max(0, min(5, int(round(kp)) - 4))
 
 
 def rtsw_fresh(v, now):
@@ -173,13 +209,24 @@ def trend(v, st, now):
     return '静穏'
 
 
+def trend_note(v, st, now):
+    """「回復途中」でも、高速の太陽風や強い磁場が残っているときに添える注意の1行（表示のみ。判定は変えない）"""
+    if trend(v, st, now) != '回復途中' or not rtsw_fresh(v, now):
+        return ''
+    if v.get('speed30', 0) >= 500 or v.get('bt', 0) >= 10:
+        return '（高速の太陽風や強い磁場が残っており、Bzが南に転じると再び乱れる可能性があります）'
+    return ''
+
+
 def status_text(v, hist, now):
     L = []
     if 'kp' in v:
         s, e = v['kp_at'], v['kp_at'] + 3 * 3600
         mx = max((k for t, k in hist if t > now - 86400), default=None)
-        L.append(f"Kp {kp_str(v['kp'])}（{jst(s)}〜{jst(e)}の値）"
-                 + (f'　24時間の最大 {kp_str(mx)}' if mx is not None else ''))
+        mx_txt = ''
+        if mx is not None:
+            mx_txt = f'　24時間の最大 {kp_str(mx)}' + (f'（G{g_level(mx)}相当）' if g_level(mx) >= 1 else '')
+        L.append(f"Kp {kp_str(v['kp'])}（{jst(s)}〜{jst(e)}の値）" + mx_txt)
     if 'speed' in v:
         L.append(f"太陽風 {v['speed']:.0f}km/s（30分平均 {v.get('speed30', v['speed']):.0f}）"
                  + (f"　密度 {v['density']:.1f}/cm³" if 'density' in v else ''))
@@ -229,19 +276,19 @@ def iono_text(now, path=IONO_PATH):
 IONO_SOURCE = '電離層: 出典：情報通信研究機構（NICT） 電離圏観測データ https://wdc.nict.go.jp/Ionosphere/index.html\n'
 
 
-def footer(with_iono):
-    return FOOTER.format(iono_src=IONO_SOURCE if with_iono else '')
+def footer(with_iono, howto=True):
+    return FOOTER.format(iono_src=IONO_SOURCE if with_iono else '', howto=HOWTO if howto else '')
 
 
-def full_text(v, hist, now):
+def full_text(v, hist, now, howto=True):
     """NOAAの値＋国分寺の1行＋フッター"""
     io = iono_text(now)
-    return status_text(v, hist, now) + ('\n' + io if io else '') + footer(bool(io))
+    return status_text(v, hist, now) + ('\n' + io if io else '') + footer(bool(io), howto)
 
 
 # ---------------------------------------------------------------- 判定
 def check_alerts(v, hist, st, now, first):
-    """送るべき知らせを [(件名, 本文)] で返し、st を更新する"""
+    """送るべき知らせを [(種類 worse/better, 件名, 本文)] で返し、st を更新する"""
     out = []
     kp = v.get('kp')
     if kp is None:
@@ -264,7 +311,7 @@ def check_alerts(v, hist, st, now, first):
     if kp >= 5 or g >= 1:
         if not st.get('g1'):
             st['g1'] = True
-            out.append(('悪化（地磁気嵐 G1以上）',
+            out.append(('worse', '悪化（地磁気嵐 G1以上）',
                         '地磁気嵐の水準（Kp 5以上 / G1以上）に達しました。北米・ヨーロッパ方面など'
                         '極地方を通る経路は悪く、ローバンドを中心に影響が数時間〜1日ほど続くことがあります。'))
     elif kp < 4:
@@ -274,20 +321,20 @@ def check_alerts(v, hist, st, now, first):
     if (st.get('disturbed') and kp <= 2 and bz30 is not None and bz30 > 0
             and sp30 is not None and sp30 < 450):
         st['disturbed'] = False
-        out.append(('好転', '地磁気の乱れが収まり、ローバンドのコンディションが良くなる可能性があります。'))
+        out.append(('better', '好転', '地磁気の乱れが収まり、ローバンドのコンディションが良くなる可能性があります。'))
 
     # 悪化の予告: Bz 30分平均が -10nT より南向き、かつ太陽風 500km/s 以上
     if (bz30 is not None and sp30 is not None and bz30 < -10 and sp30 >= 500
             and now - last.get('worse', 0) >= WORSE_INTERVAL):
         last['worse'] = now
-        out.append(('悪化の予告',
+        out.append(('worse', '悪化の予告',
                     '強い南向きのBzと高速の太陽風が続いています。1時間ほどのうちに地磁気が乱れ、'
                     '北米・ヨーロッパ方面（極地方を通る経路）が悪くなる可能性があります。'))
 
     # プロトン現象: Sスケールが上がった
     s = v.get('S', 0)
     if s >= 1 and s > st.get('last_s', 0):
-        out.append((f'プロトン現象 S{s}',
+        out.append(('worse', f'プロトン現象 S{s}',
                     '太陽プロトン現象が起きています。極地方で電波の吸収（PCA）が強まり、'
                     '北米・ヨーロッパ方面のローバンドは数日悪くなることがあります。'))
     st['last_s'] = s
@@ -306,6 +353,149 @@ def report_slot(now, st):
     if st.get('last_report_slot') == slot_ts or now - slot_ts > REPORT_LATE_SEC:
         return None
     return slot_ts
+
+
+# ---------------------------------------------------------------- 受け取る知らせの設定（返信で変更）
+def pref_id(addr, key):
+    """アドレスを、鍵がなければ元に戻せない番号にする（公開リポジトリにアドレスを残さないため）"""
+    return hmac.new(key.encode(), addr.strip().lower().encode(), hashlib.sha256).hexdigest()[:20]
+
+
+def get_pref(st, pid):
+    p = dict(DEFAULT_PREF)
+    p.update((st.get('prefs') or {}).get(pid, {}))
+    return p
+
+
+def wants(p, kind, slot_hour=None):
+    if p['stop']:
+        return False
+    if kind == 'report':
+        return slot_hour in p['slots']
+    return bool(p.get(kind))
+
+
+def pref_text(p):
+    on = lambda b: '☑' if b else '☐'
+    lines = ['現在の設定（JA1BBE 宇宙天気配信）']
+    if p['stop']:
+        lines.append('■ 配信を止めています（「再開」と返信すると、下の設定で再開します）')
+    lines.append(' '.join(f"{on(h in p['slots'])}{h}時" for h in REPORT_HOURS_JST))
+    lines.append(f"{on(p['worse'])}悪化の知らせ　{on(p['better'])}改善の知らせ")
+    return '\n'.join(lines)
+
+
+_QUOTE_HEAD = re.compile(r'(wrote:|書きました|のメッセージ|^-{2,}|^_{2,}|^From:|^差出人:|Original Message)', re.I)
+
+
+def command_line(text):
+    """返信の本文から、引用や引用の見出しを除いた最初の1行を取り出す"""
+    for ln in text.splitlines():
+        t = unicodedata.normalize('NFKC', ln).strip()
+        if not t or t.startswith('>'):
+            continue
+        if _QUOTE_HEAD.search(t):
+            return ''
+        return t
+    return ''
+
+
+def apply_command(p, line):
+    """1行の指示を設定に反映する。(新しい設定, 理解できたか) を返す"""
+    p = dict(p)
+    line = re.sub(r'(\d+)\s*時', r'\1 ', line)          # 「6時18時」→「6 18」（「定時なし」は崩さない）
+    toks = [t for t in re.split(r'[\s,、，・/／]+', line) if t]
+    hours, ok = [], False
+    for t in toks:
+        if t.isdigit() and int(t) in (0, 3, 6, 9, 12, 15, 18, 21, 24):
+            hours.append(int(t) % 24)
+        elif t in ('定時なし', '定時無し'):
+            p['slots'], ok = [], True
+        elif t in ('悪化あり', '悪化なし', '改善あり', '改善なし'):
+            p['worse' if t.startswith('悪化') else 'better'] = t.endswith('あり')
+            ok = True
+        elif t in ('停止', '配信停止', '全通知不要'):
+            p['stop'], ok = True, True
+        elif t == '再開':
+            p['stop'], ok = False, True
+        elif t == '設定':
+            ok = True
+    if hours:
+        p['slots'], ok = sorted(set(hours)), True
+    return p, ok
+
+
+def _auth_ok(msg):
+    """Gmailが付けた送信元の認証結果を見る（なりすまし対策）"""
+    res = ' '.join(str(h) for h in (msg.get_all('Authentication-Results') or [])
+                   if str(h).strip().startswith('mx.google.com')).lower()
+    if 'dmarc=fail' in res:
+        return False
+    return any(k in res for k in ('dmarc=pass', 'dkim=pass', 'spf=pass'))
+
+
+def _body_text(msg):
+    part = msg.get_body(preferencelist=('plain', 'html'))
+    if part is None:
+        return ''
+    text = part.get_content()
+    if part.get_content_type() == 'text/html':
+        text = re.sub(r'<br\s*/?>|</p>|</div>', '\n', text, flags=re.I)
+        text = re.sub(r'<[^>]+>', '', text)
+    return text
+
+
+def process_replies(st, subscribers, key, imap_factory=None, now=None):
+    """受信トレイの新しい返信を読み、設定を更新する。確認メールは [(宛先, 件名, 本文)] で返す"""
+    user, pw = _secret('MAIL_FROM'), _secret('MAIL_PASS').replace(' ', '')
+    connect = imap_factory or (lambda: imaplib.IMAP4_SSL('imap.gmail.com', 993))
+    subs = {a.lower(): a for a in subscribers}
+    replies = []
+    box = connect()
+    try:
+        box.login(user, pw)
+        box.select('INBOX', readonly=True)      # 既読などの印は付けない
+        validity = (box.response('UIDVALIDITY')[1] or [b''])[0]
+        validity = validity.decode() if isinstance(validity, bytes) else str(validity)
+        mem = st.setdefault('imap', {})
+        typ, data = box.uid('search', None, 'ALL')
+        uids = sorted(int(x) for x in (data[0] or b'').split())
+        if mem.get('validity') != validity or 'last_uid' not in mem:
+            # 初回（または受信箱が作り直された）: 過去のメールは読まずに、ここから先を対象にする
+            mem['validity'], mem['last_uid'] = validity, (uids[-1] if uids else 0)
+            print(f'[返信] 受信トレイの読み取りを開始します（既存 {len(uids)}通は対象外）')
+            return replies
+        new = [u for u in uids if u > mem['last_uid']][:IMAP_MAX_PER_RUN]
+        handled = 0
+        for u in new:
+            mem['last_uid'] = u
+            typ, d = box.uid('fetch', str(u), '(BODY.PEEK[])')
+            raw = next((x[1] for x in d if isinstance(x, tuple)), None)
+            if not raw:
+                continue
+            msg = email.message_from_bytes(raw, policy=policy.default)
+            sender = parseaddr(str(msg.get('From', '')))[1].lower()
+            if sender not in subs or not _auth_ok(msg):
+                continue
+            pid = pref_id(sender, key)
+            old = get_pref(st, pid)
+            line = command_line(_body_text(msg))
+            p, ok = apply_command(old, line)
+            st.setdefault('prefs', {})[pid] = {k: p[k] for k in DEFAULT_PREF}
+            handled += 1
+            if ok:
+                head = '設定を受け付けました。' if p != old else '設定を確認しました（変更はありません）。'
+            else:
+                head = 'ご返信の1行目から、設定の指示を読み取れませんでした。下の書き方をご覧ください。'
+            body = head + '\n\n' + pref_text(p) + '\n' + HOWTO
+            replies.append((subs[sender], '[宇宙天気] 設定の確認', body))
+        print(f'[返信] 新着 {len(new)}通のうち、配信先からの返信 {handled}通を処理しました')
+    finally:
+        try:
+            box.logout()
+        except Exception:
+            pass
+    return replies
 
 
 # ---------------------------------------------------------------- 送信
@@ -389,7 +579,7 @@ def main():
     if a.test:
         rcpts = recipients_from_env('MAIL_OWNER')
         body = (f'これはテスト送信です（{jst(now, "%m月%d日 %H:%M")}）。\n'
-                f'傾向: {trend(v, st, now)}\n\n' + full_text(v, hist, now))
+                f'傾向: {trend(v, st, now)}{trend_note(v, st, now)}\n\n' + full_text(v, hist, now))
         send_mail('[宇宙天気] テスト送信', body, rcpts, a.dry_run)
         return
 
@@ -400,12 +590,32 @@ def main():
     rcpts = recipients_from_env('SUBSCRIBERS')
     if not rcpts and not a.dry_run:
         print('SUBSCRIBERS が空のため送信しません')
+    key = _secret('PREF_KEY')
+
+    # 返信による設定の変更（先に反映してから、今回の知らせを送る）
+    if key and rcpts and not a.dry_run:
+        try:
+            for to, subj, body in process_replies(st, rcpts, key):
+                send_mail(subj, body, [to])
+        except Exception as e:
+            print(f'[返信] 読み取りでエラー（知らせの送信は続けます）: {type(e).__name__}: {e}')
+        live = {pref_id(r, key) for r in rcpts}       # 配信先から外れた人の設定は消す
+        if st.get('prefs'):
+            st['prefs'] = {k: p for k, p in st['prefs'].items() if k in live}
+    elif not key:
+        print('PREF_KEY が未設定のため、返信による設定は行わず全員に既定の知らせを送ります')
+
+    def who(kind, slot_hour=None):
+        if not key:
+            return [r for r in rcpts if kind != 'report' or slot_hour in DEFAULT_SLOTS]
+        return [r for r in rcpts if wants(get_pref(st, pref_id(r, key)), kind, slot_hour)]
 
     # 傾向の知らせ（夜間も送る）
-    for title, msg in check_alerts(v, hist, st, now, first):
+    for kind, title, msg in check_alerts(v, hist, st, now, first):
+        to = who(kind)
         body = msg + '\n\n' + full_text(v, hist, now)
-        if rcpts or a.dry_run:
-            send_mail(f'[宇宙天気] {title}', body, rcpts, a.dry_run)
+        if to or a.dry_run:
+            send_mail(f'[宇宙天気] {title}', body, to, a.dry_run)
 
     # 定時通知
     slot = report_slot(now, st)
@@ -414,12 +624,16 @@ def main():
         if kp_end < slot and now - slot < REPORT_WAIT_KP_SEC:
             print(f'定時 {jst(slot)}: 区切りのKpがまだ出ていないため次回に送ります')
         else:
+            h = datetime.fromtimestamp(slot, JST).hour
+            to = who('report', h)
             tr = trend(v, st, now)
-            subject = f"[宇宙天気] {jst(slot, '%H')}時 Kp{v['kp']:.1f} {tr}"
-            body = (f"宇宙天気 定時のお知らせ（{jst(slot, '%m月%d日 %H時')}）\n傾向: {tr}\n\n"
+            subject = f"[宇宙天気] {h}時 Kp{kp_mark(v['kp'])} {tr}"
+            body = (f"宇宙天気 定時のお知らせ（{jst(slot, '%m月%d日')} {h}時）\n傾向: {tr}{trend_note(v, st, now)}\n\n"
                     + full_text(v, hist, now))
-            if rcpts or a.dry_run:
-                send_mail(subject, body, rcpts, a.dry_run)
+            if to or a.dry_run:
+                send_mail(subject, body, to, a.dry_run)
+            else:
+                print(f'定時 {h}時: この時刻を選んでいる配信先はいません')
             st['last_report_slot'] = slot
 
     if json.dumps(st, sort_keys=True) != before:
