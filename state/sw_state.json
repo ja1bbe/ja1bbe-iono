@@ -2,10 +2,25 @@
  "disturbed": true,
  "g1": false,
  "imap": {
-  "last_uid": 17,
+  "last_uid": 18,
   "validity": "1"
  },
  "last_alert": {},
  "last_report_slot": 1791709200.0,
- "last_s": 0
+ "last_s": 0,
+ "prefs": {
+  "f411b52be257a242884c": {
+   "better": true,
+   "slots": [
+    6,
+    9,
+    12,
+    15,
+    18,
+    21
+   ],
+   "stop": false,
+   "worse": true
+  }
+ }
 }
