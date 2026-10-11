@@ -1,0 +1,55 @@
+name: space-weather-alert
+
+on:
+  schedule:
+    - cron: '3,18,33,48 * * * *'   # 15分ごと。混みやすい毎時0分と、iono.yml の22分を避ける
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'test = 管理者にだけ現在の状況を送る / normal = 通常の判定と配信'
+        required: true
+        default: 'test'
+        type: choice
+        options: [test, normal]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sw-alert
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 判定と送信
+        env:
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          MAIL_PASS: ${{ secrets.MAIL_PASS }}
+          MAIL_OWNER: ${{ secrets.MAIL_OWNER }}
+          SUBSCRIBERS: ${{ secrets.SUBSCRIBERS }}
+          MODE: ${{ inputs.mode }}
+        run: |
+          if [ "$MODE" = "test" ]; then
+            python3 sw_alert.py --test
+          else
+            python3 sw_alert.py
+          fi
+
+      - name: 状態ファイルの保存（変化があったときだけ）
+        run: |
+          [ -f state/sw_state.json ] || exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/sw_state.json
+          if git diff --cached --quiet; then echo "変化なし"; exit 0; fi
+          git commit -m "sw_alert: state"
+          for i in 1 2 3; do
+            git pull --rebase && git push && exit 0
+            sleep 5
+          done
+          exit 1
