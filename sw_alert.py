@@ -5,6 +5,7 @@ sw_alert.py — 宇宙天気の定時通知と、傾向が変わったときの�
 ・定時通知: 日本時間 0・3・6・9・12・15・18・21時（Kpの3時間区切りと一致）。
   既定は 6〜21時の6回。0時・3時は希望者だけ（返信で選ぶ）
 ・配信先は、メールへの返信で受け取る知らせを選べる（「受け取る知らせの設定」の節）
+・その状況に当てはまるときに「ひとこと解説」を添える（「ひとこと解説」の節）
 ・国分寺の電離層の値は、同じリポジトリの docs/iono.json（fetch_iono.py が毎時更新）から読む
 ・傾向の知らせ（夜間も送る）:
     悪化の予告  Bz 30分平均 < -10nT かつ 太陽風 30分平均 >= 500km/s（同じ知らせは3時間あける）
@@ -80,7 +81,7 @@ FOOTER = (
 
 HOWTO = (
     '\n■ 受け取る知らせの変更：このメールに返信し、1行目に書いてください\n'
-    '  定時を選ぶ     → 受けたい時刻を数字で　例：6 18 21（0時・3時も選べます）\n'
+    '  定時を選ぶ     → 受けたい時刻を数字で、間をスペースで区切って　例：0 6 18 21（0時・3時も選べます）\n'
     '  定時をやめる   → 定時なし\n'
     '  悪化の知らせ   → 悪化あり ／ 悪化なし（悪化の予告・地磁気嵐G1以上・プロトン現象）\n'
     '  改善の知らせ   → 改善あり ／ 改善なし（好転）\n'
@@ -89,6 +90,30 @@ HOWTO = (
     '  数分〜15分ほどで反映し、確認のメールをお送りします。宛先の変更は JA1BBE までご連絡ください。\n'
 )
 
+
+# ---------------------------------------------------------------- ひとこと解説
+# その状況に当てはまるときに添える。同じ解説は24時間あけ、定時メールには最大2つまで。
+EXPL = {
+    'kp':     'Kp指数：地磁気の乱れの大きさを0〜9で表した値です。世界の観測所のデータから3時間ごとに求め、5以上を地磁気嵐（G1）と呼びます。',
+    'bz':     'Bz：太陽風が運んでくる磁場の南北の向きです。南向き（マイナス）が続くと地球の磁場とつながり、エネルギーが流れ込んで地磁気が乱れやすくなります。',
+    'speed':  '太陽風の速さ：ふだんは毎秒300〜400km程度です。コロナホールからの高速風では600kmを超えることがあり、速い風と南向きのBzが重なると乱れが大きくなります。',
+    'polar':  'なぜ北米・ヨーロッパ方面なのか：日本から北米やヨーロッパへの大圏経路は、北極の近くを通ります。地磁気が乱れると、極地方の電離層で電波の吸収や乱れが強まるため、この方面が先に悪くなります。',
+    'lowband': 'ローバンドが影響を受けやすい理由：電離層の下の層（D層）での吸収は、周波数が低いほど強くなります（おおよそ周波数の2乗に反比例）。極地方で吸収が強まると、160m・80mが先に弱くなります。',
+    'fof2':   'foF2：電離層のF2層が、真上に向けた電波を反射できる最高の周波数です。斜めに飛ぶ電波は、1ホップ約3000kmでこのおよそ3倍までの周波数が届きます。',
+    'sfi':    'SFI（太陽電波の強さ）：波長10.7cmの太陽電波の強さで、太陽活動の目安です。高いほど電離層の電子が増え、高いバンドが開きやすくなる傾向があります。',
+    'proton': 'プロトン現象（Sスケール）：太陽フレアなどで高エネルギーの陽子が届くと、極地方で電波が強く吸収されます（極冠吸収、PCA）。数日続くことがあります。',
+    'rscale': 'Rスケール（デリンジャー現象）：太陽フレアのX線で、昼側のD層が急に強く電離され、HFが数十分〜1時間ほど聞こえにくくなります。夜側の経路には影響しません。',
+    'after':  '嵐のあと：地磁気嵐が収まっても、F2層の電子が減ってMUFが下がった状態が、1〜2日続くことがあります。Kpが下がってもすぐに元通りとは限りません。',
+    'quiet':  '静かな夜はローバンドの好機：地磁気が静かな夜は、極地方を通る経路での吸収が少なく、ローバンドのDXに有利になりやすい条件です。',
+    'rot27':  '27日周期：太陽は約27日で1回自転するため、同じコロナホールからの高速風が、約27日ごとに戻ってくることがあります。前回の乱れの日付が、次の予想の手がかりになります。{date}',
+    'l1':     '悪化の予告のしくみ：太陽風の観測衛星は、地球から約150万km太陽寄りの位置（L1点）にいます。毎秒600kmの風なら約40分で地球に届くので、この時間差を使って予告しています。',
+}
+EXPL_GAP = 24 * 3600            # 同じ解説を再び載せるまでの間隔
+EXPL_FALLBACK_GAP = 20 * 3600   # 当てはまる解説がない日に、一般の解説を1つ載せる間隔
+EXPL_MAX = 2
+EXPL_GENERAL = ('kp', 'bz', 'speed', 'polar', 'lowband', 'fof2', 'sfi', 'quiet', 'rot27', 'l1', 'after', 'proton', 'rscale')
+EXPL_FOR_ALERT = {'悪化の予告': ['l1', 'bz'], '悪化（地磁気嵐 G1以上）': ['polar', 'lowband'],
+                  'プロトン': ['proton'], '好転': ['quiet']}
 
 # ---------------------------------------------------------------- 取得と解析
 def fetch_json(url, timeout=30):
@@ -218,6 +243,71 @@ def trend_note(v, st, now):
     return ''
 
 
+def expl_triggers(v, hist, st, now, slot_hour=None):
+    """今の値で当てはまる解説を、大事な順に返す"""
+    kp = v.get('kp', 0)
+    mx = max((k for t, k in hist if t > now - 86400), default=kp)
+    fresh = rtsw_fresh(v, now)
+    tr = trend(v, st, now)
+    keys = []
+    if v.get('S', 0) >= 1:
+        keys.append('proton')
+    if v.get('R', 0) >= 1:
+        keys.append('rscale')
+    if tr == '悪化の兆し':
+        keys.append('l1')
+    if kp >= 5 or v.get('G', 0) >= 1:
+        keys += ['polar', 'lowband']
+    if kp >= 4 or mx >= 5:
+        keys += ['kp', 'polar']
+    if fresh and v.get('bz30', 0) <= -5:
+        keys.append('bz')
+    if fresh and v.get('speed30', 0) >= 500:
+        keys.append('speed')
+    if tr == '回復途中':
+        keys.append('after')
+    if mx >= 5:
+        keys.append('rot27')
+    if v.get('sfi', 0) >= 150:
+        keys.append('sfi')
+    if slot_hour in (18, 21, 0, 3) and kp <= 2 and mx < 3:
+        keys.append('quiet')
+    out = []
+    for k in keys:
+        if k not in out:
+            out.append(k)
+    return out
+
+
+def expl_text(key, hist, now):
+    date = ''
+    if key == 'rot27':
+        storm = [t for t, k in hist if k >= 5 and t > now - 86400]
+        if storm:
+            date = f"今回の乱れが高速風によるものなら、次は{jst(storm[-1] + 27 * 86400, '%m月%d日')}ごろが目安です。"
+    return EXPL[key].format(date=date)
+
+
+def explanations(v, hist, st, now, slot_hour=None, forced=(), max_n=EXPL_MAX):
+    """メールに添える解説の本文。forced は知らせの種類に応じて必ず載せるもの"""
+    shown = st.setdefault('expl_shown', {})
+    pick = list(forced)
+    for k in expl_triggers(v, hist, st, now, slot_hour):
+        if len(pick) >= max_n:
+            break
+        if k not in pick and now - shown.get(k, 0) >= EXPL_GAP:
+            pick.append(k)
+    if not pick and slot_hour is not None and now - st.get('expl_fallback', 0) >= EXPL_FALLBACK_GAP:
+        k = min(EXPL_GENERAL, key=lambda x: shown.get(x, 0))     # いちばん長く載せていないもの
+        pick.append(k)
+        st['expl_fallback'] = now
+    for k in pick:
+        shown[k] = now
+    if not pick:
+        return ''
+    return '\n\n■ ひとこと解説\n' + '\n'.join('・' + expl_text(k, hist, now) for k in pick)
+
+
 def status_text(v, hist, now):
     L = []
     if 'kp' in v:
@@ -280,10 +370,10 @@ def footer(with_iono, howto=True):
     return FOOTER.format(iono_src=IONO_SOURCE if with_iono else '', howto=HOWTO if howto else '')
 
 
-def full_text(v, hist, now, howto=True):
-    """NOAAの値＋国分寺の1行＋フッター"""
+def full_text(v, hist, now, howto=True, expl=''):
+    """NOAAの値＋国分寺の1行＋ひとこと解説＋フッター"""
     io = iono_text(now)
-    return status_text(v, hist, now) + ('\n' + io if io else '') + footer(bool(io), howto)
+    return status_text(v, hist, now) + ('\n' + io if io else '') + expl + footer(bool(io), howto)
 
 
 # ---------------------------------------------------------------- 判定
@@ -518,7 +608,7 @@ def _smtp_starttls():
     return s
 
 
-def send_mail(subject, body, rcpts, dry_run=False):
+def send_mail(subject, body, rcpts, dry_run=False, personal=False):
     if dry_run:
         print(f'--- [送信しない確認モード] 宛先 {len(rcpts)}件\n件名: {subject}\n{body}')
         return
@@ -542,7 +632,8 @@ def send_mail(subject, body, rcpts, dry_run=False):
                     for i in range(0, len(rcpts), SMTP_CHUNK):
                         msg = EmailMessage()
                         msg['From'] = user
-                        msg['To'] = user          # 宛先欄は自分。配信先は全員BCC（互いに見えない）
+                        # 一斉配信は宛先欄を自分にして全員BCC（互いに見えない）。本人あての確認は宛先欄に本人
+                        msg['To'] = rcpts[i] if personal and len(rcpts) == 1 else user
                         msg['Subject'] = subject
                         msg.set_content(body)
                         s.send_message(msg, to_addrs=rcpts[i:i + SMTP_CHUNK])
@@ -579,7 +670,8 @@ def main():
     if a.test:
         rcpts = recipients_from_env('MAIL_OWNER')
         body = (f'これはテスト送信です（{jst(now, "%m月%d日 %H:%M")}）。\n'
-                f'傾向: {trend(v, st, now)}{trend_note(v, st, now)}\n\n' + full_text(v, hist, now))
+                f'傾向: {trend(v, st, now)}{trend_note(v, st, now)}\n\n'
+                + full_text(v, hist, now, expl=explanations(v, hist, st, now, slot_hour=-1)))
         send_mail('[宇宙天気] テスト送信', body, rcpts, a.dry_run)
         return
 
@@ -596,7 +688,7 @@ def main():
     if key and rcpts and not a.dry_run:
         try:
             for to, subj, body in process_replies(st, rcpts, key):
-                send_mail(subj, body, [to])
+                send_mail(subj, body, [to], personal=True)
         except Exception as e:
             print(f'[返信] 読み取りでエラー（知らせの送信は続けます）: {type(e).__name__}: {e}')
         live = {pref_id(r, key) for r in rcpts}       # 配信先から外れた人の設定は消す
@@ -613,7 +705,8 @@ def main():
     # 傾向の知らせ（夜間も送る）
     for kind, title, msg in check_alerts(v, hist, st, now, first):
         to = who(kind)
-        body = msg + '\n\n' + full_text(v, hist, now)
+        forced = next((ks for name, ks in EXPL_FOR_ALERT.items() if title.startswith(name)), [])
+        body = msg + '\n\n' + full_text(v, hist, now, expl=explanations(v, hist, st, now, forced=forced))
         if to or a.dry_run:
             send_mail(f'[宇宙天気] {title}', body, to, a.dry_run)
 
@@ -629,7 +722,7 @@ def main():
             tr = trend(v, st, now)
             subject = f"[宇宙天気] {h}時 Kp{kp_mark(v['kp'])} {tr}"
             body = (f"宇宙天気 定時のお知らせ（{jst(slot, '%m月%d日')} {h}時）\n傾向: {tr}{trend_note(v, st, now)}\n\n"
-                    + full_text(v, hist, now))
+                    + full_text(v, hist, now, expl=explanations(v, hist, st, now, slot_hour=h)))
             if to or a.dry_run:
                 send_mail(subject, body, to, a.dry_run)
             else:
