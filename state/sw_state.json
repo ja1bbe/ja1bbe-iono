@@ -1,7 +1,9 @@
 {
  "disturbed": true,
+ "expl_fallback": 1791753568.568471,
  "expl_shown": {
   "after": 1791731911.1626546,
+  "bz": 1791753568.568471,
   "kp": 1791721692.0898142,
   "polar": 1791721692.0898142,
   "rot27": 1791743085.743756,
@@ -13,7 +15,7 @@
   "validity": "1"
  },
  "last_alert": {},
- "last_report_slot": 1791741600.0,
+ "last_report_slot": 1791752400.0,
  "last_s": 0,
  "prefs": {
   "f411b52be257a242884c": {
