@@ -1,12 +1,16 @@
 {
  "disturbed": true,
+ "expl_shown": {
+  "kp": 1791721692.0898142,
+  "polar": 1791721692.0898142
+ },
  "g1": false,
  "imap": {
   "last_uid": 20,
   "validity": "1"
  },
  "last_alert": {},
- "last_report_slot": 1791709200.0,
+ "last_report_slot": 1791720000.0,
  "last_s": 0,
  "prefs": {
   "f411b52be257a242884c": {
