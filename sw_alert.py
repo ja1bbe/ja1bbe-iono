@@ -705,10 +705,11 @@ def main():
     # 傾向の知らせ（夜間も送る）
     for kind, title, msg in check_alerts(v, hist, st, now, first):
         to = who(kind)
+        if not (to or a.dry_run):
+            continue            # 受け取る人がいなければ本文を作らない（解説の表示記録も残さない）
         forced = next((ks for name, ks in EXPL_FOR_ALERT.items() if title.startswith(name)), [])
         body = msg + '\n\n' + full_text(v, hist, now, expl=explanations(v, hist, st, now, forced=forced))
-        if to or a.dry_run:
-            send_mail(f'[宇宙天気] {title}', body, to, a.dry_run)
+        send_mail(f'[宇宙天気] {title}', body, to, a.dry_run)
 
     # 定時通知
     slot = report_slot(now, st)
@@ -719,11 +720,13 @@ def main():
         else:
             h = datetime.fromtimestamp(slot, JST).hour
             to = who('report', h)
-            tr = trend(v, st, now)
-            subject = f"[宇宙天気] {h}時 Kp{kp_mark(v['kp'])} {tr}"
-            body = (f"宇宙天気 定時のお知らせ（{jst(slot, '%m月%d日')} {h}時）\n傾向: {tr}{trend_note(v, st, now)}\n\n"
-                    + full_text(v, hist, now, expl=explanations(v, hist, st, now, slot_hour=h)))
             if to or a.dry_run:
+                # 本文（ひとこと解説を含む）は、受け取る人がいるときだけ作る。
+                # 誰も選んでいない時刻（例：3時）に解説を「載せたこと」にしてしまわないため
+                tr = trend(v, st, now)
+                subject = f"[宇宙天気] {h}時 Kp{kp_mark(v['kp'])} {tr}"
+                body = (f"宇宙天気 定時のお知らせ（{jst(slot, '%m月%d日')} {h}時）\n傾向: {tr}{trend_note(v, st, now)}\n\n"
+                        + full_text(v, hist, now, expl=explanations(v, hist, st, now, slot_hour=h)))
                 send_mail(subject, body, to, a.dry_run)
             else:
                 print(f'定時 {h}時: この時刻を選んでいる配信先はいません')
