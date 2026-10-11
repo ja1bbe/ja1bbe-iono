@@ -32,6 +32,7 @@ jobs:
           MAIL_PASS: ${{ secrets.MAIL_PASS }}
           MAIL_OWNER: ${{ secrets.MAIL_OWNER }}
           SUBSCRIBERS: ${{ secrets.SUBSCRIBERS }}
+          PREF_KEY: ${{ secrets.PREF_KEY }}
           MODE: ${{ inputs.mode }}
         run: |
           if [ "$MODE" = "test" ]; then
