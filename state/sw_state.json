@@ -1,8 +1,10 @@
 {
  "disturbed": true,
  "expl_shown": {
+  "after": 1791731911.1626546,
   "kp": 1791721692.0898142,
-  "polar": 1791721692.0898142
+  "polar": 1791721692.0898142,
+  "speed": 1791731911.1626546
  },
  "g1": false,
  "imap": {
@@ -10,7 +12,7 @@
   "validity": "1"
  },
  "last_alert": {},
- "last_report_slot": 1791720000.0,
+ "last_report_slot": 1791730800.0,
  "last_s": 0,
  "prefs": {
   "f411b52be257a242884c": {
