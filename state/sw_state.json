@@ -2,7 +2,7 @@
  "disturbed": true,
  "g1": false,
  "imap": {
-  "last_uid": 19,
+  "last_uid": 20,
   "validity": "1"
  },
  "last_alert": {},
@@ -13,6 +13,9 @@
    "better": true,
    "slots": [
     6,
+    9,
+    12,
+    15,
     18,
     21
    ],
