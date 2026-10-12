@@ -11,6 +11,7 @@
   ・国分寺の値は同じ場所の iono.json（fetch_iono.py が毎時更新）を読む。NICTへは取りに行かない
   ・「乱れを経験中か」は、メール配信（sw_alert.py）の状態ファイルを読み、メールと同じ判定にそろえる
   ・判定の条件と解説の文は sw_alert.py と同じ。片方を変えたら、もう片方も変える
+  ・Kpの予報と方面別の経路判定は、PC版（space_weather_now.html）と同じ計算と文。片方を変えたら、もう片方も変える
 -->
 <style>
 :root{
@@ -58,6 +59,22 @@ details{margin-top:6px} summary{font-size:13px;color:var(--link);cursor:pointer;
 footer{font-size:11px;color:var(--sub);line-height:1.7;padding:4px 4px 0}
 footer a{color:var(--link)}
 .err{font-size:13px;color:var(--dist)}
+.t1{color:var(--quiet)}.t3{color:var(--recov)}.t4{color:var(--dist)}.t5{color:var(--storm)}
+.dest{border-top:1px solid var(--line);padding:12px 0}
+.dest:first-of-type{border-top:0;padding-top:2px}
+.dest-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 8px}
+.dest-h span{white-space:nowrap;font-size:12px;color:var(--sub)}
+.dest-h b{font-size:15px;font-weight:600}
+.tag{display:inline-block;font-size:11px;font-weight:600;border-radius:4px;padding:1px 6px;margin-left:4px}
+.day{background:var(--recov-t);color:var(--recov)}.gl{background:var(--pre-t);color:var(--pre)}.night{background:var(--bg);color:var(--link)}
+.adv{font-size:14px;line-height:1.6;margin:6px 0 8px}
+.adv b{font-weight:600}
+.legs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.leg{background:var(--bg);border-radius:8px;padding:8px 10px}
+.leg .lab{font-size:11px}
+.az{font-size:26px;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums}
+.leg .sub{font-size:11px}
+.sum{font-size:14px;line-height:1.7;margin-top:8px}
 </style>
 </head>
 <body>
@@ -73,6 +90,16 @@ footer a{color:var(--link)}
   </section>
 
   <section class="card">
+    <h2>方面別の経路判定（ローテーター方位つき）</h2>
+    <div id="dests"><div class="fine">計算しています…</div></div>
+    <div class="fine" id="jaSun"></div>
+    <div class="fine" id="aurInfo"></div>
+    <details><summary>方位と判定の見方</summary>
+      <div class="fine">方位は真北を0°とした大圏方位で、東京を基準に計算しています（湯河原・横浜との差は1°未満）。ローテーターが磁北基準の場合は、日本付近の磁気偏角（西へ約7〜9°）の分だけ補正してください。「暗さ」は経路上の地点のうち太陽高度が−6°以下の割合です。「地磁気緯度」は地磁気を双極子で近似した経路上の最高値で、北米上空は地磁気の極に近いため、地理的な緯度より高くなります。オーロラ確率はNOAAのOVATIONモデルによる30〜90分先の推定値を、経路上で最も高い地点で示しています（30%以上を「通過」、10〜30%を「縁」）。オーロラ帯ではD層・E層への電子の降り込みで吸収が強まり、特に160m・80mが大きく弱まることがあります。判定は主にローバンド向けの目安です。</div>
+    </details>
+  </section>
+
+  <section class="card">
     <h2>いまの値</h2>
     <div class="grid" id="nums"></div>
     <div class="fine" id="nums-when"></div>
@@ -83,9 +110,13 @@ footer a{color:var(--link)}
   </section>
 
   <section class="card">
-    <h2>地磁気の推移（過去24時間のKp）</h2>
+    <h2>Kp：過去24時間と3日間の予報</h2>
     <div id="kp-chart"></div>
-    <div class="fine">3時間ごとの値で、下の数字は始まりの時刻です。緑は4未満、黄は4、赤は5以上（地磁気嵐）。</div>
+    <div class="sum" id="kpf-sum"></div>
+    <div class="fine">塗りつぶしの棒は実測・速報値、点線の枠の棒はNOAAの予報値です。緑は4未満、黄は4、赤は5以上（地磁気嵐）。縦線は日本時間の0時の区切り。</div>
+    <details><summary>予報の見方</summary>
+      <div class="fine">予報はNOAA宇宙天気予報センターによるもので、主にCME（コロナ質量放出）の到来予想や、約27日周期で繰り返す高速太陽風にもとづきます。CMEの到着時刻の予測には一般に半日程度の誤差があるため、予報の時刻は幅を持って見てください。Kp 5以上（G1以上）の予報は、欧州・北米・カリブなど北回りのパスが弱まる可能性を示します。<a href="https://www.swpc.noaa.gov/products/3-day-forecast">NOAAの3日間予報</a></div>
+    </details>
   </section>
 
   <section class="card">
@@ -126,6 +157,8 @@ footer a{color:var(--link)}
     wind: NOAA + '/products/solar-wind/plasma-2-hour.json',
     scales: NOAA + '/products/noaa-scales.json',
     sfi: NOAA + '/products/10cm-flux-30-day.json',
+    kpf: NOAA + '/products/noaa-planetary-k-index-forecast.json',
+    aur: NOAA + '/json/ovation_aurora_latest.json',
     iono: 'iono.json',
     state: 'https://raw.githubusercontent.com/ja1bbe/ja1bbe-iono/main/state/sw_state.json',
   };
@@ -195,23 +228,134 @@ footer a{color:var(--link)}
       `<text x="${W / 2}" y="${H - 3}" text-anchor="middle" font-size="10" fill="${css('--sub')}">${jst(xs[0])}〜${jst(xs[xs.length - 1])}</text></svg>`;
   }
 
-  function kpChart(el, kp) {
-    const last = kp.slice(-8);
-    if (!last.length) { el.innerHTML = '<div class="fine">データがありません</div>'; return; }
-    const W = 320, H = 120, n = last.length, gap = 6, bw = (W - gap * (n - 1)) / n, base = H - 18, top = 16;
-    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="過去24時間のKp：${last.map(r => kpMark(r[1])).join('、')}">`;
+  // ---- Kp：過去24時間と3日間の予報（PC版の kpfChart をスマートフォンの幅に合わせたもの）
+  function parseKpf(d) {
+    return rows(d).map(r => ({ t: ts(r.time_tag), kp: parseFloat(r.kp ?? r.Kp), kind: String(r.observed ?? r.kind ?? '').toLowerCase() }))
+      .filter(r => !isNaN(r.kp) && !isNaN(r.t)).sort((a, b) => a.t - b.t);
+  }
+  const gOf = k => k >= 9 ? 'G5' : k >= 8 ? 'G4' : k >= 7 ? 'G3' : k >= 6 ? 'G2' : k >= 5 ? 'G1' : 'G0';
+  function kpChart(el, list, now) {
+    if (!list.length) { el.innerHTML = '<div class="fine">データがありません</div>'; return; }
+    const W = 340, H = 130, top = 14, base = H - 22, n = list.length, gap = n > 16 ? 2 : 5, bw = (W - gap * (n - 1)) / n;
+    const Y = k => base - (k / 9) * (base - top);
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Kpの推移と予報">`;
     s += `<line x1="0" x2="${W}" y1="${base}" y2="${base}" stroke="${css('--line')}"/>`;
-    const y5 = base - (5 / 9) * (base - top);
-    s += `<line x1="0" x2="${W}" y1="${y5.toFixed(1)}" y2="${y5.toFixed(1)}" stroke="${css('--line')}" stroke-dasharray="3 3"/>` +
-         `<text x="${W}" y="${(y5 - 3).toFixed(1)}" text-anchor="end" font-size="9" fill="${css('--sub')}">5（G1）</text>`;
-    last.forEach(([t, k], i) => {
-      const x = i * (bw + gap), h = Math.max(3, (k / 9) * (base - top)), isLast = i === n - 1;
-      s += `<rect x="${x.toFixed(1)}" y="${(base - h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${kpColor(k)}"` +
-           (isLast ? ` stroke="${css('--ink')}" stroke-width="2"` : '') + '/>';
-      s += `<text x="${(x + bw / 2).toFixed(1)}" y="${(base - h - 4).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="600" fill="${isLast ? css('--ink') : css('--sub')}">${kpMark(k)}</text>`;
-      s += `<text x="${(x + bw / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="10" fill="${css('--sub')}">${String(jstHour(t)).padStart(2, '0')}</text>`;
+    s += `<line x1="0" x2="${W}" y1="${Y(5).toFixed(1)}" y2="${Y(5).toFixed(1)}" stroke="${css('--line')}" stroke-dasharray="3 3"/>` +
+         `<text x="${W}" y="${(Y(5) - 3).toFixed(1)}" text-anchor="end" font-size="9" fill="${css('--sub')}">5（G1）</text>`;
+    list.forEach((r, i) => {
+      const x = i * (bw + gap), h = Math.max(2, (r.kp / 9) * (base - top)), c = kpColor(r.kp), pred = r.kind.startsWith('pred');
+      s += pred
+        ? `<rect x="${(x + 0.5).toFixed(1)}" y="${(base - h).toFixed(1)}" width="${(bw - 1).toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${c}" fill-opacity=".15" stroke="${c}" stroke-dasharray="2 2"/>`
+        : `<rect x="${x.toFixed(1)}" y="${(base - h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${c}"/>`;
+      if (n <= 10) s += `<text x="${(x + bw / 2).toFixed(1)}" y="${(base - h - 4).toFixed(1)}" text-anchor="middle" font-size="10" fill="${css('--sub')}">${kpMark(r.kp)}</text>`;
+      if (jstHour(r.t) < 3) {
+        const d = new Date(r.t + 9 * 3600e3);
+        s += `<line x1="${(x - gap / 2).toFixed(1)}" x2="${(x - gap / 2).toFixed(1)}" y1="${top - 6}" y2="${base}" stroke="${css('--line')}"/>` +
+             `<text x="${(x + 1).toFixed(1)}" y="${H - 8}" font-size="10" fill="${css('--sub')}">${d.getUTCMonth() + 1}/${d.getUTCDate()}</text>`;
+      }
     });
+    const ni = list.findIndex(r => r.t + 3 * 3600e3 > now);
+    if (ni >= 0) {
+      const x = ni * (bw + gap) + bw * Math.min(1, (now - list[ni].t) / (3 * 3600e3));
+      s += `<line x1="${x.toFixed(1)}" x2="${x.toFixed(1)}" y1="${top - 6}" y2="${base}" stroke="${css('--ink')}" stroke-width="1.5"/>` +
+           `<text x="${(x + 3).toFixed(1)}" y="${top}" font-size="10" font-weight="600" fill="${css('--ink')}">現在</text>`;
+    }
     el.innerHTML = s + '</svg>';
+  }
+  function kpfSummary(list, now) {
+    const next = list.filter(r => r.t + 3 * 3600e3 > now && r.t < now + 24 * 3600e3);
+    if (!next.length) return '';
+    const mx = next.reduce((a, b) => b.kp > a.kp ? b : a);
+    let txt = `今後24時間の予報の最大は Kp ${mx.kp.toFixed(2)}（${gOf(mx.kp)}）、日本時間 ${jst(mx.t, true)}〜${jst(mx.t + 3 * 3600e3)} の枠です。`;
+    if (mx.kp >= 5) txt += '地磁気嵐の予報です。欧州・北米・カリブなど北回りのパスは、この時間帯の前後で弱まる可能性があります。';
+    else if (mx.kp >= 4) txt += 'やや活発になる予報です。高緯度パスに注意してください。';
+    else txt += '大きな乱れは予報されていません。';
+    const all = list.filter(r => r.t > now && r.kind.startsWith('pred')), g = all.length ? all.reduce((a, b) => b.kp > a.kp ? b : a) : null;
+    if (g && g.kp >= 5 && g !== mx) txt += `なお、3日間の予報期間中では ${jst(g.t, true)}〜 に Kp ${g.kp.toFixed(2)}（${gOf(g.kp)}）の予報があります。`;
+    return txt;
+  }
+
+  // ---- 方面別の経路判定（PC版と同じ計算と判定の文）
+  const STATION = { name: '東京', lat: 35.68, lon: 139.69 };   // 基準地点
+  const GMPOLE = { lat: 80.8, lon: -72.6 };                     // 地磁気北極（双極子近似）
+  const RAD = Math.PI / 180, EARTH = 6371;
+  const DESTS = [['欧州（ロンドン）', 51.5, -0.13], ['北米東部（ニューヨーク）', 40.7, -74.0], ['北米西部（ロサンゼルス）', 34.05, -118.24],
+    ['カリブ（プエルトリコ）', 18.47, -66.11], ['アフリカ西海岸（セネガル・ダカール）', 14.69, -17.45], ['南米（ブラジル・サンパウロ）', -23.55, -46.63],
+    ['南部アフリカ（ヨハネスブルグ）', -26.2, 28.05], ['オセアニア（シドニー）', -33.87, 151.21], ['東南アジア（シンガポール）', 1.35, 103.82]];
+  let AUR = null;
+  function sunElev(lat, lon, t) {
+    const d = new Date(t), doy = (Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - Date.UTC(d.getUTCFullYear(), 0, 0)) / 864e5;
+    const hr = d.getUTCHours() + d.getUTCMinutes() / 60, g = 2 * Math.PI / 365 * (doy - 1 + (hr - 12) / 24);
+    const eq = 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g) - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g));
+    const dec = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g) - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
+    const ha = ((hr * 60 + eq + 4 * lon) / 4 - 180) * RAD, la = lat * RAD;
+    return Math.asin(Math.sin(la) * Math.sin(dec) + Math.cos(la) * Math.cos(dec) * Math.cos(ha)) / RAD;
+  }
+  const magLat = (lat, lon) => Math.asin(Math.sin(lat * RAD) * Math.sin(GMPOLE.lat * RAD) + Math.cos(lat * RAD) * Math.cos(GMPOLE.lat * RAD) * Math.cos((lon - GMPOLE.lon) * RAD)) / RAD;
+  function bearingDist(la1, lo1, la2, lo2) {
+    const p1 = la1 * RAD, p2 = la2 * RAD, dl = (lo2 - lo1) * RAD;
+    const d = Math.acos(Math.min(1, Math.sin(p1) * Math.sin(p2) + Math.cos(p1) * Math.cos(p2) * Math.cos(dl)));
+    const az = (Math.atan2(Math.sin(dl) * Math.cos(p2), Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dl)) / RAD + 360) % 360;
+    return { az, km: d * EARTH };
+  }
+  function dest(la, lo, az, km) {
+    const d = km / EARTH, p1 = la * RAD, t = az * RAD;
+    const p2 = Math.asin(Math.sin(p1) * Math.cos(d) + Math.cos(p1) * Math.sin(d) * Math.cos(t));
+    const l2 = lo * RAD + Math.atan2(Math.sin(t) * Math.sin(d) * Math.cos(p1), Math.cos(d) - Math.sin(p1) * Math.sin(p2));
+    return [p2 / RAD, ((l2 / RAD + 540) % 360) - 180];
+  }
+  function aurAt(lat, lon) {
+    if (!AUR) return null;
+    let L = Math.round(lon); L = ((L % 360) + 360) % 360;
+    const la = Math.max(-90, Math.min(90, Math.round(lat)));
+    return AUR.grid[L * 181 + la + 90];
+  }
+  function parseAur(d) {
+    const g = new Float32Array(360 * 181); let nmax = 0;
+    for (const [lo, la, a] of d.coordinates) {
+      const L = ((Math.round(lo) % 360) + 360) % 360, A = Math.round(la);
+      if (A < -90 || A > 90) continue;
+      g[L * 181 + A + 90] = a; if (A > 0 && a > nmax) nmax = a;
+    }
+    return { grid: g, obs: ts(d['Observation Time']), fc: ts(d['Forecast Time']), nmax };
+  }
+  function pathStats(az, km, t) {
+    let dark = 0, n = 0, mm = -90, au = null;
+    for (let x = 0; x <= km; x += 200) {
+      const [la, lo] = dest(STATION.lat, STATION.lon, az, x); n++;
+      if (sunElev(la, lo, t) < -6) dark++;
+      const m = magLat(la, lo); if (Math.abs(m) > Math.abs(mm) || mm === -90) mm = m;
+      const a = aurAt(la, lo); if (a != null) au = Math.max(au ?? 0, a);
+    }
+    return { az, km, dark: dark / n, mag: mm, aur: au };
+  }
+  const aurTxt = a => a == null ? '―' : a >= 30 ? `<span class="t5">${a.toFixed(0)}%（通過）</span>` : a >= 10 ? `<span class="t4">${a.toFixed(0)}%（縁）</span>` : `<span class="t1">${a.toFixed(0)}%（影響小）</span>`;
+  function advise(sp, lp) {
+    const bad = a => a != null && a >= 30, edge = a => a != null && a >= 10 && a < 30;
+    if (sp.dark >= 0.8 && !bad(sp.aur)) return `<b class="t1">短経路 ${sp.az.toFixed(0)}° でローバンドを狙える条件</b>${edge(sp.aur) ? '（オーロラ帯の縁を通るため、やや弱まる可能性）' : ''}`;
+    if (lp.dark >= 0.8 && !bad(lp.aur) && (bad(sp.aur) || sp.dark < 0.5)) return `<b class="t3">長経路 ${lp.az.toFixed(0)}° を検討</b>（短経路は${bad(sp.aur) ? 'オーロラ帯を通過' : '明るい区間が多い'}）`;
+    if (bad(sp.aur) && sp.dark >= 0.5) return `<b class="t5">短経路はオーロラ帯を通過</b>：北回りは大きく弱まる可能性。高緯度を通らない方面に切り替えを`;
+    if (sp.dark >= 0.5) return `<b class="t3">短経路 ${sp.az.toFixed(0)}°</b>：経路の一部が明るい。グレイラインに注目`;
+    if (sp.dark >= 0.2) return `<b>短経路 ${sp.az.toFixed(0)}°</b>：ミドルバンド中心の時間帯`;
+    return `<b>短経路 ${sp.az.toFixed(0)}°</b>：経路の大部分が明るい。ハイ・ミドルバンドの時間帯`;
+  }
+  const dnState = e => e > 6 ? ['昼', 'day'] : e > -6 ? ['薄明', 'gl'] : ['夜', 'night'];
+  const leg = (title, p) => `<div class="leg"><div class="lab">${title}</div><div class="az">${p.az.toFixed(0)}°</div>` +
+    `<div class="sub">${(Math.round(p.km / 100) * 100).toLocaleString()} km<br>地磁気緯度 ${p.mag >= 0 ? 'N' : 'S'}${Math.abs(p.mag).toFixed(0)}°<br>オーロラ ${aurTxt(p.aur)}<br>暗さ ${(p.dark * 100).toFixed(0)}%</div></div>`;
+  function paths(now) {
+    const ej = sunElev(STATION.lat, STATION.lon, now), [jl, jc] = dnState(ej);
+    $('dests').innerHTML = DESTS.map(([n, la, lo]) => {
+      const [l, c] = dnState(sunElev(la, lo, now)), g = bearingDist(STATION.lat, STATION.lon, la, lo);
+      const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
+      return `<div class="dest"><div class="dest-h"><b>${esc(n)}</b><span>相手<span class="tag ${c}">${l}</span> 日本<span class="tag ${jc}">${jl}</span></span></div>` +
+        `<div class="adv">${advise(sp, lp)}</div><div class="legs">${leg('短経路', sp)}${leg('長経路', lp)}</div></div>`;
+    }).join('');
+    $('aurInfo').textContent = AUR ? `オーロラ（OVATION）：観測 ${jst(AUR.obs)}、予測対象 ${jst(AUR.fc)}（日本時間）。北半球の最大確率 ${AUR.nmax.toFixed(0)}%。`
+      : 'オーロラのデータを取得できていないため、オーロラ確率は表示していません。';
+    const j = new Date(now + 9 * 3600e3), b0 = Date.UTC(j.getUTCFullYear(), j.getUTCMonth(), j.getUTCDate()) - 9 * 3600e3;
+    let rise, set, prev = sunElev(STATION.lat, STATION.lon, b0);
+    for (let m = 1; m <= 1440; m++) { const t = b0 + m * 60e3, e = sunElev(STATION.lat, STATION.lon, t); if (prev < -0.833 && e >= -0.833) rise = t; if (prev >= -0.833 && e < -0.833) set = t; prev = e; }
+    $('jaSun').textContent = `東京の今日の日の出 ${rise ? jst(rise) : '―'}・日の入り ${set ? jst(set) : '―'}（日本時間、計算値）。`;
   }
 
   const cell = (lab, val, unit, sub) =>
@@ -281,7 +425,15 @@ footer a{color:var(--link)}
     $('sp-now').textContent = wind.length ? wind[wind.length - 1][1].toFixed(0) + ' km/s' : '';
     spark($('bz-chart'), mag.map(r => [r[0], r[1]]), { zero: true, fmt: x => x.toFixed(1), color: css('--ink') });
     $('bz-now').textContent = mag.length ? (mag[mag.length - 1][1] >= 0 ? '+' : '') + mag[mag.length - 1][1].toFixed(1) + ' nT' : '';
-    kpChart($('kp-chart'), kp.filter(r => r[0] > now - 86400e3 - 3 * 3600e3));
+    // Kpの推移と予報：予報のファイルがあれば過去24時間〜3日先を、なければ過去24時間だけを描く
+    let kpl = d.kpf ? parseKpf(d.kpf).filter(r => r.t >= now - 24 * 3600e3) : [];
+    if (!kpl.length) kpl = kp.filter(r => r[0] > now - 86400e3 - 3 * 3600e3).map(r => ({ t: r[0], kp: r[1], kind: 'observed' }));
+    kpChart($('kp-chart'), kpl, now);
+    $('kpf-sum').textContent = d.kpf ? kpfSummary(kpl, now) : 'Kpの予報を取得できませんでした。過去24時間の値だけを表示しています。';
+
+    // 方面別の経路判定
+    try { AUR = d.aur ? parseAur(d.aur) : null; } catch (e) { AUR = null; }
+    paths(now);
 
     // 電離層（国分寺）
     const rec = d.iono && Array.isArray(d.iono.recent) ? d.iono.recent : [];
@@ -320,10 +472,13 @@ footer a{color:var(--link)}
     $('expl-rest').innerHTML = ORDER.filter(k => !pick.includes(k)).map(para).join('');
 
     const failed = keys.filter(k => d[k] === null && k !== 'state');
+    lastNow = now;
     $('updated').textContent = `${jst(now, true)} 更新` + (failed.length ? '（一部の値を取得できませんでした）' : '');
   }
 
+  let lastNow = 0;
   $('reload').addEventListener('click', load);
+  setInterval(() => { if (!document.hidden && AUR !== undefined) paths(Date.now()); }, 60e3);   // 昼夜と暗さは1分ごとに計算し直す
   document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
   setInterval(() => { if (!document.hidden) load(); }, 5 * 60e3);
   load();
