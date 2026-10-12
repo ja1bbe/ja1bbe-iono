@@ -5,6 +5,7 @@ sw_alert.py — 宇宙天気の定時通知と、傾向が変わったときの�
 ・定時通知: 日本時間 0・3・6・9・12・15・18・21時（Kpの3時間区切りと一致）。
   既定は 6〜21時の6回。0時・3時は希望者だけ（返信で選ぶ）
 ・配信先は、メールへの返信で受け取る知らせを選べる（「受け取る知らせの設定」の節）
+・標準はテキスト形式。返信で「HTML」と書いた人には、スマートフォン向けのHTML版（テキスト版も同封）を送る
 ・その状況に当てはまるときに「ひとこと解説」を添える（「ひとこと解説」の節）
 ・国分寺の電離層の値は、同じリポジトリの docs/iono.json（fetch_iono.py が毎時更新）から読む
 ・傾向の知らせ（夜間も送る）:
@@ -32,6 +33,7 @@ import argparse
 import email
 import hashlib
 import hmac
+import html as _html
 import imaplib
 import re
 import unicodedata
@@ -42,6 +44,7 @@ import smtplib
 import ssl
 import sys
 import time
+import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from email import policy
@@ -51,7 +54,8 @@ from email.utils import parseaddr
 JST = timezone(timedelta(hours=9))
 REPORT_HOURS_JST = (0, 3, 6, 9, 12, 15, 18, 21)
 DEFAULT_SLOTS = [6, 9, 12, 15, 18, 21]
-DEFAULT_PREF = {'slots': DEFAULT_SLOTS, 'worse': True, 'better': True, 'stop': False}
+DEFAULT_PREF = {'slots': DEFAULT_SLOTS, 'worse': True, 'better': True, 'stop': False, 'html': False}
+NOWCAST_URL = 'https://ja1bbe.wixsite.com/mysite/' + urllib.parse.quote('宇宙天気ナウキャスト')
 IMAP_MAX_PER_RUN = 50           # 1回に読む返信の上限
 REPORT_WAIT_KP_SEC = 45 * 60    # 区切りのKpが出るのを待つ上限。過ぎたら手元の値で送る
 REPORT_LATE_SEC = 2 * 3600      # GitHubの遅れでこれ以上ずれたら、その回の定時は送らない
@@ -86,6 +90,7 @@ HOWTO = (
     '  悪化の知らせ   → 悪化あり ／ 悪化なし（悪化の予告・地磁気嵐G1以上・プロトン現象）\n'
     '  改善の知らせ   → 改善あり ／ 改善なし（好転）\n'
     '  すべて止める   → 停止　　再開するとき → 再開\n'
+    '  表示の形式     → HTML（スマートフォン向けの表示）／ テキスト（標準）\n'
     '  今の設定を見る → 設定\n'
     '  数分〜15分ほどで反映し、確認のメールをお送りします。宛先の変更は JA1BBE までご連絡ください。\n'
 )
@@ -289,7 +294,7 @@ def expl_text(key, hist, now):
 
 
 def explanations(v, hist, st, now, slot_hour=None, forced=(), max_n=EXPL_MAX):
-    """メールに添える解説の本文。forced は知らせの種類に応じて必ず載せるもの"""
+    """メールに添える解説の文の一覧。forced は知らせの種類に応じて必ず載せるもの"""
     shown = st.setdefault('expl_shown', {})
     pick = list(forced)
     for k in expl_triggers(v, hist, st, now, slot_hour):
@@ -303,9 +308,12 @@ def explanations(v, hist, st, now, slot_hour=None, forced=(), max_n=EXPL_MAX):
         st['expl_fallback'] = now
     for k in pick:
         shown[k] = now
-    if not pick:
-        return ''
-    return '\n\n■ ひとこと解説\n' + '\n'.join('・' + expl_text(k, hist, now) for k in pick)
+    return [expl_text(k, hist, now) for k in pick]
+
+
+def expl_section(lst):
+    """解説の一覧を、テキストのメール用の節にする"""
+    return ('\n\n■ ひとこと解説\n' + '\n'.join('・' + x for x in lst)) if lst else ''
 
 
 def status_text(v, hist, now):
@@ -374,6 +382,153 @@ def full_text(v, hist, now, howto=True, expl=''):
     """NOAAの値＋国分寺の1行＋ひとこと解説＋フッター"""
     io = iono_text(now)
     return status_text(v, hist, now) + ('\n' + io if io else '') + expl + footer(bool(io), howto)
+
+
+# ---------------------------------------------------------------- HTMLのメール
+# メールの中ではプログラムは動かず、<style>も削られることがあるため、表と行内のstyleだけで組む。
+# 幅は100%で最大600px（スマートフォンでもPCでも1列）。グラフは色を付けた枠で描く（SVGはGmailで出ない）。
+C_INK, C_SUB, C_LINE, C_BG, C_PAPER, C_LINK = '#1b2633', '#5a6573', '#d9dee5', '#eef1f5', '#ffffff', '#1f5fbf'
+TREND_COLOR = {   # 傾向ごとの色（文字色, 帯の色, 淡い背景）
+    '静穏': ('#ffffff', '#2f7a57', '#e9f4ee'),
+    '回復途中': ('#ffffff', '#a66a12', '#fbf2e2'),
+    '悪化の兆し': ('#ffffff', '#6a3fb5', '#f1ecfa'),
+    '乱れ中': ('#ffffff', '#c2531a', '#fcede4'),
+    '地磁気嵐（G1以上）': ('#ffffff', '#a3203f', '#f9e6eb'),
+}
+FONT = "'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','Meiryo',sans-serif"
+
+
+def _e(x):
+    return _html.escape(str(x), quote=True)
+
+
+def kp_color(k):
+    """NOAAのKpの棒と同じ考え方：4未満は緑、4は黄、5以上は赤系"""
+    return '#3f9a6b' if k < 4 else '#d9a21b' if k < 5 else '#c2531a' if k < 7 else '#a3203f'
+
+
+def html_kp_strip(hist, now):
+    rows = [(t, k) for t, k in hist if t > now - 86400 - 3 * 3600][-8:]
+    if not rows:
+        return ''
+    cells, labels = [], []
+    for i, (t, k) in enumerate(rows):
+        h = max(3, int(round(k * 9)))
+        last = i == len(rows) - 1
+        cells.append(
+            f'<td valign="bottom" align="center" style="padding:0 3px;height:92px;">'
+            f'<div style="font:600 11px/1.2 {FONT};color:{C_INK if last else C_SUB};padding-bottom:3px;">{_e(kp_mark(k))}</div>'
+            f'<div style="height:{h}px;line-height:{h}px;font-size:1px;background:{kp_color(k)};border-radius:3px 3px 0 0;'
+            f'{"outline:2px solid " + C_INK + ";" if last else ""}">&nbsp;</div></td>')
+        labels.append(f'<td align="center" style="padding:4px 0 0;font:11px/1.2 {FONT};color:{C_SUB};">{_e(jst(t, "%H"))}</td>')
+    return (f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;'
+            f'border-bottom:1px solid {C_LINE};table-layout:fixed;"><tr>{"".join(cells)}</tr></table>'
+            f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;">'
+            f'<tr>{"".join(labels)}</tr></table>'
+            f'<div style="font:11px/1.5 {FONT};color:{C_SUB};padding-top:6px;">'
+            f'過去24時間のKp（3時間ごと、数字は始まりの時刻）。緑は4未満、黄は4、赤は5以上（地磁気嵐）。</div>')
+
+
+def html_cell(label, value, unit, note=''):
+    return (f'<td width="50%" valign="top" style="padding:12px 12px 12px 0;border-top:1px solid {C_LINE};">'
+            f'<div style="font:12px/1.4 {FONT};color:{C_SUB};">{_e(label)}</div>'
+            f'<div style="font:600 22px/1.25 {FONT};color:{C_INK};padding-top:2px;">{_e(value)}'
+            f'<span style="font:400 13px {FONT};color:{C_SUB};"> {_e(unit)}</span></div>'
+            + (f'<div style="font:12px/1.5 {FONT};color:{C_SUB};padding-top:2px;">'
+               + '<br>'.join(_e(x) for x in (note if isinstance(note, list) else [note])) + '</div>' if note else '')
+            + '</td>')
+
+
+def html_numbers(v, now):
+    cells = []
+    if 'speed' in v:
+        cells.append(html_cell('太陽風の速さ', f"{v.get('speed30', v['speed']):.0f}", 'km/s',
+                               ['30分平均'] + ([f"密度 {v['density']:.1f}/cm³"] if 'density' in v else [])))
+    if 'bz30' in v:
+        cells.append(html_cell('Bz（磁場の南北）', f"{v['bz30']:+.1f}", 'nT',
+                               [('南向き' if v['bz30'] < 0 else '北向き') + '・30分平均']
+                               + ([f"磁場の強さ Bt {v['bt']:.1f}nT"] if 'bt' in v else [])))
+    if 'kp' in v:
+        cells.append(html_cell('Kp指数', kp_mark(v['kp']), '',
+                               f"{jst(v['kp_at'])}〜{jst(v['kp_at'] + 3 * 3600)}の値"))
+    if 'sfi' in v:
+        sc = ' '.join(f'{k}{v[k]}' for k in ('R', 'S', 'G') if k in v)
+        cells.append(html_cell('SFI（太陽電波）', f"{v['sfi']:.0f}", '', f'NOAAスケール {sc}' if sc else ''))
+    rows = ''.join('<tr>' + ''.join(cells[i:i + 2]) + ('<td></td>' if len(cells[i:i + 2]) == 1 else '') + '</tr>'
+                   for i in range(0, len(cells), 2))
+    stale = '' if rtsw_fresh(v, now) else '（データが途切れており古い値です）'
+    when = (f'<div style="font:11px/1.5 {FONT};color:{C_SUB};padding-top:4px;">太陽風・Bzは {jst(v["rtsw_at"])} の値{stale}</div>'
+            if 'rtsw_at' in v else '')
+    return f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0">{rows}</table>{when}'
+
+
+def html_button(label, href, solid=False):
+    bg, fg, bd = (C_LINK, '#ffffff', C_LINK) if solid else (C_PAPER, C_LINK, C_LINE)
+    return (f'<a href="{_e(href)}" style="display:inline-block;margin:0 6px 8px 0;padding:10px 14px;border:1px solid {bd};'
+            f'border-radius:6px;background:{bg};color:{fg};font:600 14px/1.2 {FONT};text-decoration:none;">{_e(label)}</a>')
+
+
+def mailto(cmd):
+    to = _secret('MAIL_FROM') or 'ja1bbe.dxcc@gmail.com'
+    return f"mailto:{to}?subject={urllib.parse.quote('[宇宙天気] 設定')}&body={urllib.parse.quote(cmd)}"
+
+
+def render_html(heading, lead, v, hist, st, now, expl):
+    """HTML版の本文（テキスト版と同じ内容を、見やすく並べたもの）"""
+    tr = trend(v, st, now)
+    fg, band, tint = TREND_COLOR.get(tr, TREND_COLOR['静穏'])
+    note = trend_note(v, st, now).strip('（）')
+    io = iono_text(now)
+    sec = lambda title, inner: (f'<tr><td style="padding:20px 20px 4px;"><div style="font:600 13px/1.4 {FONT};color:{C_INK};'
+                                f'padding-bottom:8px;">{_e(title)}</div>{inner}</td></tr>')
+    mx = max((k for t, k in hist if t > now - 86400), default=None)
+    parts = [
+        # 見出し：どの回のお知らせか
+        f'<tr><td style="padding:16px 20px 12px;font:12px/1.5 {FONT};color:{C_SUB};">JA1BBE 宇宙天気配信</td></tr>',
+        # 主役：今の傾向を色の帯で
+        f'<tr><td style="padding:0 20px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" '
+        f'style="background:{tint};border-left:6px solid {band};border-radius:4px;"><tr><td style="padding:14px 16px;">'
+        f'<div style="font:12px/1.5 {FONT};color:{C_SUB};">{_e(heading)}</div>'
+        f'<div style="font:700 26px/1.3 {FONT};color:{band};padding-top:2px;">{_e(tr)}</div>'
+        + (f'<div style="font:14px/1.6 {FONT};color:{C_INK};padding-top:6px;">{_e(lead)}</div>' if lead else '')
+        + (f'<div style="font:13px/1.6 {FONT};color:{C_INK};padding-top:6px;">{_e(note)}</div>' if note else '')
+        + (f'<div style="font:12px/1.5 {FONT};color:{C_SUB};padding-top:6px;">24時間の最大 Kp {_e(kp_mark(mx))}'
+           + (f'（G{g_level(mx)}相当）' if g_level(mx) >= 1 else '') + '</div>' if mx is not None else '')
+        + '</td></tr></table></td></tr>',
+        sec('いまの値', html_numbers(v, now)),
+        sec('地磁気の推移', html_kp_strip(hist, now)),
+    ]
+    if io:
+        parts.append(sec('電離層（国分寺）', f'<div style="font:14px/1.6 {FONT};color:{C_INK};">'
+                         f'{_e(io.split(": ", 1)[-1])}</div>'))
+    if expl:
+        items = ''.join(f'<p style="margin:0 0 10px;font:14px/1.7 {FONT};color:{C_INK};">{_e(x)}</p>' for x in expl)
+        parts.append(f'<tr><td style="padding:20px 20px 4px;"><div style="background:{C_BG};border-radius:6px;padding:14px 16px;">'
+                     f'<div style="font:600 13px/1.4 {FONT};color:{C_INK};padding-bottom:8px;">ひとこと解説</div>{items}</div></td></tr>')
+    parts.append(sec('', html_button('ナウキャストのページを開く', NOWCAST_URL, solid=True)))
+    parts.append(sec('受け取る知らせの設定',
+                     f'<div style="font:12px/1.6 {FONT};color:{C_SUB};padding-bottom:10px;">ボタンを押すと返信の画面が開きます。'
+                     '送信すると、数分〜15分ほどで反映し、確認のメールが届きます。時刻を選ぶときは、返信の1行目に「0 6 18 21」のように書いてください。</div>'
+                     + html_button('今の設定を見る', mailto('設定'))
+                     + html_button('テキスト形式に戻す', mailto('テキスト'))
+                     + html_button('悪化の知らせを止める', mailto('悪化なし'))
+                     + html_button('すべて止める', mailto('停止'))))
+    src = ('データ元：NOAA Space Weather Prediction Center（services.swpc.noaa.gov）'
+           + ('<br>電離層：出典：情報通信研究機構（NICT） 電離圏観測データ '
+              '<a href="https://wdc.nict.go.jp/Ionosphere/index.html" style="color:' + C_LINK + ';">'
+              'https://wdc.nict.go.jp/Ionosphere/index.html</a>' if io else '')
+           + '<br>観測値は自動処理の結果を含みます。運用の目安としてお使いください。宛先の変更は JA1BBE までご連絡ください。')
+    parts.append(f'<tr><td style="padding:20px;border-top:1px solid {C_LINE};font:11px/1.7 {FONT};color:{C_SUB};">{src}</td></tr>')
+    return ('<!doctype html><html lang="ja"><head><meta charset="utf-8">'
+            '<meta name="viewport" content="width=device-width,initial-scale=1">'
+            '<meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light">'
+            f'<title>{_e(heading)}</title></head>'
+            f'<body style="margin:0;padding:0;background:{C_BG};">'
+            f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:{C_BG};"><tr>'
+            f'<td align="center" style="padding:12px 8px;">'
+            f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" '
+            f'style="max-width:600px;width:100%;background:{C_PAPER};border-radius:8px;">'
+            + ''.join(parts) + '</table></td></tr></table></body></html>')
 
 
 # ---------------------------------------------------------------- 判定
@@ -472,6 +627,7 @@ def pref_text(p):
         lines.append('■ 配信を止めています（「再開」と返信すると、下の設定で再開します）')
     lines.append(' '.join(f"{on(h in p['slots'])}{h}時" for h in REPORT_HOURS_JST))
     lines.append(f"{on(p['worse'])}悪化の知らせ　{on(p['better'])}改善の知らせ")
+    lines.append(f"{on(p.get('html'))}HTMLで受け取る（☐ならテキスト）")
     return '\n'.join(lines)
 
 
@@ -508,6 +664,10 @@ def apply_command(p, line):
             p['stop'], ok = True, True
         elif t == '再開':
             p['stop'], ok = False, True
+        elif t.upper() in ('HTML', 'HTML形式'):
+            p['html'], ok = True, True
+        elif t in ('テキスト', 'テキスト形式', '文字') or t.upper() == 'TEXT':
+            p['html'], ok = False, True
         elif t == '設定':
             ok = True
     if hours:
@@ -608,9 +768,12 @@ def _smtp_starttls():
     return s
 
 
-def send_mail(subject, body, rcpts, dry_run=False, personal=False):
+def send_mail(subject, body, rcpts, dry_run=False, personal=False, html=None):
     if dry_run:
-        print(f'--- [送信しない確認モード] 宛先 {len(rcpts)}件\n件名: {subject}\n{body}')
+        print(f"--- [送信しない確認モード] 宛先 {len(rcpts)}件{'（HTML）' if html else ''}\n件名: {subject}\n{body}")
+        if html:
+            with open('preview.html', 'w', encoding='utf-8') as f:     # 見た目の確認用
+                f.write(html)
         return
     user = _secret('MAIL_FROM')
     pw = _secret('MAIL_PASS').replace(' ', '').replace('\u3000', '')   # 表示どおりの空白入りでも通るように
@@ -636,6 +799,8 @@ def send_mail(subject, body, rcpts, dry_run=False, personal=False):
                         msg['To'] = rcpts[i] if personal and len(rcpts) == 1 else user
                         msg['Subject'] = subject
                         msg.set_content(body)
+                        if html:
+                            msg.add_alternative(html, subtype='html')   # テキスト版も同封（HTMLを表示しない受信側向け）
                         s.send_message(msg, to_addrs=rcpts[i:i + SMTP_CHUNK])
                 print(f'送信: {subject}（宛先 {len(rcpts)}件、{name}）')
                 return
@@ -655,7 +820,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--state', default='state/sw_state.json')
     ap.add_argument('--test', action='store_true', help='現在の状況を MAIL_OWNER にだけ送る（状態は変えない）')
-    ap.add_argument('--dry-run', action='store_true', help='送信せず画面に出すだけ')
+    ap.add_argument('--dry-run', action='store_true', help='送信せず画面に出すだけ（HTMLは preview.html に保存）')
+    ap.add_argument('--html', action='store_true', help='--test をHTML形式で送る（設定にかかわらず）')
     a = ap.parse_args()
 
     now = time.time()
@@ -669,10 +835,15 @@ def main():
 
     if a.test:
         rcpts = recipients_from_env('MAIL_OWNER')
+        key = _secret('PREF_KEY')
+        as_html = a.html or bool(key and rcpts and get_pref(st, pref_id(rcpts[0], key)).get('html'))
+        ex = explanations(v, hist, st, now, slot_hour=-1)
+        heading = f'テスト送信（{jst(now, "%m月%d日 %H:%M")}）'
         body = (f'これはテスト送信です（{jst(now, "%m月%d日 %H:%M")}）。\n'
                 f'傾向: {trend(v, st, now)}{trend_note(v, st, now)}\n\n'
-                + full_text(v, hist, now, expl=explanations(v, hist, st, now, slot_hour=-1)))
-        send_mail('[宇宙天気] テスト送信', body, rcpts, a.dry_run)
+                + full_text(v, hist, now, expl=expl_section(ex)))
+        html = render_html(heading, '', v, hist, st, now, ex) if as_html else None
+        send_mail('[宇宙天気] テスト送信', body, rcpts, a.dry_run, html=html)
         return
 
     if 'kp' not in v:
@@ -702,14 +873,29 @@ def main():
             return [r for r in rcpts if kind != 'report' or slot_hour in DEFAULT_SLOTS]
         return [r for r in rcpts if wants(get_pref(st, pref_id(r, key)), kind, slot_hour)]
 
+    def deliver(subject, text_body, to, heading, lead, ex):
+        """配信先を「テキストの組」と「HTMLの組」に分けて送る（どちらもBCC）"""
+        if a.dry_run and not to:
+            to = []
+        if key:
+            want_html = [r for r in to if get_pref(st, pref_id(r, key)).get('html')]
+        else:
+            want_html = []
+        text_to = [r for r in to if r not in want_html]
+        if text_to or (a.dry_run and not want_html):
+            send_mail(subject, text_body, text_to, a.dry_run)
+        if want_html or (a.dry_run and a.html):
+            send_mail(subject, text_body, want_html, a.dry_run, html=render_html(heading, lead, v, hist, st, now, ex))
+
     # 傾向の知らせ（夜間も送る）
     for kind, title, msg in check_alerts(v, hist, st, now, first):
         to = who(kind)
         if not (to or a.dry_run):
             continue            # 受け取る人がいなければ本文を作らない（解説の表示記録も残さない）
         forced = next((ks for name, ks in EXPL_FOR_ALERT.items() if title.startswith(name)), [])
-        body = msg + '\n\n' + full_text(v, hist, now, expl=explanations(v, hist, st, now, forced=forced))
-        send_mail(f'[宇宙天気] {title}', body, to, a.dry_run)
+        ex = explanations(v, hist, st, now, forced=forced)
+        body = msg + '\n\n' + full_text(v, hist, now, expl=expl_section(ex))
+        deliver(f'[宇宙天気] {title}', body, to, f'{title}（{jst(now, "%m月%d日 %H:%M")}）', msg, ex)
 
     # 定時通知
     slot = report_slot(now, st)
@@ -725,9 +911,10 @@ def main():
                 # 誰も選んでいない時刻（例：3時）に解説を「載せたこと」にしてしまわないため
                 tr = trend(v, st, now)
                 subject = f"[宇宙天気] {h}時 Kp{kp_mark(v['kp'])} {tr}"
+                ex = explanations(v, hist, st, now, slot_hour=h)
                 body = (f"宇宙天気 定時のお知らせ（{jst(slot, '%m月%d日')} {h}時）\n傾向: {tr}{trend_note(v, st, now)}\n\n"
-                        + full_text(v, hist, now, expl=explanations(v, hist, st, now, slot_hour=h)))
-                send_mail(subject, body, to, a.dry_run)
+                        + full_text(v, hist, now, expl=expl_section(ex)))
+                deliver(subject, body, to, f"定時のお知らせ（{jst(slot, '%m月%d日')} {h}時）", '', ex)
             else:
                 print(f'定時 {h}時: この時刻を選んでいる配信先はいません')
             st['last_report_slot'] = slot
