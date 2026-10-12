@@ -5,7 +5,7 @@ sw_alert.py — 宇宙天気の定時通知と、傾向が変わったときの�
 ・定時通知: 日本時間 0・3・6・9・12・15・18・21時（Kpの3時間区切りと一致）。
   既定は 6〜21時の6回。0時・3時は希望者だけ（返信で選ぶ）
 ・配信先は、メールへの返信で受け取る知らせを選べる（「受け取る知らせの設定」の節）
-・標準はテキスト形式。返信で「HTML」と書いた人には、スマートフォン向けのHTML版（テキスト版も同封）を送る
+・標準はHTML形式（テキスト版も同封）。返信で「テキスト」と書いた人には、文字だけの形式で送る
 ・その状況に当てはまるときに「ひとこと解説」を添える（「ひとこと解説」の節）
 ・国分寺の電離層の値は、同じリポジトリの docs/iono.json（fetch_iono.py が毎時更新）から読む
 ・傾向の知らせ（夜間も送る）:
@@ -54,8 +54,9 @@ from email.utils import parseaddr
 JST = timezone(timedelta(hours=9))
 REPORT_HOURS_JST = (0, 3, 6, 9, 12, 15, 18, 21)
 DEFAULT_SLOTS = [6, 9, 12, 15, 18, 21]
-DEFAULT_PREF = {'slots': DEFAULT_SLOTS, 'worse': True, 'better': True, 'stop': False, 'html': False}
-NOWCAST_URL = 'https://ja1bbe.wixsite.com/mysite/' + urllib.parse.quote('宇宙天気ナウキャスト')
+DEFAULT_PREF = {'slots': DEFAULT_SLOTS, 'worse': True, 'better': True, 'stop': False, 'html': True}   # 標準はHTML
+NOWCAST_URL = 'https://ja1bbe.github.io/ja1bbe-iono/m.html'          # スマートフォン版のナウキャスト
+NOWCAST_PC_URL = 'https://ja1bbe.wixsite.com/mysite/' + urllib.parse.quote('宇宙天気ナウキャスト')
 IMAP_MAX_PER_RUN = 50           # 1回に読む返信の上限
 REPORT_WAIT_KP_SEC = 45 * 60    # 区切りのKpが出るのを待つ上限。過ぎたら手元の値で送る
 REPORT_LATE_SEC = 2 * 3600      # GitHubの遅れでこれ以上ずれたら、その回の定時は送らない
@@ -90,7 +91,7 @@ HOWTO = (
     '  悪化の知らせ   → 悪化あり ／ 悪化なし（悪化の予告・地磁気嵐G1以上・プロトン現象）\n'
     '  改善の知らせ   → 改善あり ／ 改善なし（好転）\n'
     '  すべて止める   → 停止　　再開するとき → 再開\n'
-    '  表示の形式     → HTML（スマートフォン向けの表示）／ テキスト（標準）\n'
+    '  表示の形式     → HTML（標準）／ テキスト（文字だけの形式）\n'
     '  今の設定を見る → 設定\n'
     '  数分〜15分ほどで反映し、確認のメールをお送りします。宛先の変更は JA1BBE までご連絡ください。\n'
 )
@@ -505,12 +506,12 @@ def render_html(heading, lead, v, hist, st, now, expl):
         items = ''.join(f'<p style="margin:0 0 10px;font:14px/1.7 {FONT};color:{C_INK};">{_e(x)}</p>' for x in expl)
         parts.append(f'<tr><td style="padding:20px 20px 4px;"><div style="background:{C_BG};border-radius:6px;padding:14px 16px;">'
                      f'<div style="font:600 13px/1.4 {FONT};color:{C_INK};padding-bottom:8px;">ひとこと解説</div>{items}</div></td></tr>')
-    parts.append(sec('', html_button('ナウキャストのページを開く', NOWCAST_URL, solid=True)))
+    parts.append(sec('', html_button('ナウキャスト（スマートフォン版）を開く', NOWCAST_URL, solid=True)))
     parts.append(sec('受け取る知らせの設定',
                      f'<div style="font:12px/1.6 {FONT};color:{C_SUB};padding-bottom:10px;">ボタンを押すと返信の画面が開きます。'
                      '送信すると、数分〜15分ほどで反映し、確認のメールが届きます。時刻を選ぶときは、返信の1行目に「0 6 18 21」のように書いてください。</div>'
                      + html_button('今の設定を見る', mailto('設定'))
-                     + html_button('テキスト形式に戻す', mailto('テキスト'))
+                     + html_button('テキスト形式にする', mailto('テキスト'))
                      + html_button('悪化の知らせを止める', mailto('悪化なし'))
                      + html_button('すべて止める', mailto('停止'))))
     src = ('データ元：NOAA Space Weather Prediction Center（services.swpc.noaa.gov）'
@@ -627,7 +628,7 @@ def pref_text(p):
         lines.append('■ 配信を止めています（「再開」と返信すると、下の設定で再開します）')
     lines.append(' '.join(f"{on(h in p['slots'])}{h}時" for h in REPORT_HOURS_JST))
     lines.append(f"{on(p['worse'])}悪化の知らせ　{on(p['better'])}改善の知らせ")
-    lines.append(f"{on(p.get('html'))}HTMLで受け取る（☐ならテキスト）")
+    lines.append(f"{on(p.get('html'))}HTMLで受け取る（☐ならテキスト形式）")
     return '\n'.join(lines)
 
 
@@ -836,7 +837,7 @@ def main():
     if a.test:
         rcpts = recipients_from_env('MAIL_OWNER')
         key = _secret('PREF_KEY')
-        as_html = a.html or bool(key and rcpts and get_pref(st, pref_id(rcpts[0], key)).get('html'))
+        as_html = a.html or (get_pref(st, pref_id(rcpts[0], key)).get('html') if key and rcpts else DEFAULT_PREF['html'])
         ex = explanations(v, hist, st, now, slot_hour=-1)
         heading = f'テスト送信（{jst(now, "%m月%d日 %H:%M")}）'
         body = (f'これはテスト送信です（{jst(now, "%m月%d日 %H:%M")}）。\n'
@@ -880,7 +881,7 @@ def main():
         if key:
             want_html = [r for r in to if get_pref(st, pref_id(r, key)).get('html')]
         else:
-            want_html = []
+            want_html = list(to) if DEFAULT_PREF['html'] else []
         text_to = [r for r in to if r not in want_html]
         if text_to or (a.dry_run and not want_html):
             send_mail(subject, text_body, text_to, a.dry_run)
