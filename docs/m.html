@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>宇宙天気ナウキャスト（スマートフォン版）JA1BBE</title>
+<meta name="description" content="NOAAの太陽風・地磁気とNICT国分寺の電離層の値を、DX運用の目安として表示します。">
+<!--
+  JA1BBE 宇宙天気ナウキャスト スマートフォン版（GitHub Pages: docs/m.html）
+  ・NOAA SWPC の値はブラウザが直接取得する
+  ・国分寺の値は同じ場所の iono.json（fetch_iono.py が毎時更新）を読む。NICTへは取りに行かない
+  ・「乱れを経験中か」は、メール配信（sw_alert.py）の状態ファイルを読み、メールと同じ判定にそろえる
+  ・判定の条件と解説の文は sw_alert.py と同じ。片方を変えたら、もう片方も変える
+-->
+<style>
+:root{
+  --ink:#1b2633; --sub:#5a6573; --line:#d9dee5; --bg:#eef1f5; --paper:#ffffff; --link:#1f5fbf;
+  --quiet:#2f7a57; --quiet-t:#e9f4ee; --recov:#a66a12; --recov-t:#fbf2e2; --pre:#6a3fb5; --pre-t:#f1ecfa;
+  --dist:#c2531a; --dist-t:#fcede4; --storm:#a3203f; --storm-t:#f9e6eb;
+  --k-g:#3f9a6b; --k-y:#d9a21b; --k-o:#c2531a; --k-r:#a3203f;
+  --font:'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','Meiryo',system-ui,sans-serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --ink:#e6ebf1; --sub:#9aa6b4; --line:#2c3642; --bg:#10151b; --paper:#171e26; --link:#7fb0ff;
+    --quiet:#5cc493; --quiet-t:#15281f; --recov:#e0a548; --recov-t:#2a2215; --pre:#a98bef; --pre-t:#221b33;
+    --dist:#f08a55; --dist-t:#2e1d14; --storm:#f0738f; --storm-t:#311820; }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-text-size-adjust:100%}
+main{max-width:560px;margin:0 auto;padding:12px 12px 32px}
+.card{background:var(--paper);border-radius:10px;padding:16px;margin-bottom:12px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 4px 10px;font-size:12px;color:var(--sub)}
+.top b{font-weight:600;color:var(--ink);font-size:13px}
+button{font:600 13px var(--font);color:var(--link);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:7px 12px}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.hero{border-left:6px solid var(--c);background:var(--t)}
+.hero .when{font-size:12px;color:var(--sub)}
+.hero .word{font-size:30px;font-weight:700;color:var(--c);line-height:1.3;margin-top:2px}
+.hero .note{font-size:14px;line-height:1.7;margin-top:6px}
+.hero .mx{font-size:12px;color:var(--sub);margin-top:6px}
+h2{font-size:13px;font-weight:600;margin:0 0 10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.grid>div{padding:10px 0;border-top:1px solid var(--line)}
+.lab{font-size:12px;color:var(--sub)}
+.val{font-size:24px;font-weight:600;line-height:1.25;margin-top:2px;font-variant-numeric:tabular-nums}
+.val small{font-size:13px;font-weight:400;color:var(--sub)}
+.sub{font-size:12px;color:var(--sub);line-height:1.5;margin-top:2px}
+.fine{font-size:11px;color:var(--sub);line-height:1.6;margin-top:6px}
+svg{display:block;width:100%;height:auto}
+.spark-lab{display:flex;justify-content:space-between;font-size:12px;color:var(--sub);margin:12px 0 4px}
+.spark-lab b{color:var(--ink);font-weight:600}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--recov-t);color:var(--recov);margin-left:6px;vertical-align:2px}
+.expl p{margin:0 0 10px;font-size:14px;line-height:1.75}
+.expl p b{font-weight:600}
+details{margin-top:6px} summary{font-size:13px;color:var(--link);cursor:pointer;padding:6px 0}
+.links a{display:block;color:var(--link);font-size:14px;padding:6px 0;text-decoration:none}
+footer{font-size:11px;color:var(--sub);line-height:1.7;padding:4px 4px 0}
+footer a{color:var(--link)}
+.err{font-size:13px;color:var(--dist)}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><div><b>JA1BBE 宇宙天気ナウキャスト</b><br><span id="updated">読み込み中…</span></div>
+    <button id="reload" type="button">最新にする</button></div>
+
+  <section class="card hero" id="hero" style="--c:var(--quiet);--t:var(--quiet-t)">
+    <div class="when" id="hero-when">いまの傾向</div>
+    <div class="word" id="hero-word">…</div>
+    <div class="note" id="hero-note"></div>
+    <div class="mx" id="hero-mx"></div>
+  </section>
+
+  <section class="card">
+    <h2>いまの値</h2>
+    <div class="grid" id="nums"></div>
+    <div class="fine" id="nums-when"></div>
+    <div class="spark-lab"><span>太陽風の速さ（直近2時間）</span><b id="sp-now"></b></div>
+    <div id="sp-chart"></div>
+    <div class="spark-lab"><span>Bz（直近2時間、下が南向き）</span><b id="bz-now"></b></div>
+    <div id="bz-chart"></div>
+  </section>
+
+  <section class="card">
+    <h2>地磁気の推移（過去24時間のKp）</h2>
+    <div id="kp-chart"></div>
+    <div class="fine">3時間ごとの値で、下の数字は始まりの時刻です。緑は4未満、黄は4、赤は5以上（地磁気嵐）。</div>
+  </section>
+
+  <section class="card">
+    <h2>電離層（国分寺）<span class="badge" id="iono-old" hidden>古い値</span></h2>
+    <div class="grid" id="iono"></div>
+    <div class="fine" id="iono-when"></div>
+    <div class="spark-lab"><span>foF2（公開されている直近6時間）</span><b id="fo-now"></b></div>
+    <div id="fo-chart"></div>
+  </section>
+
+  <section class="card expl">
+    <h2>ひとこと解説</h2>
+    <div id="expl-now"></div>
+    <details><summary>そのほかの解説を読む</summary><div id="expl-rest"></div></details>
+  </section>
+
+  <section class="card links">
+    <h2>関連</h2>
+    <a href="https://ja1bbe.wixsite.com/mysite/%E5%AE%87%E5%AE%99%E5%A4%A9%E6%B0%97%E3%83%8A%E3%82%A6%E3%82%AD%E3%83%A3%E3%82%B9%E3%83%88">ナウキャスト（PC版）を開く</a>
+    <a href="https://www.swpc.noaa.gov/">NOAA Space Weather Prediction Center</a>
+    <a href="https://swc.nict.go.jp/">NICT 宇宙天気予報</a>
+  </section>
+
+  <footer>
+    データ元：NOAA Space Weather Prediction Center（services.swpc.noaa.gov）<br>
+    電離層：出典：情報通信研究機構（NICT） 電離圏観測データ
+    <a href="https://wdc.nict.go.jp/Ionosphere/index.html">https://wdc.nict.go.jp/Ionosphere/index.html</a><br>
+    観測値は自動処理の結果を含みます。運用の目安としてお使いください。国分寺の値は1日1回まとめて公開されるため、数時間〜1日前の値のことがあります。
+  </footer>
+</main>
+
+<script>
+(() => {
+  const NOAA = 'https://services.swpc.noaa.gov';
+  const SRC = {
+    kp: NOAA + '/products/noaa-planetary-k-index.json',
+    mag: NOAA + '/products/solar-wind/mag-2-hour.json',
+    wind: NOAA + '/products/solar-wind/plasma-2-hour.json',
+    scales: NOAA + '/products/noaa-scales.json',
+    sfi: NOAA + '/products/10cm-flux-30-day.json',
+    iono: 'iono.json',
+    state: 'https://raw.githubusercontent.com/ja1bbe/ja1bbe-iono/main/state/sw_state.json',
+  };
+  const RTSW_STALE = 30 * 60e3, IONO_STALE = 90 * 60e3;
+
+  // ---- 解説（sw_alert.py の EXPL と同じ文）
+  const EXPL = {
+    kp: 'Kp指数：地磁気の乱れの大きさを0〜9で表した値です。世界の観測所のデータから3時間ごとに求め、5以上を地磁気嵐（G1）と呼びます。',
+    bz: 'Bz：太陽風が運んでくる磁場の南北の向きです。南向き（マイナス）が続くと地球の磁場とつながり、エネルギーが流れ込んで地磁気が乱れやすくなります。',
+    speed: '太陽風の速さ：ふだんは毎秒300〜400km程度です。コロナホールからの高速風では600kmを超えることがあり、速い風と南向きのBzが重なると乱れが大きくなります。',
+    polar: 'なぜ北米・ヨーロッパ方面なのか：日本から北米やヨーロッパへの大圏経路は、北極の近くを通ります。地磁気が乱れると、極地方の電離層で電波の吸収や乱れが強まるため、この方面が先に悪くなります。',
+    lowband: 'ローバンドが影響を受けやすい理由：電離層の下の層（D層）での吸収は、周波数が低いほど強くなります（おおよそ周波数の2乗に反比例）。極地方で吸収が強まると、160m・80mが先に弱くなります。',
+    fof2: 'foF2：電離層のF2層が、真上に向けた電波を反射できる最高の周波数です。斜めに飛ぶ電波は、1ホップ約3000kmでこのおよそ3倍までの周波数が届きます。',
+    sfi: 'SFI（太陽電波の強さ）：波長10.7cmの太陽電波の強さで、太陽活動の目安です。高いほど電離層の電子が増え、高いバンドが開きやすくなる傾向があります。',
+    proton: 'プロトン現象（Sスケール）：太陽フレアなどで高エネルギーの陽子が届くと、極地方で電波が強く吸収されます（極冠吸収、PCA）。数日続くことがあります。',
+    rscale: 'Rスケール（デリンジャー現象）：太陽フレアのX線で、昼側のD層が急に強く電離され、HFが数十分〜1時間ほど聞こえにくくなります。夜側の経路には影響しません。',
+    after: '嵐のあと：地磁気嵐が収まっても、F2層の電子が減ってMUFが下がった状態が、1〜2日続くことがあります。Kpが下がってもすぐに元通りとは限りません。',
+    quiet: '静かな夜はローバンドの好機：地磁気が静かな夜は、極地方を通る経路での吸収が少なく、ローバンドのDXに有利になりやすい条件です。',
+    rot27: '27日周期：太陽は約27日で1回自転するため、同じコロナホールからの高速風が、約27日ごとに戻ってくることがあります。前回の乱れの日付が、次の予想の手がかりになります。',
+    l1: '悪化の予告のしくみ：太陽風の観測衛星は、地球から約150万km太陽寄りの位置（L1点）にいます。毎秒600kmの風なら約40分で地球に届くので、この時間差を使って予告しています。',
+  };
+  const ORDER = ['kp','bz','speed','polar','lowband','fof2','sfi','proton','rscale','after','quiet','rot27','l1'];
+
+  const $ = id => document.getElementById(id);
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const ts = s => Date.parse(String(s).replace(' ', 'T').replace(/Z?$/, 'Z').slice(0, 19) + 'Z');
+  const jst = (t, withDate) => {
+    const d = new Date(t + 9 * 3600e3), p = n => String(n).padStart(2, '0');
+    return (withDate ? `${d.getUTCMonth() + 1}/${d.getUTCDate()} ` : '') + `${p(d.getUTCHours())}:${p(d.getUTCMinutes())}`;
+  };
+  const jstHour = t => new Date(t + 9 * 3600e3).getUTCHours();
+  // 見出し行つきの配列（[[列名…],[値…]…]）も、辞書の配列も同じ形にそろえる
+  const rows = d => Array.isArray(d) && Array.isArray(d[0]) ? d.slice(1).map(r => Object.fromEntries(d[0].map((h, i) => [h, r[i]]))) : (d || []);
+  const kpMark = k => { const b = Math.round(k), f = k - b; return b + (f > 0.15 ? '+' : f < -0.15 ? '-' : ''); };
+  const gLevel = k => Math.max(0, Math.min(5, Math.round(k) - 4));
+  const kpColor = k => k < 4 ? css('--k-g') : k < 5 ? css('--k-y') : k < 7 ? css('--k-o') : css('--k-r');
+  const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
+
+  async function get(url) {
+    const r = await fetch(url + (url.startsWith('http') ? '' : '?t=' + Date.now()), { cache: 'no-store' });
+    if (!r.ok) throw new Error(r.status);
+    return r.json();
+  }
+
+  function spark(el, pts, { zero = false, fmt = v => v.toFixed(0), color = css('--link') } = {}) {
+    if (pts.length < 2) { el.innerHTML = '<div class="fine">データがありません</div>'; return; }
+    const W = 320, H = 70, P = 4;
+    const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+    let lo = Math.min(...ys), hi = Math.max(...ys);
+    if (zero) { lo = Math.min(lo, -5); hi = Math.max(hi, 5); }
+    if (hi - lo < 1e-6) { hi += 1; lo -= 1; }
+    const X = x => P + (x - xs[0]) / (xs[xs.length - 1] - xs[0] || 1) * (W - 2 * P);
+    const Y = y => P + (hi - y) / (hi - lo) * (H - 2 * P);
+    const d = pts.map((p, i) => (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ' ' + Y(p[1]).toFixed(1)).join(' ');
+    let extra = '';
+    if (zero) {
+      const y0 = Y(0);
+      extra = `<rect x="0" y="${y0.toFixed(1)}" width="${W}" height="${(H - y0).toFixed(1)}" fill="${css('--dist-t')}"/>` +
+              `<line x1="0" x2="${W}" y1="${y0.toFixed(1)}" y2="${y0.toFixed(1)}" stroke="${css('--line')}" stroke-width="1"/>` +
+              `<text x="${W - 2}" y="${(H - 4)}" text-anchor="end" font-size="10" fill="${css('--sub')}">南向き</text>`;
+    }
+    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="直近の推移（${fmt(lo)}〜${fmt(hi)}）">${extra}` +
+      `<path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round"/>` +
+      `<text x="2" y="11" font-size="10" fill="${css('--sub')}">${esc(fmt(hi))}</text>` +
+      `<text x="2" y="${H - 3}" font-size="10" fill="${css('--sub')}">${esc(fmt(lo))}</text>` +
+      `<text x="${W / 2}" y="${H - 3}" text-anchor="middle" font-size="10" fill="${css('--sub')}">${jst(xs[0])}〜${jst(xs[xs.length - 1])}</text></svg>`;
+  }
+
+  function kpChart(el, kp) {
+    const last = kp.slice(-8);
+    if (!last.length) { el.innerHTML = '<div class="fine">データがありません</div>'; return; }
+    const W = 320, H = 120, n = last.length, gap = 6, bw = (W - gap * (n - 1)) / n, base = H - 18, top = 16;
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="過去24時間のKp：${last.map(r => kpMark(r[1])).join('、')}">`;
+    s += `<line x1="0" x2="${W}" y1="${base}" y2="${base}" stroke="${css('--line')}"/>`;
+    const y5 = base - (5 / 9) * (base - top);
+    s += `<line x1="0" x2="${W}" y1="${y5.toFixed(1)}" y2="${y5.toFixed(1)}" stroke="${css('--line')}" stroke-dasharray="3 3"/>` +
+         `<text x="${W}" y="${(y5 - 3).toFixed(1)}" text-anchor="end" font-size="9" fill="${css('--sub')}">5（G1）</text>`;
+    last.forEach(([t, k], i) => {
+      const x = i * (bw + gap), h = Math.max(3, (k / 9) * (base - top)), isLast = i === n - 1;
+      s += `<rect x="${x.toFixed(1)}" y="${(base - h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${kpColor(k)}"` +
+           (isLast ? ` stroke="${css('--ink')}" stroke-width="2"` : '') + '/>';
+      s += `<text x="${(x + bw / 2).toFixed(1)}" y="${(base - h - 4).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="600" fill="${isLast ? css('--ink') : css('--sub')}">${kpMark(k)}</text>`;
+      s += `<text x="${(x + bw / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="10" fill="${css('--sub')}">${String(jstHour(t)).padStart(2, '0')}</text>`;
+    });
+    el.innerHTML = s + '</svg>';
+  }
+
+  const cell = (lab, val, unit, sub) =>
+    `<div><div class="lab">${esc(lab)}</div><div class="val">${esc(val)}${unit ? ` <small>${esc(unit)}</small>` : ''}</div>` +
+    (sub ? `<div class="sub">${sub.map(esc).join('<br>')}</div>` : '') + '</div>';
+
+  async function load() {
+    $('updated').textContent = '読み込み中…';
+    const keys = Object.keys(SRC);
+    const res = await Promise.allSettled(keys.map(k => get(SRC[k])));
+    const d = {}; keys.forEach((k, i) => d[k] = res[i].status === 'fulfilled' ? res[i].value : null);
+    const now = Date.now(), v = {};
+
+    // Kp（time_tag は3時間区間の始まり）
+    const kp = rows(d.kp).map(r => [ts(r.time_tag), parseFloat(r.Kp ?? r.kp)]).filter(r => !isNaN(r[1])).sort((a, b) => a[0] - b[0]);
+    if (kp.length) { [v.kpAt, v.kp] = kp[kp.length - 1]; }
+    const k24 = kp.filter(r => r[0] > now - 86400e3).map(r => r[1]);
+    const mx = k24.length ? Math.max(...k24) : v.kp;
+
+    // 太陽風（直近2時間、1分値）
+    const mag = rows(d.mag).map(r => [ts(r.time_tag), parseFloat(r.bz_gsm), parseFloat(r.bt)]).filter(r => !isNaN(r[1]));
+    const wind = rows(d.wind).map(r => [ts(r.time_tag), parseFloat(r.speed), parseFloat(r.density)]).filter(r => !isNaN(r[1]));
+    const tail30 = (a, i) => { if (!a.length) return []; const tEnd = a[a.length - 1][0]; return a.filter(r => r[0] > tEnd - 1800e3).map(r => r[i]).filter(x => !isNaN(x)); };
+    if (mag.length) { v.bz30 = avg(tail30(mag, 1)); v.bt = mag[mag.length - 1][2]; v.magAt = mag[mag.length - 1][0]; }
+    if (wind.length) { v.sp30 = avg(tail30(wind, 1)); v.den = wind[wind.length - 1][2]; v.windAt = wind[wind.length - 1][0]; }
+    v.rtswAt = Math.max(v.magAt || 0, v.windAt || 0) || null;
+    const fresh = v.rtswAt && now - v.rtswAt <= RTSW_STALE;
+
+    // スケールとSFI
+    if (d.scales && d.scales['0']) for (const k of ['R', 'S', 'G']) { const x = (d.scales['0'][k] || {}).Scale; if (x !== null && x !== undefined && x !== '') v[k] = parseInt(x); }
+    const sf = rows(d.sfi).filter(r => r.flux !== undefined && r.flux !== null);
+    if (sf.length) v.sfi = parseFloat(sf[sf.length - 1].flux);
+
+    // 傾向（sw_alert.py の trend と同じ。「乱れを経験中か」はメール配信の状態を使う）
+    let disturbed = d.state && typeof d.state.disturbed === 'boolean' ? d.state.disturbed : (mx >= 4 && v.kp > 2);
+    let tr = '静穏';
+    if (v.kp !== undefined) {
+      if (v.kp >= 5 || (v.G || 0) >= 1) tr = '地磁気嵐（G1以上）';
+      else if (v.kp >= 4) tr = '乱れ中';
+      else if (fresh && v.bz30 < -10 && v.sp30 >= 500) tr = '悪化の兆し';
+      else if (disturbed) tr = '回復途中';
+    }
+    const TC = { '静穏': ['--quiet', '--quiet-t'], '回復途中': ['--recov', '--recov-t'], '悪化の兆し': ['--pre', '--pre-t'], '乱れ中': ['--dist', '--dist-t'], '地磁気嵐（G1以上）': ['--storm', '--storm-t'] }[tr];
+    $('hero').style.setProperty('--c', `var(${TC[0]})`); $('hero').style.setProperty('--t', `var(${TC[1]})`);
+    $('hero-word').textContent = v.kp === undefined ? '取得できませんでした' : tr;
+    const notes = {
+      '静穏': '地磁気は落ち着いています。',
+      '回復途中': '地磁気の乱れは収まりつつありますが、まだ元通りではありません。',
+      '悪化の兆し': '強い南向きのBzと速い太陽風が続いています。1時間ほどのうちに地磁気が乱れ、北米・ヨーロッパ方面が悪くなる可能性があります。',
+      '乱れ中': '地磁気が乱れています。北米・ヨーロッパ方面（極地方を通る経路）は悪くなりやすい状態です。',
+      '地磁気嵐（G1以上）': '地磁気嵐の水準です。極地方を通る経路は悪く、ローバンドを中心に影響が数時間〜1日続くことがあります。',
+    };
+    let note = notes[tr] || '';
+    if (tr === '回復途中' && fresh && (v.sp30 >= 500 || v.bt >= 10)) note += '高速の太陽風や強い磁場が残っており、Bzが南に転じると再び乱れる可能性があります。';
+    $('hero-note').textContent = note;
+    $('hero-mx').textContent = mx !== undefined ? `24時間の最大 Kp ${kpMark(mx)}` + (gLevel(mx) >= 1 ? `（G${gLevel(mx)}相当）` : '') : '';
+
+    // いまの値
+    const nums = [];
+    if (v.sp30 !== undefined) nums.push(cell('太陽風の速さ', v.sp30.toFixed(0), 'km/s', ['30分平均'].concat(isNaN(v.den) ? [] : [`密度 ${v.den.toFixed(1)}/cm³`])));
+    if (v.bz30 !== undefined) nums.push(cell('Bz（磁場の南北）', (v.bz30 >= 0 ? '+' : '') + v.bz30.toFixed(1), 'nT', [(v.bz30 < 0 ? '南向き' : '北向き') + '・30分平均'].concat(isNaN(v.bt) ? [] : [`磁場の強さ Bt ${v.bt.toFixed(1)}nT`])));
+    if (v.kp !== undefined) nums.push(cell('Kp指数', kpMark(v.kp), '', [`${jst(v.kpAt)}〜${jst(v.kpAt + 3 * 3600e3)}の値`]));
+    if (v.sfi !== undefined) nums.push(cell('SFI（太陽電波）', v.sfi.toFixed(0), '', ['NOAAスケール ' + ['R', 'S', 'G'].filter(k => v[k] !== undefined).map(k => k + v[k]).join(' ')]));
+    $('nums').innerHTML = nums.join('') || '<div class="err">NOAAの値を取得できませんでした。</div>';
+    $('nums-when').textContent = v.rtswAt ? `太陽風・Bzは ${jst(v.rtswAt)} の値` + (fresh ? '' : '（データが途切れており古い値です）') : '';
+    spark($('sp-chart'), wind.map(r => [r[0], r[1]]), { color: css('--link') });
+    $('sp-now').textContent = wind.length ? wind[wind.length - 1][1].toFixed(0) + ' km/s' : '';
+    spark($('bz-chart'), mag.map(r => [r[0], r[1]]), { zero: true, fmt: x => x.toFixed(1), color: css('--ink') });
+    $('bz-now').textContent = mag.length ? (mag[mag.length - 1][1] >= 0 ? '+' : '') + mag[mag.length - 1][1].toFixed(1) + ' nT' : '';
+    kpChart($('kp-chart'), kp.filter(r => r[0] > now - 86400e3 - 3 * 3600e3));
+
+    // 電離層（国分寺）
+    const rec = d.iono && Array.isArray(d.iono.recent) ? d.iono.recent : [];
+    if (rec.length) {
+      const r = rec[rec.length - 1], at = Date.parse(r.time), age = now - at, old = age >= IONO_STALE;
+      const ion = [];
+      if (r.foF2 !== null && r.foF2 !== undefined) ion.push(cell('foF2', r.foF2.toFixed(1), 'MHz', ['1ホップ約3000kmで、およそ' + (r.foF2 * 3).toFixed(0) + 'MHzまでの目安']));
+      if (r.hF2 !== null && r.hF2 !== undefined) ion.push(cell("見かけの高さ h'F2", r.hF2.toFixed(0), 'km', r.spreadF ? ['Spread-Fの兆候あり'] : null));
+      else if (r.hF !== null && r.hF !== undefined) ion.push(cell("見かけの高さ h'F", r.hF.toFixed(0), 'km', r.spreadF ? ['Spread-Fの兆候あり'] : null));
+      $('iono').innerHTML = ion.join('');
+      $('iono-old').hidden = !old;
+      $('iono-when').textContent = `${jst(at, true)} の観測` + (old ? `（約${age < 3 * 3600e3 ? Math.round(age / 60e3) + '分' : Math.round(age / 3600e3) + '時間'}前。公開は1日1回、夜にまとめて行われます。ハイバンドの目安には使わないでください）` : '');
+      const fo = rec.filter(x => x.foF2 !== null && x.foF2 !== undefined).map(x => [Date.parse(x.time), x.foF2]);
+      spark($('fo-chart'), fo, { fmt: x => x.toFixed(1), color: css('--quiet') });
+      $('fo-now').textContent = r.foF2 != null ? r.foF2.toFixed(1) + ' MHz' : '';
+    } else {
+      $('iono').innerHTML = '<div class="err">国分寺の値を読み込めませんでした。</div>';
+    }
+
+    // ひとこと解説（いまの状況に当てはまるもの。ページでは間隔をあけずに表示する）
+    const now_h = jstHour(now), on = [];
+    if ((v.S || 0) >= 1) on.push('proton');
+    if ((v.R || 0) >= 1) on.push('rscale');
+    if (tr === '悪化の兆し') on.push('l1');
+    if (v.kp >= 5 || (v.G || 0) >= 1) on.push('polar', 'lowband');
+    if (v.kp >= 4 || mx >= 5) on.push('kp', 'polar');
+    if (fresh && v.bz30 <= -5) on.push('bz');
+    if (fresh && v.sp30 >= 500) on.push('speed');
+    if (tr === '回復途中') on.push('after');
+    if (mx >= 5) on.push('rot27');
+    if (v.sfi >= 150) on.push('sfi');
+    if ([18, 19, 20, 21, 22, 23, 0, 1, 2, 3].includes(now_h) && v.kp <= 2 && mx < 3) on.push('quiet');
+    const pick = [...new Set(on)];
+    const para = k => { const [h, ...b] = EXPL[k].split('：'); return `<p><b>${esc(h)}</b>：${esc(b.join('：'))}</p>`; };
+    $('expl-now').innerHTML = pick.length ? pick.map(para).join('') : '<p>いまの状況で特に注意する点はありません。下の解説もご覧ください。</p>';
+    $('expl-rest').innerHTML = ORDER.filter(k => !pick.includes(k)).map(para).join('');
+
+    const failed = keys.filter(k => d[k] === null && k !== 'state');
+    $('updated').textContent = `${jst(now, true)} 更新` + (failed.length ? '（一部の値を取得できませんでした）' : '');
+  }
+
+  $('reload').addEventListener('click', load);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+  setInterval(() => { if (!document.hidden) load(); }, 5 * 60e3);
+  load();
+})();
+</script>
+</body>
+</html>
