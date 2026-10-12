@@ -11,7 +11,7 @@
  },
  "g1": false,
  "imap": {
-  "last_uid": 21,
+  "last_uid": 23,
   "validity": "1"
  },
  "last_alert": {},
@@ -20,6 +20,7 @@
  "prefs": {
   "f411b52be257a242884c": {
    "better": true,
+   "html": true,
    "slots": [
     0,
     3,
