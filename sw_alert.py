@@ -506,7 +506,9 @@ def render_html(heading, lead, v, hist, st, now, expl):
         items = ''.join(f'<p style="margin:0 0 10px;font:14px/1.7 {FONT};color:{C_INK};">{_e(x)}</p>' for x in expl)
         parts.append(f'<tr><td style="padding:20px 20px 4px;"><div style="background:{C_BG};border-radius:6px;padding:14px 16px;">'
                      f'<div style="font:600 13px/1.4 {FONT};color:{C_INK};padding-bottom:8px;">ひとこと解説</div>{items}</div></td></tr>')
-    parts.append(sec('', html_button('ナウキャスト（スマートフォン版）を開く', NOWCAST_URL, solid=True)))
+    parts.append(sec('ナウキャスト（最新の値・方面別の経路判定・Kpの予報）',
+                     html_button('スマートフォン版を開く', NOWCAST_URL, solid=True)
+                     + html_button('PC版を開く', NOWCAST_PC_URL)))
     parts.append(sec('受け取る知らせの設定',
                      f'<div style="font:12px/1.6 {FONT};color:{C_SUB};padding-bottom:10px;">ボタンを押すと返信の画面が開きます。'
                      '送信すると、数分〜15分ほどで反映し、確認のメールが届きます。時刻を選ぶときは、返信の1行目に「0 6 18 21」のように書いてください。</div>'
