@@ -5,6 +5,7 @@ sw_alert.py — 宇宙天気の定時通知と、傾向が変わったときの�
 ・定時通知: 日本時間 0・3・6・9・12・15・18・21時（Kpの3時間区切りと一致）。
   既定は 6〜21時の6回。0時・3時は希望者だけ（返信で選ぶ）
 ・配信先は、メールへの返信で受け取る知らせを選べる（「受け取る知らせの設定」の節）
+・定時ごとに、同じ内容をWeb版「最新のお知らせ」（docs/latest.html）にも書き出す
 ・標準はHTML形式（テキスト版も同封）。返信で「テキスト」と書いた人には、文字だけの形式で送る
 ・その状況に当てはまるときに「ひとこと解説」を添える（「ひとこと解説」の節）
 ・国分寺の電離層の値は、同じリポジトリの docs/iono.json（fetch_iono.py が毎時更新）から読む
@@ -294,9 +295,10 @@ def expl_text(key, hist, now):
     return EXPL[key].format(date=date)
 
 
-def explanations(v, hist, st, now, slot_hour=None, forced=(), max_n=EXPL_MAX):
-    """メールに添える解説の文の一覧。forced は知らせの種類に応じて必ず載せるもの"""
-    shown = st.setdefault('expl_shown', {})
+def explanations(v, hist, st, now, slot_hour=None, forced=(), max_n=EXPL_MAX, record=True):
+    """メールに添える解説の文の一覧。forced は知らせの種類に応じて必ず載せるもの。
+    record=False のときは選ぶだけで「載せた」記録を残さない（誰にも送らない回のWeb版用）"""
+    shown = st.get('expl_shown', {}) if not record else st.setdefault('expl_shown', {})
     pick = list(forced)
     for k in expl_triggers(v, hist, st, now, slot_hour):
         if len(pick) >= max_n:
@@ -306,9 +308,11 @@ def explanations(v, hist, st, now, slot_hour=None, forced=(), max_n=EXPL_MAX):
     if not pick and slot_hour is not None and now - st.get('expl_fallback', 0) >= EXPL_FALLBACK_GAP:
         k = min(EXPL_GENERAL, key=lambda x: shown.get(x, 0))     # いちばん長く載せていないもの
         pick.append(k)
-        st['expl_fallback'] = now
-    for k in pick:
-        shown[k] = now
+        if record:
+            st['expl_fallback'] = now
+    if record:
+        for k in pick:
+            shown[k] = now
     return [expl_text(k, hist, now) for k in pick]
 
 
@@ -474,7 +478,7 @@ def mailto(cmd):
     return f"mailto:{to}?subject={urllib.parse.quote('[宇宙天気] 設定')}&body={urllib.parse.quote(cmd)}"
 
 
-def render_html(heading, lead, v, hist, st, now, expl):
+def render_html(heading, lead, v, hist, st, now, expl, web=False):
     """HTML版の本文（テキスト版と同じ内容を、見やすく並べたもの）"""
     tr = trend(v, st, now)
     fg, band, tint = TREND_COLOR.get(tr, TREND_COLOR['静穏'])
@@ -485,7 +489,7 @@ def render_html(heading, lead, v, hist, st, now, expl):
     mx = max((k for t, k in hist if t > now - 86400), default=None)
     parts = [
         # 見出し：どの回のお知らせか
-        f'<tr><td style="padding:16px 20px 12px;font:12px/1.5 {FONT};color:{C_SUB};">JA1BBE 宇宙天気配信</td></tr>',
+        f'<tr><td style="padding:16px 20px 12px;font:12px/1.5 {FONT};color:{C_SUB};">JA1BBE 宇宙天気配信' + ('（Web版・最新のお知らせ）' if web else '') + '</td></tr>',
         # 主役：今の傾向を色の帯で
         f'<tr><td style="padding:0 20px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" '
         f'style="background:{tint};border-left:6px solid {band};border-radius:4px;"><tr><td style="padding:14px 16px;">'
@@ -509,7 +513,8 @@ def render_html(heading, lead, v, hist, st, now, expl):
     parts.append(sec('ナウキャスト（最新の値・方面別の経路判定・Kpの予報）',
                      html_button('スマートフォン版を開く', NOWCAST_URL, solid=True)
                      + html_button('PC版を開く', NOWCAST_PC_URL)))
-    parts.append(sec('受け取る知らせの設定',
+    if not web:
+      parts.append(sec('受け取る知らせの設定',
                      f'<div style="font:12px/1.6 {FONT};color:{C_SUB};padding-bottom:10px;">ボタンを押すと返信の画面が開きます。'
                      '送信すると、数分〜15分ほどで反映し、確認のメールが届きます。時刻を選ぶときは、返信の1行目に「0 6 18 21」のように書いてください。</div>'
                      + html_button('今の設定を見る', mailto('設定'))
@@ -520,12 +525,14 @@ def render_html(heading, lead, v, hist, st, now, expl):
            + ('<br>電離層：出典：情報通信研究機構（NICT） 電離圏観測データ '
               '<a href="https://wdc.nict.go.jp/Ionosphere/index.html" style="color:' + C_LINK + ';">'
               'https://wdc.nict.go.jp/Ionosphere/index.html</a>' if io else '')
-           + '<br>観測値は自動処理の結果を含みます。運用の目安としてお使いください。宛先の変更は JA1BBE までご連絡ください。')
+           + '<br>観測値は自動処理の結果を含みます。運用の目安としてお使いください。'
+           + ('このページは、メールで配信している定時のお知らせと同じ内容で、お知らせのたびに更新されます（最大3時間前の内容です）。'
+              '最新の値はナウキャストでご覧ください。メール配信のお申し込みは JA1BBE まで。' if web else '宛先の変更は JA1BBE までご連絡ください。'))
     parts.append(f'<tr><td style="padding:20px;border-top:1px solid {C_LINE};font:11px/1.7 {FONT};color:{C_SUB};">{src}</td></tr>')
     return ('<!doctype html><html lang="ja"><head><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width,initial-scale=1">'
             '<meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light">'
-            f'<title>{_e(heading)}</title></head>'
+            f'<title>{_e(("最新のお知らせ｜JA1BBE 宇宙天気配信（" + heading + "）") if web else heading)}</title></head>'
             f'<body style="margin:0;padding:0;background:{C_BG};">'
             f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:{C_BG};"><tr>'
             f'<td align="center" style="padding:12px 8px;">'
@@ -824,6 +831,7 @@ def main():
     ap.add_argument('--state', default='state/sw_state.json')
     ap.add_argument('--test', action='store_true', help='現在の状況を MAIL_OWNER にだけ送る（状態は変えない）')
     ap.add_argument('--dry-run', action='store_true', help='送信せず画面に出すだけ（HTMLは preview.html に保存）')
+    ap.add_argument('--latest', default='docs/latest.html', help='Web版「最新のお知らせ」の書き出し先')
     ap.add_argument('--html', action='store_true', help='--test をHTML形式で送る（設定にかかわらず）')
     a = ap.parse_args()
 
@@ -909,7 +917,9 @@ def main():
         else:
             h = datetime.fromtimestamp(slot, JST).hour
             to = who('report', h)
-            if to or a.dry_run:
+            send_now = bool(to or a.dry_run)
+            heading = f"定時のお知らせ（{jst(slot, '%m月%d日')} {h}時）"
+            if send_now:
                 # 本文（ひとこと解説を含む）は、受け取る人がいるときだけ作る。
                 # 誰も選んでいない時刻（例：3時）に解説を「載せたこと」にしてしまわないため
                 tr = trend(v, st, now)
@@ -917,9 +927,18 @@ def main():
                 ex = explanations(v, hist, st, now, slot_hour=h)
                 body = (f"宇宙天気 定時のお知らせ（{jst(slot, '%m月%d日')} {h}時）\n傾向: {tr}{trend_note(v, st, now)}\n\n"
                         + full_text(v, hist, now, expl=expl_section(ex)))
-                deliver(subject, body, to, f"定時のお知らせ（{jst(slot, '%m月%d日')} {h}時）", '', ex)
+                deliver(subject, body, to, heading, '', ex)
             else:
                 print(f'定時 {h}時: この時刻を選んでいる配信先はいません')
+                ex = explanations(v, hist, st, now, slot_hour=h, record=False)   # Web版用。記録は残さない
+            # Web版「最新のお知らせ」：受け取る人がいない時刻（0時・3時など）も含め、定時ごとに更新する
+            try:
+                os.makedirs(os.path.dirname(a.latest) or '.', exist_ok=True)
+                with open(a.latest, 'w', encoding='utf-8') as f:
+                    f.write(render_html(heading, '', v, hist, st, now, ex, web=True))
+                print(f'Web版を更新しました: {a.latest}')
+            except Exception as e:
+                print(f'[Web版] 書き出せませんでした: {e}')
             st['last_report_slot'] = slot
 
     if json.dumps(st, sort_keys=True) != before:
