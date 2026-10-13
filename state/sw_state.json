@@ -1,9 +1,10 @@
 {
  "disturbed": true,
- "expl_fallback": 1791839975.8903298,
+ "expl_fallback": 1791925551.5465915,
  "expl_shown": {
   "after": 1791916049.021743,
   "bz": 1791753568.568471,
+  "fof2": 1791925551.5465915,
   "kp": 1791721692.0898142,
   "lowband": 1791839975.8903298,
   "polar": 1791721692.0898142,
@@ -16,7 +17,7 @@
   "validity": "1"
  },
  "last_alert": {},
- "last_report_slot": 1791914400.0,
+ "last_report_slot": 1791925200.0,
  "last_s": 0,
  "prefs": {
   "f411b52be257a242884c": {
