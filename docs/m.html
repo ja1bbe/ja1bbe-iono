@@ -153,8 +153,9 @@ footer a{color:var(--link)}
   const NOAA = 'https://services.swpc.noaa.gov';
   const SRC = {
     kp: NOAA + '/products/noaa-planetary-k-index.json',
-    mag: NOAA + '/products/solar-wind/mag-2-hour.json',
-    wind: NOAA + '/products/solar-wind/plasma-2-hour.json',
+    // 太陽風はメール・PC版と同じリアルタイム観測（RTSW）を使う。運用中の衛星の値（active）だけを直近2時間ぶん描く
+    mag: NOAA + '/json/rtsw/rtsw_mag_1m.json',
+    wind: NOAA + '/json/rtsw/rtsw_wind_1m.json',
     scales: NOAA + '/products/noaa-scales.json',
     sfi: NOAA + '/products/10cm-flux-30-day.json',
     kpf: NOAA + '/products/noaa-planetary-k-index-forecast.json',
@@ -376,8 +377,15 @@ footer a{color:var(--link)}
     const mx = k24.length ? Math.max(...k24) : v.kp;
 
     // 太陽風（直近2時間、1分値）
-    const mag = rows(d.mag).map(r => [ts(r.time_tag), parseFloat(r.bz_gsm), parseFloat(r.bt)]).filter(r => !isNaN(r[1]));
-    const wind = rows(d.wind).map(r => [ts(r.time_tag), parseFloat(r.speed), parseFloat(r.density)]).filter(r => !isNaN(r[1]));
+    const rtsw = (data, cols) => {
+      const act = rows(data).filter(r => r && r.active === true && r[cols[0]] != null);
+      const out = act.map(r => [ts(r.time_tag), parseFloat(r[cols[0]]), parseFloat(r[cols[1]])]).filter(r => !isNaN(r[0]) && !isNaN(r[1])).sort((a, b) => a[0] - b[0]);
+      if (!out.length) return out;
+      const tEnd = out[out.length - 1][0];
+      return out.filter(r => r[0] > tEnd - 2 * 3600e3);
+    };
+    const mag = rtsw(d.mag, ['bz_gsm', 'bt']);
+    const wind = rtsw(d.wind, ['proton_speed', 'proton_density']);
     const tail30 = (a, i) => { if (!a.length) return []; const tEnd = a[a.length - 1][0]; return a.filter(r => r[0] > tEnd - 1800e3).map(r => r[i]).filter(x => !isNaN(x)); };
     if (mag.length) { v.bz30 = avg(tail30(mag, 1)); v.bt = mag[mag.length - 1][2]; v.magAt = mag[mag.length - 1][0]; }
     if (wind.length) { v.sp30 = avg(tail30(wind, 1)); v.den = wind[wind.length - 1][2]; v.windAt = wind[wind.length - 1][0]; }
