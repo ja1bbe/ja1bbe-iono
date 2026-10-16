@@ -208,6 +208,7 @@ def collect(fetch=fetch_json):
 # 3時間ごと（UTC 0・3・6…21時始まり、Kpの区切りと同じ）のまとめの値を docs/history.json に残す。
 # 太陽の自転（約27日）の1〜3回前と比べられるよう、90日分を保つ（古いものから消す）。
 HISTORY_PATH = 'docs/history.json'
+HISTORY_CSV = 'docs/history.csv'      # 同じ記録の表（Excel用。UTF-8のBOM付き）
 HISTORY_LINE = ''              # メールに添える「27日前の同じ時間帯」の1行（main で設定）
 HISTORY_KEEP_DAYS = 90
 BIN = 3 * 3600
@@ -305,8 +306,31 @@ def update_history(v, now, path=HISTORY_PATH, iono_path=IONO_PATH):
     os.makedirs(os.path.dirname(path) or '.', exist_ok=True)
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(out, f, ensure_ascii=False, separators=(',', ':'))
+    write_history_csv(rows, os.path.join(os.path.dirname(path) or '.', os.path.basename(HISTORY_CSV)))
     print(f'[27日比較] 記録を更新しました（{len(rows)}区間）')
     return rows
+
+
+def write_history_csv(rows, path):
+    """同じ記録を、Excelでそのまま開ける表にする（列名は日本語、BOM付きUTF-8）"""
+    head = ['区間の始まり(UTC)', '区間の始まり(日本時間)', 'Kp', '太陽風の速さ 平均(km/s)', '太陽風の速さ 最大(km/s)',
+            'Bz 最も南向き(nT)', 'Bz 南向き成分の平均(nT)', 'Bt 平均(nT)', 'Bt 最大(nT)', '密度 中央値(/cm3)', '密度 最大(/cm3)',
+            'Gスケール', 'Sスケール', 'Rスケール', 'SFI', '国分寺 foF2 中央値(MHz)', '国分寺 見かけの高さ 中央値(km)']
+    def g(r, k, i=None):
+        x = r.get(k)
+        if x is None:
+            return ''
+        return str(x[i]) if i is not None else str(x)
+    lines = [','.join(head)]
+    for b in sorted(rows):
+        r = rows[b]
+        lines.append(','.join([
+            datetime.fromtimestamp(b, timezone.utc).strftime('%Y-%m-%d %H:%M'),
+            datetime.fromtimestamp(b, JST).strftime('%Y-%m-%d %H:%M'),
+            g(r, 'kp'), g(r, 'sp', 0), g(r, 'sp', 1), g(r, 'bz', 0), g(r, 'bz', 1), g(r, 'bt', 0), g(r, 'bt', 1),
+            g(r, 'n', 0), g(r, 'n', 1), g(r, 'G'), g(r, 'S'), g(r, 'R'), g(r, 'sfi'), g(r, 'fo'), g(r, 'h')]))
+    with open(path, 'w', encoding='utf-8-sig', newline='') as f:
+        f.write('\r\n'.join(lines) + '\r\n')
 
 
 def history_line(rows, now, days=27):
