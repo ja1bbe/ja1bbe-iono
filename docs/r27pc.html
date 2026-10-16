@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>27日比較（太陽の自転）PC版｜JA1BBE</title>
+<!--
+  JA1BBE 宇宙天気 27日比較 PC版（GitHub Pages: docs/r27pc.html）
+  Wixの「HTMLコードを埋め込む」で「Webサイトのアドレス」に、このページのURLを指定して表示する。
+  データは同じ場所の history.json（sw_alert.py が3時間ごとのまとめを90日分残す）だけを読む。
+  色づかいはPC版ナウキャスト（space_weather_now.html）にそろえている。
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0b0c; --panel:#161618; --panel2:#1e1e21; --line:#2c2c31;
+  --ink:#ececec; --muted:#9a9aa3; --gold:#d8b14a;
+  --c1:#2bb3a3; --c2:#7fd3c6; --c3:#e9c46a; --c4:#f08a4b; --c5:#e05555; --empty:#232327;
+  --sans:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+  --mono:"JetBrains Mono","Consolas","Menlo",monospace;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{scrollbar-width:none;-ms-overflow-style:none}
+html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.7;font-size:15px}
+.wrap{max-width:1120px;margin:0 auto;padding:24px 20px 40px}
+header h1{color:var(--gold);font-size:clamp(1.4rem,3vw,2rem);margin:0;font-weight:700;letter-spacing:.02em}
+header p{color:var(--muted);margin:4px 0 0;font-size:.92rem}
+.bar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:14px 0 20px;font-size:.85rem;color:var(--muted)}
+.bar button,.tabs button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 12px;font:inherit;cursor:pointer}
+.bar button:hover,.tabs button:hover{border-color:var(--gold)}
+h2{color:var(--gold);font-size:1.08rem;margin:28px 0 10px;font-weight:700}
+.row2{display:grid;grid-template-columns:1.25fr 1fr;gap:14px}
+@media (max-width:820px){.row2{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.panel .lab{font-size:.8rem;color:var(--muted);margin-bottom:6px}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{color:var(--muted);font-weight:500;font-size:.8rem}
+td:first-child,th:first-child{text-align:left;color:var(--muted)}
+td.now{color:var(--gold);font-weight:700}
+td .v{font-family:var(--mono);font-size:1.05rem}
+.ahead{font-size:.98rem;line-height:1.85}
+.ahead .flag{display:inline-block;font-size:.78rem;font-weight:700;padding:1px 10px;border-radius:999px;margin-bottom:8px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.tabs button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
+.grid svg,.chart svg{width:100%;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted);margin-top:10px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.fn{color:var(--muted);font-size:.84rem;margin:8px 0 0}
+#tip{position:fixed;pointer-events:none;background:#0f0f11;border:1px solid var(--gold);color:var(--ink);border-radius:6px;padding:6px 10px;font-size:.82rem;line-height:1.6;display:none;z-index:10;max-width:280px}
+.note{color:var(--muted);font-size:.86rem;margin-top:26px;border-top:1px solid var(--line);padding-top:14px}
+.note a,.links a{color:var(--gold)}
+.links{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:.92rem;margin-top:10px}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:820px){.cols2{grid-template-columns:1fr}}
+.cols2 p{margin:0 0 8px;font-size:.92rem;color:#d6d6d6}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>27日比較　太陽の自転で読み解く宇宙天気</h1>
+  <p>太陽は地球から見て約27日で1回転します。今日と、太陽の1〜3自転前を並べて比べます。</p>
+</header>
+<div class="bar"><span id="upd">記録を読み込んでいます…</span><button id="reload" type="button">今すぐ更新</button></div>
+
+<div class="row2">
+  <section class="panel">
+    <div class="lab">今日と、1〜3自転前の同じ日（日本時間の1日ごと）</div>
+    <div id="cmp"></div>
+    <p class="fn">今日の値は、今までに記録できた分です。Bzは1日のうちで最も南向き（マイナス）になった値、foF2は国分寺の中央値です。</p>
+  </section>
+  <section class="panel">
+    <div class="lab">前回の自転では、この先3日は</div>
+    <div class="ahead" id="ahead"></div>
+  </section>
+</div>
+
+<h2>27日ごとの折り返し</h2>
+<section class="panel grid">
+  <div class="tabs" role="group" aria-label="表示する値">
+    <button type="button" data-m="kp" aria-pressed="true">1日の最大Kp</button>
+    <button type="button" data-m="sp" aria-pressed="false">太陽風の最大速度</button>
+    <button type="button" data-m="bz" aria-pressed="false">Bzの最も南向き</button>
+    <button type="button" data-m="fo" aria-pressed="false">国分寺 foF2</button>
+  </div>
+  <div id="grid"></div>
+  <div class="legend" id="legend"></div>
+  <p class="fn">横の1列が太陽の1自転（27日）で、上から今の自転と1〜3自転前です。縦にそろったます目は、太陽の同じ面が地球を向いていた日です。金色の枠が今日、点線の枠はまだ来ていない日です。ます目にマウスを重ねると、その日の値を表示します。</p>
+</section>
+
+<h2>自転ごとの重ね合わせ</h2>
+<section class="panel chart">
+  <div class="tabs" role="group" aria-label="重ねる値">
+    <button type="button" data-c="sp" aria-pressed="true">太陽風の速さ（3時間平均）</button>
+    <button type="button" data-c="kp" aria-pressed="false">Kp</button>
+    <button type="button" data-c="bz" aria-pressed="false">Bzの南向き成分</button>
+  </div>
+  <div id="chart"></div>
+  <div class="legend"><span><i style="background:var(--gold)"></i>今の自転</span><span><i style="background:var(--c1)"></i>1自転前</span><span><i style="background:var(--c2);opacity:.75"></i>2自転前</span><span><i style="background:#77777f"></i>3自転前</span></div>
+  <p class="fn">横軸は、上の折り返しの図と同じ27日です。同じ位置に山が重なれば、同じコロナホールからの高速の太陽風が、自転ごとに戻ってきていると考えられます。</p>
+</section>
+
+<h2>見方と注意</h2>
+<section class="panel cols2">
+  <div>
+    <p>この並べ方は、20世紀前半にドイツの地球物理学者バルテルスが考案した、地磁気の「27日ごとの折り返し表」にならったものです。コロナホールは数回の自転にわたって残ることが多く、そこから吹き出す高速の太陽風は、太陽の同じ面が地球を向くたびに届きます。北米・カリブ・ヨーロッパなど北回りの経路を狙う日の目安に使えます。</p>
+  </div>
+  <div>
+    <p>実際の自転は約27.3日なので、自転を重ねるほど少しずつずれます。高速の太陽風が届く時刻も自転ごとに半日〜1日ほど前後するので、前後1日の幅で見てください。コロナホールは形を変えながら消えていくこともあり、CME（コロナ質量放出）による突発的な地磁気嵐は、この方法では予想できません。</p>
+  </div>
+</section>
+
+<div class="links">
+  <a href="https://ja1bbe.wixsite.com/mysite/%E5%AE%87%E5%AE%99%E5%A4%A9%E6%B0%97%E3%83%8A%E3%82%A6%E3%82%AD%E3%83%A3%E3%82%B9%E3%83%88" target="_top">宇宙天気ナウキャスト（PC版）へ戻る</a>
+  <a href="https://ja1bbe.github.io/ja1bbe-iono/m.html" target="_blank" rel="noopener">スマートフォン版</a>
+  <a href="https://www.swpc.noaa.gov/products/27-day-outlook-107-cm-radio-flux-and-geomagnetic-indices" target="_blank" rel="noopener">NOAAの27日先の見通し</a>
+</div>
+
+<div class="note">
+  <p>記録は3時間ごとのまとめの値（太陽風の速さは平均と最大、Bzは最も南向きの値と南向き成分の平均、国分寺は中央値）で、90日分を残しています。観測値は自動処理の結果を含みます。運用の判断の参考としてお使いください。</p>
+  <p>データ：NOAA Space Weather Prediction Center（米国海洋大気庁 宇宙天気予報センター）。電離層：出典：情報通信研究機構（NICT） 電離圏観測データ　<a href="https://wdc.nict.go.jp/Ionosphere/index.html" target="_blank" rel="noopener">https://wdc.nict.go.jp/Ionosphere/index.html</a></p>
+</div>
+</div>
+<div id="tip"></div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const DAY = 86400e3, JST = 9 * 3600e3, ROT = 27, TODAY_COL = 23, NROW = 4;
+  const ROWNAME = ['今の自転', '1自転前', '2自転前', '3自転前'];
+  const dayKey = t => Math.floor((t + JST) / DAY);
+  const dayLabel = k => { const d = new Date(k * DAY); return `${d.getUTCMonth() + 1}/${d.getUTCDate()}`; };
+  const kpMark = k => { const b = Math.round(k), f = k - b; return b + (f > 0.15 ? '+' : f < -0.15 ? '-' : ''); };
+  const median = a => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y), n = s.length; return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2; };
+  const parseT = s => Date.parse(s.replace('Z', ':00Z'));
+
+  // 値ごとの色分け（PC版ナウキャストの5段階の色にそろえる）
+  const M = {
+    kp: { name: '1日の最大Kp', fmt: v => kpMark(v), color: v => v < 2 ? css('--c1') : v < 4 ? css('--c2') : v < 5 ? css('--c3') : v < 7 ? css('--c4') : css('--c5'),
+          legend: [['--c1', '2未満'], ['--c2', '2〜4'], ['--c3', '4'], ['--c4', '5〜6（G1〜G2）'], ['--c5', '7以上']] },
+    sp: { name: '太陽風の最大速度', fmt: v => v + ' km/s', color: v => v < 400 ? css('--c1') : v < 500 ? css('--c2') : v < 600 ? css('--c3') : v < 700 ? css('--c4') : css('--c5'),
+          legend: [['--c1', '400km/s未満'], ['--c2', '400〜500'], ['--c3', '500〜600'], ['--c4', '600〜700'], ['--c5', '700以上']] },
+    bz: { name: 'Bzの最も南向き', fmt: v => (v > 0 ? '+' : '') + v.toFixed(1) + ' nT', color: v => v > -2 ? css('--c1') : v > -5 ? css('--c2') : v > -10 ? css('--c3') : v > -20 ? css('--c4') : css('--c5'),
+          legend: [['--c1', '−2nTより北'], ['--c2', '−2〜−5'], ['--c3', '−5〜−10'], ['--c4', '−10〜−20'], ['--c5', '−20以下']] },
+    fo: { name: '国分寺 foF2（中央値）', fmt: v => v.toFixed(1) + ' MHz', color: v => v >= 9 ? css('--c1') : v >= 7 ? css('--c2') : v >= 5 ? css('--c3') : v >= 4 ? css('--c4') : css('--c5'),
+          legend: [['--c1', '9MHz以上'], ['--c2', '7〜9'], ['--c3', '5〜7'], ['--c4', '4〜5'], ['--c5', '4未満']] },
+  };
+
+  let ROWS = [], D = {}, TODAY = 0, gridMetric = 'kp', chartMetric = 'sp';
+
+  function daily(rows) {
+    const by = {};
+    for (const r of rows) {
+      const k = dayKey(parseT(r.t)), d = by[k] || (by[k] = { kp: [], sp: [], bz: [], fo: [] });
+      if (r.kp != null) d.kp.push(r.kp);
+      if (r.sp) d.sp.push(r.sp[1]);
+      if (r.bz) d.bz.push(r.bz[0]);
+      if (r.fo != null) d.fo.push(r.fo);
+    }
+    const out = {};
+    for (const [k, d] of Object.entries(by)) out[k] = {
+      kp: d.kp.length ? Math.max(...d.kp) : null, sp: d.sp.length ? Math.max(...d.sp) : null,
+      bz: d.bz.length ? Math.min(...d.bz) : null, fo: median(d.fo) };
+    return out;
+  }
+  const dayText = (day) => {
+    const d = D[day], ago = TODAY - day, when = ago === 0 ? '今日' : ago > 0 ? `${ago}日前` : `${-ago}日後`;
+    if (!d) return `<b>${dayLabel(day)}</b>（${when}）<br>記録がありません`;
+    return `<b>${dayLabel(day)}</b>（${when}）<br>` + [
+      d.kp != null ? `最大Kp ${kpMark(d.kp)}` : null, d.sp != null ? `太陽風 最大${d.sp}km/s` : null,
+      d.bz != null ? `Bz 最も南向き${d.bz > 0 ? '+' : ''}${d.bz.toFixed(1)}nT` : null, d.fo != null ? `国分寺foF2 ${d.fo.toFixed(1)}MHz` : null,
+    ].filter(Boolean).join('<br>');
+  };
+
+  // ---- 大きな折り返しの図
+  function drawGrid() {
+    const m = M[gridMetric], W = 1080, left = 96, cw = (W - left) / ROT, ch = 34, gap = 10, top = 30;
+    const H = top + NROW * (ch + gap) + 6;
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="27日ごとの折り返しの図（${m.name}）">`;
+    for (let j = 0; j < ROT; j++) {             // 上の目盛り：今の自転の日付
+      const day = TODAY + (j - TODAY_COL), x = left + j * cw + cw / 2, isT = j === TODAY_COL;
+      s += `<text x="${x.toFixed(1)}" y="18" text-anchor="middle" font-size="11" font-family="JetBrains Mono,monospace" fill="${isT ? css('--gold') : css('--muted')}">${dayLabel(day)}</text>`;
+    }
+    for (let k = 0; k < NROW; k++) {
+      const y = top + k * (ch + gap);
+      s += `<text x="0" y="${y + ch / 2 + 4}" font-size="12" fill="${k === 0 ? css('--gold') : css('--muted')}">${ROWNAME[k]}</text>`;
+      for (let j = 0; j < ROT; j++) {
+        const day = TODAY - ROT * k + (j - TODAY_COL), d = D[day], v = d ? d[gridMetric] : null;
+        const future = k === 0 && j > TODAY_COL, isT = k === 0 && j === TODAY_COL;
+        const x = left + j * cw + 1.5, w = cw - 3;
+        if (future) s += `<rect x="${x.toFixed(1)}" y="${y}" width="${w.toFixed(1)}" height="${ch}" rx="3" fill="none" stroke="${css('--line')}" stroke-dasharray="3 3" data-day="${day}"/>`;
+        else s += `<rect x="${x.toFixed(1)}" y="${y}" width="${w.toFixed(1)}" height="${ch}" rx="3" fill="${v == null ? css('--empty') : m.color(v)}"` +
+                  (isT ? ` stroke="${css('--gold')}" stroke-width="2.5"` : '') + ` data-day="${day}"/>`;
+      }
+    }
+    // 今日の列を縦に貫く目印
+    const xt = left + TODAY_COL * cw + cw / 2;
+    s += `<line x1="${xt.toFixed(1)}" x2="${xt.toFixed(1)}" y1="24" y2="${H - 2}" stroke="${css('--gold')}" stroke-opacity=".35" stroke-dasharray="2 4"/>`;
+    $('grid').innerHTML = s + '</svg>';
+    $('legend').innerHTML = m.legend.map(([c, t]) => `<span><i style="background:var(${c})"></i>${t}</span>`).join('') +
+      `<span><i style="background:var(--empty)"></i>記録なし</span>`;
+    const tip = $('tip');
+    $('grid').querySelectorAll('rect[data-day]').forEach(r => {
+      r.addEventListener('mousemove', e => { tip.innerHTML = dayText(+r.dataset.day); tip.style.display = 'block';
+        tip.style.left = Math.min(e.clientX + 14, innerWidth - 300) + 'px'; tip.style.top = (e.clientY + 14) + 'px'; });
+      r.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+    });
+  }
+
+  // ---- 自転ごとの重ね合わせの折れ線（横軸は折り返しの図と同じ27日）
+  function drawChart() {
+    const W = 1080, H = 300, L = 54, R = 16, T = 16, B = 30, pw = W - L - R, ph = H - T - B;
+    const startDay = TODAY - TODAY_COL;             // 今の自転の行の左端の日
+    const conf = {
+      sp: { get: r => r.sp ? r.sp[0] : null, lo: 250, hi: 800, ticks: [300, 400, 500, 600, 700], unit: 'km/s' },
+      kp: { get: r => r.kp != null ? r.kp : null, lo: 0, hi: 9, ticks: [2, 4, 5, 7], unit: 'Kp' },
+      bz: { get: r => r.bz ? r.bz[1] : null, lo: -12, hi: 0, ticks: [-2, -5, -10], unit: 'nT' },
+    }[chartMetric];
+    let lo = conf.lo, hi = conf.hi;
+    const series = [0, 1, 2, 3].map(k => {
+      const t0 = (startDay - ROT * k) * DAY - JST;   // その行の左端の日（日本時間0時）
+      return ROWS.map(r => [ (parseT(r.t) + 1.5 * 3600e3 - t0) / DAY, conf.get(r) ])
+                 .filter(([x, v]) => v != null && x >= 0 && x <= ROT);
+    });
+    if (chartMetric === 'sp') { const vs = series.flat().map(p => p[1]); if (vs.length) { lo = Math.min(lo, Math.floor(Math.min(...vs) / 50) * 50); hi = Math.max(hi, Math.ceil(Math.max(...vs) / 50) * 50); } }
+    if (chartMetric === 'bz') { const vs = series.flat().map(p => p[1]); if (vs.length) lo = Math.min(lo, Math.floor(Math.min(...vs) / 2) * 2); }
+    const X = x => L + x / ROT * pw, Y = v => T + (hi - v) / (hi - lo) * ph;
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="自転ごとの重ね合わせ">`;
+    for (const tk of conf.ticks) if (tk > lo && tk < hi) s += `<line x1="${L}" x2="${W - R}" y1="${Y(tk).toFixed(1)}" y2="${Y(tk).toFixed(1)}" stroke="${css('--line')}"/><text x="${L - 8}" y="${(Y(tk) + 4).toFixed(1)}" text-anchor="end" font-size="11" font-family="JetBrains Mono,monospace" fill="${css('--muted')}">${tk}</text>`;
+    s += `<text x="${L - 8}" y="${T + 4}" text-anchor="end" font-size="10" fill="${css('--muted')}">${conf.unit}</text>`;
+    for (let j = 0; j <= ROT; j += 3) s += `<text x="${X(j).toFixed(1)}" y="${H - 8}" text-anchor="middle" font-size="11" font-family="JetBrains Mono,monospace" fill="${css('--muted')}">${dayLabel(startDay + j)}</text>`;
+    const xt = X(TODAY_COL + ((Date.now() + JST) % DAY) / DAY);
+    s += `<line x1="${xt.toFixed(1)}" x2="${xt.toFixed(1)}" y1="${T}" y2="${T + ph}" stroke="${css('--gold')}" stroke-opacity=".6" stroke-dasharray="3 3"/><text x="${(xt + 4).toFixed(1)}" y="${T + 12}" font-size="11" fill="${css('--gold')}">現在</text>`;
+    const style = [[css('--gold'), 2.6, 1], [css('--c1'), 1.8, .95], [css('--c2'), 1.5, .7], ['#77777f', 1.3, .7]];
+    for (let k = NROW - 1; k >= 0; k--) {
+      const pts = series[k]; if (pts.length < 2) continue;
+      let d = '', prev = null;
+      for (const [x, v] of pts) { d += (prev != null && x - prev <= 0.26 ? 'L' : 'M') + X(x).toFixed(1) + ' ' + Y(Math.max(lo, Math.min(hi, v))).toFixed(1) + ' '; prev = x; }
+      s += `<path d="${d}" fill="none" stroke="${style[k][0]}" stroke-width="${style[k][1]}" stroke-opacity="${style[k][2]}" stroke-linejoin="round"/>`;
+    }
+    if (!series.some(p => p.length > 1)) s += `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" font-size="13" fill="${css('--muted')}">まだ記録がありません</text>`;
+    $('chart').innerHTML = s + '</svg>';
+  }
+
+  function drawTables() {
+    const cols = [0, 1, 2, 3].map(k => ({ k, day: TODAY - ROT * k, d: D[TODAY - ROT * k] }));
+    const cell = (c, key, f) => `<td class="${c.k === 0 ? 'now' : ''}"><span class="v">${c.d && c.d[key] != null ? f(c.d[key]) : '―'}</span></td>`;
+    const tr = (name, key, f) => `<tr><td>${name}</td>${cols.map(c => cell(c, key, f)).join('')}</tr>`;
+    $('cmp').innerHTML = `<table><tr><th></th><th>今日</th><th>27日前</th><th>54日前</th><th>81日前</th></tr>` +
+      `<tr><td>日付</td>${cols.map(c => `<td class="${c.k === 0 ? 'now' : ''}">${dayLabel(c.day)}</td>`).join('')}</tr>` +
+      tr('1日の最大Kp', 'kp', v => kpMark(v)) + tr('太陽風の最大（km/s）', 'sp', v => v) +
+      tr('Bzの最も南向き（nT）', 'bz', v => (v > 0 ? '+' : '') + v.toFixed(1)) + tr('国分寺 foF2（MHz）', 'fo', v => v.toFixed(1)) + '</table>';
+
+    const ahead = k => { const ds = [1, 2, 3].map(i => D[TODAY - ROT * k + i]).filter(Boolean);
+      const kps = ds.map(d => d.kp).filter(x => x != null), sps = ds.map(d => d.sp).filter(x => x != null);
+      return ds.length ? { kp: kps.length ? Math.max(...kps) : null, sp: sps.length ? Math.max(...sps) : null } : null; };
+    const a1 = ahead(1), a2 = ahead(2), first = ROWS.length ? dayKey(parseT(ROWS[0].t)) : TODAY;
+    const hotOf = a => a && ((a.kp != null && a.kp >= 4) || (a.sp != null && a.sp >= 500));
+    let html;
+    if (!a1) html = `<span class="flag" style="background:var(--panel2);color:var(--muted)">記録をためています</span><br>まだ1自転前の記録がありません（記録を始めたのは${dayLabel(first)}です）。27日分たまると、ここに前回の自転の様子が表示されます。`;
+    else {
+      const h1 = hotOf(a1), h2 = hotOf(a2);
+      const flag = h1 && h2 ? ['var(--c4)', '高速の太陽風が戻る可能性'] : h1 ? ['var(--c3)', '前回は乱れていました'] : ['var(--c1)', '前回は比較的静か'];
+      html = `<span class="flag" style="background:${flag[0]};color:#111">${flag[1]}</span><br>` +
+        `1自転前（27日前）の、明日からの3日間は、最大Kp <b>${a1.kp != null ? kpMark(a1.kp) : '―'}</b>、太陽風の最大 <b>${a1.sp != null ? a1.sp + 'km/s' : '―'}</b>でした。` +
+        (a2 ? `2自転前は、最大Kp <b>${a2.kp != null ? kpMark(a2.kp) : '―'}</b>、太陽風の最大 <b>${a2.sp != null ? a2.sp + 'km/s' : '―'}</b>でした。` : '') +
+        (h1 && h2 ? '2回続けて乱れているので、同じコロナホールが残っていれば、この先3日のうちに高速の太陽風が戻ってくる可能性があります。北回りの経路に注意してください。'
+          : h1 ? '同じコロナホールが残っていれば、この先3日のうちに高速の太陽風が戻ってくる可能性があります。' : '前回の自転では、この時期は比較的静かでした。') +
+        '<br><span style="color:var(--muted);font-size:.86rem">CMEによる突発的な嵐は、この方法では予想できません。</span>';
+    }
+    $('ahead').innerHTML = html;
+  }
+
+  async function load() {
+    $('upd').textContent = '記録を読み込んでいます…';
+    try {
+      const r = await fetch('https://ja1bbe.github.io/ja1bbe-iono/history.json?t=' + Date.now(), { cache: 'no-store' });
+      if (!r.ok) throw new Error(r.status);
+      ROWS = (await r.json()).rows || [];
+    } catch (e) {
+      $('upd').textContent = '記録を読み込めませんでした。しばらくしてから「今すぐ更新」を押してください。';
+      return;
+    }
+    D = daily(ROWS); TODAY = dayKey(Date.now());
+    drawTables(); drawGrid(); drawChart();
+    const last = ROWS.length ? ROWS[ROWS.length - 1].t.replace('T', ' ').replace('Z', ' UTC') : '―';
+    $('upd').textContent = `記録 ${ROWS.length}区間（最新の区間 ${last}）・3時間ごとに更新`;
+  }
+
+  document.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => {
+    gridMetric = b.dataset.m; document.querySelectorAll('[data-m]').forEach(x => x.setAttribute('aria-pressed', x === b)); drawGrid(); }));
+  document.querySelectorAll('[data-c]').forEach(b => b.addEventListener('click', () => {
+    chartMetric = b.dataset.c; document.querySelectorAll('[data-c]').forEach(x => x.setAttribute('aria-pressed', x === b)); drawChart(); }));
+  $('reload').addEventListener('click', load);
+  load();
+  setInterval(load, 30 * 60e3);
+})();
+</script>
+</body>
+</html>
