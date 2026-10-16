@@ -41,11 +41,11 @@ jobs:
             python3 sw_alert.py
           fi
 
-      - name: 状態ファイルとWeb版の保存（変化があったときだけ）
+      - name: 状態ファイル・Web版・27日比較の記録の保存（変化があったときだけ）
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for f in state/sw_state.json docs/latest.html; do if [ -f "$f" ]; then git add "$f"; fi; done
+          for f in state/sw_state.json docs/latest.html docs/history.json; do if [ -f "$f" ]; then git add "$f"; fi; done
           if git diff --cached --quiet; then echo "変化なし"; exit 0; fi
           git commit -m "sw_alert: state"
           for i in 1 2 3; do
