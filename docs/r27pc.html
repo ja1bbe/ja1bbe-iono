@@ -29,6 +29,8 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line
 header h1{color:var(--gold);font-size:clamp(1.4rem,3vw,2rem);margin:0;font-weight:700;letter-spacing:.02em}
 header p{color:var(--muted);margin:4px 0 0;font-size:.92rem}
 .bar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:14px 0 20px;font-size:.85rem;color:var(--muted)}
+.bar a.dl{color:var(--ink);text-decoration:none;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:5px 12px}
+.bar a.dl:hover{border-color:var(--gold)}
 .bar button,.tabs button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 12px;font:inherit;cursor:pointer}
 .bar button:hover,.tabs button:hover{border-color:var(--gold)}
 h2{color:var(--gold);font-size:1.08rem;margin:28px 0 10px;font-weight:700}
@@ -65,7 +67,9 @@ td .v{font-family:var(--mono);font-size:1.05rem}
   <h1>27日比較　太陽の自転で読み解く宇宙天気</h1>
   <p>太陽は地球から見て約27日で1回転します。今日と、太陽の1〜3自転前を並べて比べます。</p>
 </header>
-<div class="bar"><span id="upd">記録を読み込んでいます…</span><button id="reload" type="button">今すぐ更新</button></div>
+<div class="bar"><span id="upd">記録を読み込んでいます…</span><button id="reload" type="button">今すぐ更新</button>
+  <a class="dl" href="https://ja1bbe.github.io/ja1bbe-iono/history.csv" target="_blank" rel="noopener" title="3時間ごとの記録の全件（最大90日分）。Excelでそのまま開けます">全記録をダウンロード（CSV・Excel用）</a>
+  <a class="dl" href="https://ja1bbe.github.io/ja1bbe-iono/history.json" target="_blank" rel="noopener" title="同じ記録のJSON形式">JSON</a></div>
 
 <div class="row2">
   <section class="panel">
@@ -121,7 +125,7 @@ td .v{font-family:var(--mono);font-size:1.05rem}
 </div>
 
 <div class="note">
-  <p>記録は3時間ごとのまとめの値（太陽風の速さは平均と最大、Bzは最も南向きの値と南向き成分の平均、国分寺は中央値）で、90日分を残しています。観測値は自動処理の結果を含みます。運用の判断の参考としてお使いください。</p>
+  <p>記録は3時間ごと（1日8回、Kpの区切りと同じ世界時0・3・6…21時始まり）のまとめの値（太陽風の速さは平均と最大、Bzは最も南向きの値と南向き成分の平均、国分寺は中央値）で、90日分を残しています。上の「全記録をダウンロード」で、すべての区間を表（CSV）として取り出せます。観測値は自動処理の結果を含みます。運用の判断の参考としてお使いください。</p>
   <p>データ：NOAA Space Weather Prediction Center（米国海洋大気庁 宇宙天気予報センター）。電離層：出典：情報通信研究機構（NICT） 電離圏観測データ　<a href="https://wdc.nict.go.jp/Ionosphere/index.html" target="_blank" rel="noopener">https://wdc.nict.go.jp/Ionosphere/index.html</a></p>
 </div>
 </div>
