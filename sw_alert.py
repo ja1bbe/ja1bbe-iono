@@ -6,6 +6,7 @@ sw_alert.py — 宇宙天気の定時通知と、傾向が変わったときの�
   既定は 6〜21時の6回。0時・3時は希望者だけ（返信で選ぶ）
 ・配信先は、メールへの返信で受け取る知らせを選べる（「受け取る知らせの設定」の節）
 ・定時ごとに、同じ内容をWeb版「最新のお知らせ」（docs/latest.html）にも書き出す
+・3時間ごとのまとめの値を90日分 docs/history.json に残し、27日比較のページ（docs/r27.html）で見られるようにする
 ・標準はHTML形式（テキスト版も同封）。返信で「テキスト」と書いた人には、文字だけの形式で送る
 ・その状況に当てはまるときに「ひとこと解説」を添える（「ひとこと解説」の節）
 ・国分寺の電離層の値は、同じリポジトリの docs/iono.json（fetch_iono.py が毎時更新）から読む
@@ -149,6 +150,7 @@ def parse_kp(data, v):
     rows.sort()
     if rows:
         v['kp'], v['kp_at'] = rows[-1][1], rows[-1][0]
+    v['_kprows'] = rows                               # 27日比較の記録用（取れる範囲すべて）
     return rows[-16:]                                 # 直近48時間
 
 
@@ -162,6 +164,7 @@ def parse_rtsw(data, fields, v):
         if not vals:
             continue
         v[name] = float(vals[-1][1])
+        v.setdefault('_series', {})[name] = [(t, float(x)) for t, x in vals]   # 27日比較の記録用
         win = [float(x) for t, x in vals if t > latest_t - 1800]
         if win:
             v[name + '30'] = sum(win) / len(win)
@@ -199,6 +202,127 @@ def collect(fetch=fetch_json):
         except Exception as e:
             errors.append(f'{key}: {e}')
     return v, hist, errors
+
+
+# ---------------------------------------------------------------- 27日比較の記録
+# 3時間ごと（UTC 0・3・6…21時始まり、Kpの区切りと同じ）のまとめの値を docs/history.json に残す。
+# 太陽の自転（約27日）の1〜3回前と比べられるよう、90日分を保つ（古いものから消す）。
+HISTORY_PATH = 'docs/history.json'
+HISTORY_LINE = ''              # メールに添える「27日前の同じ時間帯」の1行（main で設定）
+HISTORY_KEEP_DAYS = 90
+BIN = 3 * 3600
+BIN_MIN_SAMPLES = 90           # 1分値が3時間（180個）のうち半分以上そろった区間だけ記録する
+R27_URL = 'https://ja1bbe.github.io/ja1bbe-iono/r27.html'
+
+
+def _median(xs):
+    xs = sorted(xs)
+    n = len(xs)
+    return None if not n else (xs[n // 2] if n % 2 else (xs[n // 2 - 1] + xs[n // 2]) / 2)
+
+
+def _iso(t):
+    return datetime.fromtimestamp(t, timezone.utc).strftime('%Y-%m-%dT%H:%MZ')
+
+
+def load_history(path=HISTORY_PATH):
+    try:
+        with open(path, encoding='utf-8') as f:
+            d = json.load(f)
+        return {_ts(r['t']): r for r in d.get('rows', [])}
+    except Exception:
+        return {}
+
+
+def update_history(v, now, path=HISTORY_PATH, iono_path=IONO_PATH):
+    """完了した3時間の区間のまとめを足し、Kpや国分寺の値をあとから補い、古いものを消す。変わったら書き出す"""
+    rows = load_history(path)
+    before = json.dumps(rows, sort_keys=True)
+    ser = v.get('_series', {})
+    done_until = now - 5 * 60                       # 区間の終わりから5分は待つ（データの遅れ）
+    starts = set()
+    for name in ('speed', 'bz'):
+        for t, _ in ser.get(name, []):
+            starts.add(int(t // BIN) * BIN)
+    for b in sorted(starts):
+        if b + BIN > done_until or b < now - HISTORY_KEEP_DAYS * 86400:
+            continue
+        r = rows.get(b, {'t': _iso(b)})
+        def win(name):
+            return [x for t, x in ser.get(name, []) if b <= t < b + BIN]
+        sp, bz, bt, n = win('speed'), win('bz'), win('bt'), win('density')
+        if 'sp' not in r and len(sp) >= BIN_MIN_SAMPLES:
+            r['sp'] = [round(sum(sp) / len(sp)), round(max(sp))]                    # 平均・最大
+            if len(n) >= BIN_MIN_SAMPLES:
+                r['n'] = [round(_median(n), 1), round(max(n), 1)]                  # 中央値・最大
+        if 'bz' not in r and len(bz) >= BIN_MIN_SAMPLES:
+            south = sum(min(x, 0.0) for x in bz) / len(bz)                        # 北向きを0とした南向き成分の平均
+            r['bz'] = [round(min(bz), 1), round(south, 1)]                          # 最小（最も南向き）・南向き成分の平均
+            if len(bt) >= BIN_MIN_SAMPLES:
+                r['bt'] = [round(sum(bt) / len(bt), 1), round(max(bt), 1)]          # 平均・最大
+        if len(r) > 1:
+            if b + 2 * BIN > now:                                                  # 直近の区間には今のスケールとSFIを添える
+                for k in ('G', 'S', 'R'):
+                    if k in v and k not in r:
+                        r[k] = v[k]
+                if 'sfi' in v and 'sfi' not in r:
+                    r['sfi'] = round(v['sfi'])
+            rows[b] = r
+    for t, kp in v.get('_kprows', []):                                             # Kp（あとから公開・修正されることがある）
+        b = int(t // BIN) * BIN
+        if b < now - HISTORY_KEEP_DAYS * 86400 or b + BIN > now + BIN:
+            continue
+        r = rows.setdefault(b, {'t': _iso(b)})
+        r['kp'] = round(kp, 2)
+    try:                                                                           # 国分寺（1日1回まとめて公開。区間ごとの中央値）
+        with open(iono_path, encoding='utf-8') as f:
+            rec = json.load(f).get('recent', [])
+        by = {}
+        for x in rec:
+            b = int(_ts(x['time']) // BIN) * BIN
+            by.setdefault(b, []).append(x)
+        for b, xs in by.items():
+            if b < now - HISTORY_KEEP_DAYS * 86400:
+                continue
+            r = rows.setdefault(b, {'t': _iso(b)})
+            fo = [x['foF2'] for x in xs if x.get('foF2') is not None]
+            hh = [x.get('hF2') if x.get('hF2') is not None else x.get('hF') for x in xs]
+            hh = [h for h in hh if h is not None]
+            if fo and 'fo' not in r:
+                r['fo'] = round(_median(fo), 1)
+            if hh and 'h' not in r:
+                r['h'] = round(_median(hh))
+    except Exception as e:
+        print('[27日比較] 国分寺の値を読めませんでした:', e)
+    rows = {b: r for b, r in rows.items() if b >= now - HISTORY_KEEP_DAYS * 86400}
+    if json.dumps(rows, sort_keys=True) == before:
+        return rows
+    out = {'note': '3時間ごとのまとめ（時刻はUTCの区間の始まり）。sp=太陽風の速さ[平均,最大]km/s、'
+                   'bz=[最小,南向き成分の平均]nT、bt=[平均,最大]nT、n=密度[中央値,最大]/cm3、kp=Kp、'
+                   'fo=国分寺foF2の中央値MHz、h=見かけの高さの中央値km。データ元：NOAA SWPC、NICT（国分寺）',
+           'keep_days': HISTORY_KEEP_DAYS,
+           'rows': [rows[b] for b in sorted(rows)]}
+    os.makedirs(os.path.dirname(path) or '.', exist_ok=True)
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(out, f, ensure_ascii=False, separators=(',', ':'))
+    print(f'[27日比較] 記録を更新しました（{len(rows)}区間）')
+    return rows
+
+
+def history_line(rows, now, days=27):
+    """メール用：27日前の同じ時間帯の1行。記録がなければ空"""
+    b = int((now - days * 86400) // BIN) * BIN
+    r = rows.get(b)
+    if not r:
+        return ''
+    parts = []
+    if 'kp' in r:
+        parts.append(f"Kp {kp_mark(r['kp'])}")
+    if 'sp' in r:
+        parts.append(f"太陽風 最大{r['sp'][1]}km/s")
+    if 'bz' in r:
+        parts.append(f"Bz 最も南向き{r['bz'][0]:+.1f}nT")
+    return (f"27日前（太陽の1自転前）の同じ時間帯：" + '、'.join(parts)) if parts else ''
 
 
 # ---------------------------------------------------------------- 表示
@@ -345,6 +469,8 @@ def status_text(v, hist, now):
     if sc:
         L.append('NOAAスケール ' + ' / '.join(sc)
                  + (f"　プロトン現象の確率（今日） {v['S_prob']}%" if 'S_prob' in v else ''))
+    if L and HISTORY_LINE:
+        L.append(HISTORY_LINE)
     return '\n'.join(L) if L else '宇宙天気のデータを取得できませんでした。'
 
 
@@ -500,7 +626,8 @@ def render_html(heading, lead, v, hist, st, now, expl, web=False):
         + (f'<div style="font:12px/1.5 {FONT};color:{C_SUB};padding-top:6px;">24時間の最大 Kp {_e(kp_mark(mx))}'
            + (f'（G{g_level(mx)}相当）' if g_level(mx) >= 1 else '') + '</div>' if mx is not None else '')
         + '</td></tr></table></td></tr>',
-        sec('いまの値', html_numbers(v, now)),
+        sec('いまの値', html_numbers(v, now)
+            + (f'<div style="font:12px/1.6 {FONT};color:{C_INK};padding-top:8px;">{_e(HISTORY_LINE)}</div>' if HISTORY_LINE else '')),
         sec('地磁気の推移', html_kp_strip(hist, now)),
     ]
     if io:
@@ -512,7 +639,8 @@ def render_html(heading, lead, v, hist, st, now, expl, web=False):
                      f'<div style="font:600 13px/1.4 {FONT};color:{C_INK};padding-bottom:8px;">ひとこと解説</div>{items}</div></td></tr>')
     parts.append(sec('ナウキャスト（最新の値・方面別の経路判定・Kpの予報）',
                      html_button('スマートフォン版を開く', NOWCAST_URL, solid=True)
-                     + html_button('PC版を開く', NOWCAST_PC_URL)))
+                     + html_button('PC版を開く', NOWCAST_PC_URL)
+                     + html_button('27日比較（太陽の自転）を開く', R27_URL)))
     if not web:
       parts.append(sec('受け取る知らせの設定',
                      f'<div style="font:12px/1.6 {FONT};color:{C_SUB};padding-bottom:10px;">ボタンを押すと返信の画面が開きます。'
@@ -839,6 +967,13 @@ def main():
     v, hist, errors = collect()
     for e in errors:
         print('[取得できず]', e)
+
+    global HISTORY_LINE
+    try:   # 27日比較の記録（テスト送信のときは読むだけ）
+        hrows = load_history() if a.test else update_history(v, now)
+        HISTORY_LINE = history_line(hrows, now)
+    except Exception as e:
+        print('[27日比較] 記録を更新できませんでした:', e)
 
     first = not os.path.exists(a.state)
     st = {} if first else json.load(open(a.state, encoding='utf-8'))
