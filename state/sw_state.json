@@ -16,13 +16,13 @@
   "sfi": 1793440676.0109222,
   "speed": 1793470007.38466
  },
- "g1": true,
+ "g1": false,
  "imap": {
   "last_uid": 26,
   "validity": "1"
  },
  "last_alert": {},
- "last_report_slot": 1793480400.0,
+ "last_report_slot": 1793491200.0,
  "last_s": 0,
  "prefs": {
   "f411b52be257a242884c": {
