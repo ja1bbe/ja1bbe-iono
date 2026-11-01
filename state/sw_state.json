@@ -2,7 +2,7 @@
  "disturbed": true,
  "expl_fallback": 1793513770.2364726,
  "expl_shown": {
-  "after": 1793416765.196743,
+  "after": 1793524684.1257648,
   "bz": 1793395263.017696,
   "fof2": 1793364700.5669575,
   "kp": 1793503330.8215356,
@@ -16,13 +16,13 @@
   "sfi": 1793440676.0109222,
   "speed": 1793470007.38466
  },
- "g1": true,
+ "g1": false,
  "imap": {
   "last_uid": 26,
   "validity": "1"
  },
  "last_alert": {},
- "last_report_slot": 1793512800.0,
+ "last_report_slot": 1793523600.0,
  "last_s": 0,
  "prefs": {
   "f411b52be257a242884c": {
