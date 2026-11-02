@@ -889,6 +889,10 @@ def process_replies(st, subscribers, key, imap_factory=None, now=None):
             sender = parseaddr(str(msg.get('From', '')))[1].lower()
             if sender not in subs or not _auth_ok(msg):
                 continue
+            # 件名に「宇宙天気」を含む返信だけを設定の指示として読む。同じ受信トレイには、
+            # DXCC水先案内人のGET・STOPの返信（件名「GET 5W1SA #JC3X」など）も届くため
+            if '宇宙天気' not in str(msg.get('Subject', '')):
+                continue
             pid = pref_id(sender, key)
             old = get_pref(st, pid)
             line = command_line(_body_text(msg))
