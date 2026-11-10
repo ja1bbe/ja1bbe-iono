@@ -144,6 +144,9 @@ h4 { color: #E8CB7A; font-size: 1.02rem; margin: 1.8rem 0 .3rem; padding-left: .
   .mailguide { position: static; }
 }
 @media print { .mailcase { grid-template-columns: 220px 1fr; } .mailguide { position: static; } }
+.scene { margin: 1.4rem 0; }
+.scene svg { display: block; width: 100%; height: auto; border-radius: 8px; border: 1px solid #2A2E36; }
+.scene figcaption { margin-top: .5rem; color: var(--sub); font-size: .88rem; }
 
 </style>
 </head>
@@ -214,16 +217,16 @@ h4 { color: #E8CB7A; font-size: 1.02rem; margin: 1.8rem 0 .3rem; padding-left: .
 <p><strong>理科の磁石で考えてみよう。</strong>2本の棒磁石を横に並べると、向きが反対なら N極とS極が引き合ってピタッとくっつき、同じ向きなら反発して離れます。太陽風の磁場と地球の磁場も、これに少し似ています。向きが反対（Bz が南向き）だと、反対向きの磁力線どうしがくっつくようにつながり、バリアに穴が開きます。向きが同じ（Bz が北向き）だと、つながりにくく、エネルギーは入りにくくなります。実際の宇宙では、磁石がくっつくのとは少し違い、磁力線がつなぎ変わる現象ですが、イメージとしてはこれで十分です。</p>
 <aside class="box note"><p class="boxtitle">ミニ知識：Bz の「z」と nT の意味</p><p><strong>Bz（ビー・ズィー）</strong>：B は磁場を表す記号です。宇宙で向きを表すときは、太陽の方向を x、そこに直角な横の方向を y、地球の北と南を結ぶ上下の方向を z とする「ものさしの軸」を決めます。Bz は、その z 軸、つまり北と南の向きの成分です。</p><p><strong>nT（ナノテスラ）</strong>：磁場の強さの単位です。ナノは10億分の1。日本の地面での地磁気は約4万6千nT、冷蔵庫に貼る磁石は数百万nTほどです。太陽風の磁場はふだん数nTから10nT程度と、地磁気のおよそ1万分の1しかありません。それでも、向きしだいで地球全体を揺さぶる力になります。</p></aside>
 <aside class="box key"><p class="boxtitle">乱れの大きさを決めるもの</p><p><strong>太陽風の速さと、南向きの Bz の組み合わせ</strong>：太陽風が速く、南向きの Bz が強く、長時間続くほど、地球の磁気圏へエネルギーが流れ込みやすくなります。両者の組み合わせは、磁気活動の強まりを考えるうえで重要な目安です。磁場全体の強さ（Bt）、向きの変わり方、密度なども関わるので、実際の乱れは Kp で確かめます。</p><p><strong>太陽風の密度</strong>：密度が高いと太陽風の圧力が増し、磁気圏を押し縮めます。急な変化のきっかけにはなりますが、Bz が南向きでなければ、密度が高いだけで大きな磁気嵐にはなりにくいと考えられています。</p></aside>
-<aside class="box example"><p class="boxtitle">実例：2026年11月9日 15時の配信</p><p class='data'>太陽風の速さ 721km/s、密度 2.3個/cm³、Bz ＋0.7nT（30分平均、北向き）、Kp 3+。</p><p>Bz は平均では北向きなのに、なぜ Kp が下がらないのでしょうか。コロナホールから吹き出す高速の太陽風の中では、磁場の向きが数分単位で激しく揺れています。30分平均ではほぼゼロでも、その中に短い南向きの時間が何度も含まれます。太陽風が速いと、その短い時間にもエネルギーが流れ込み、Kp 3〜4程度のやや乱れた状態が続きます。この状態は、太陽風の速さが秒速500km程度に下がるまで、数日続くのが普通です。</p></aside>
+<aside class="box example"><p class="boxtitle">実例：2026年11月9日 15時の配信</p><p class='data'>太陽風の速さ 721km/s、密度 2.3個/cm³、Bz ＋0.7nT（30分平均、北向き）、Kp 3+。</p><p>Bz は平均では北向きなのに、なぜ Kp が下がらないのでしょうか。コロナホールから吹き出す高速の太陽風の中では、磁場の向きが数分単位で揺れていることがよくあります。30分平均ではほぼゼロでも、その間に短い南向きの変動が含まれていた可能性があります。太陽風が速い状態では、こうした変動も地磁気活動に影響することがあります。高速太陽風が続く間は、地磁気活動がやや活発な状態が続く可能性があります。</p></aside>
 </section>
 
 <section id="s6">
 <h2><span class="no">6</span>Kp指数 ― 地上で観測した乱れの物差し</h2>
 <p>Kp指数は、地球の地磁気がどれだけ乱れたかを、世界各地の地磁気観測所のデータから3時間ごとに0〜9で表した指数です。正式な値はドイツのGFZ（地球科学研究センター）が算出し、NOAA（米国海洋大気庁）などが速報値を出しています。</p>
-<div class="tbl first-nowrap"><table><thead><tr><th>Kp</th><th>NOAAの尺度</th><th>状態と通信への影響（目安）</th></tr></thead><tbody><tr><td><span class='kp k0'>0〜2</span></td><td>―</td><td>静穏。極域を通る経路も比較的安定</td></tr><tr><td><span class='kp k3'>3</span></td><td>―</td><td>やや乱れ。極域寄りの経路が不安定になり始める</td></tr><tr><td><span class='kp k4'>4</span></td><td>―</td><td>活発。極域寄りの経路で信号の弱まりや揺らぎが出やすい</td></tr><tr><td><span class='kp k5'>5</span></td><td>G1（小規模の磁気嵐）</td><td>極域寄りの経路はかなり厳しくなる</td></tr><tr><td><span class='kp k6'>6</span></td><td>G2</td><td>中緯度の経路にも影響が広がる</td></tr><tr><td><span class='kp k7'>7</span></td><td>G3</td><td>短波の伝搬が広い範囲で不安定に</td></tr><tr><td><span class='kp k8'>8〜9</span></td><td>G4〜G5</td><td>短波の途絶が長く続くことがある。北海道などで低緯度オーロラが見られることがある</td></tr></tbody></table></div>
+<div class="tbl first-nowrap"><table><thead><tr><th>Kp</th><th>NOAAの尺度</th><th>状態と通信への影響（目安）</th></tr></thead><tbody><tr><td><span class='kp k0'>0〜2</span></td><td>―</td><td>静穏。極域を通る経路も比較的安定</td></tr><tr><td><span class='kp k3'>3</span></td><td>―</td><td>やや乱れ。極域寄りの経路が不安定になり始める</td></tr><tr><td><span class='kp k4'>4</span></td><td>―</td><td>活発。極域寄りの経路で信号の弱まりや揺らぎが出やすい</td></tr><tr><td><span class='kp k5'>5</span></td><td>G1（小規模の磁気嵐）</td><td>極域寄りの経路はかなり厳しくなる</td></tr><tr><td><span class='kp k6'>6</span></td><td>G2</td><td>中緯度の経路にも影響が広がる</td></tr><tr><td><span class='kp k7'>7</span></td><td>G3</td><td>短波の伝搬が広い範囲で不安定に</td></tr><tr><td><span class='kp k8'>8〜9</span></td><td>G4〜G5</td><td>短波の途絶が長く続くことがある。強い磁気嵐の際には、日本など比較的低緯度の地域でもオーロラが観測されることがある</td></tr></tbody></table></div>
 <p>Bz と Kp は、役割の違う二つの指標です。Bz と太陽風の速さは、地磁気の乱れが強まる可能性を判断するための<strong>先行指標</strong>、Kp は地上で観測された地磁気の乱れを示す<strong>観測指標</strong>です。Kp は Bz だけで決まるものではなく、太陽風の速さ、磁場の強さ、密度、磁場の変動、その状態が続いた時間なども関わります。</p>
 <div class="tbl"><table><thead><tr><th>比べる点</th><th>Bz（太陽風の磁場）</th><th>Kp（地磁気の乱れ）</th></tr></thead><tbody><tr><td>役割</td><td>先行指標（乱れが強まる可能性）</td><td>観測指標（地上で観測された乱れ）</td></tr><tr><td>測る場所</td><td>宇宙空間（L1点の観測衛星）</td><td>地上（世界各地の観測所）</td></tr><tr><td>時間の細かさ</td><td>1分ごとなど（ほぼ実況）</td><td>3時間ごとの値</td></tr><tr><td>読み方</td><td>マイナスが大きく、長く続くほど要注意</td><td>5以上で磁気嵐</td></tr></tbody></table></div>
-<p>太陽風の状態が地上の地磁気に表れるまでには時間がかかるため、Bz の変化から Kp が上がるまでには、およそ30分から数時間の時間差があります。Bz と太陽風の速さは「これから乱れが強まりそうか」の目安として、Kp は「いま、どのくらい乱れているか（乱れていたか）」の実況として使い分けます。</p>
+<p>太陽風の状態が地上の地磁気に表れるまでには時間差があります。また、Kp は3時間単位で評価される指数なので、Bz などの変化がすぐに Kp の数値に反映されるとは限りません。Bz の一つひとつの変動が、Kp の値の上がり下がりと直接対応するわけではない点にも注意が必要です。Bz と太陽風の速さは「これから乱れが強まりそうか」の目安として、Kp は「いま、どのくらい乱れているか（乱れていたか）」の実況として使い分けます。</p>
 </section>
 
 <section id="s7">
@@ -271,7 +274,7 @@ h4 { color: #E8CB7A; font-size: 1.02rem; margin: 1.8rem 0 .3rem; padding-left: .
 
 <h4>赤道横断伝搬（TEP）</h4>
 <p>TEP（Trans-Equatorial Propagation）は、磁気赤道をはさんで、南北にほぼ同じくらい離れた地域どうしを結ぶ伝搬です。日本とオーストラリアのあいだの 50MHz などで、春分・秋分の前後の夕方から夜、太陽活動の高い時期に開きやすいことが知られています。</p>
-<p>TEP には、赤道域に特有の電離層の構造が関わっています。昼から夕方にかけて、磁気赤道の南北それぞれ約15度の位置に、電離の特に濃い帯ができます（赤道異常）。この電子の分布によって、ふだんなら突き抜けてしまう高い周波数の電波も、赤道を越えて反対側の半球へ届くようになると考えられています。日没後の夜の TEP には、赤道域の電離層にできる不規則な構造（第7章のプラズマバブルなど）が関わるとされます。上のダクト伝搬とは別の現象として扱われ、仕組みには研究途上の部分があります。沖縄は、北側の濃い帯に近い位置にあります。</p>
+<p>TEP には、赤道域に特有の電離層の構造が関わっています。昼から夕方にかけて、磁気赤道の南北それぞれ約15度の位置に、電離の特に濃い帯ができます（赤道異常）。TEP には、この赤道異常に伴う電子密度の分布や、赤道域に生じる電離層の不規則構造（第7章のプラズマバブルなど）などが関係すると考えられています。ただし、これらだけで伝搬の仕組みがすべて説明できるわけではなく、研究途上の部分があります。上のダクト伝搬とは別の現象として扱われます。沖縄は、北側の濃い帯に近い位置にあります。</p>
 
 <p><strong>体験のしかた</strong>：FT8 で運用しながら PSK Reporter の地図を見て、ふだんより遠くの局に、ふだんより良い SNR で受信されている時間帯を探してみてください。ローバンドならグレイラインの時刻、50MHz なら春分・秋分の前後の夕方が狙い目です。</p>
 <h3>9-2　自分の電波が戻ってくる ― 世界一周エコーと長遅延エコー</h3>
@@ -294,6 +297,59 @@ h4 { color: #E8CB7A; font-size: 1.02rem; margin: 1.8rem 0 .3rem; padding-left: .
 </div>
 <p class="flow">通知を受信 → 交信成立 → LoTW へのアップロードも完了</p>
 </div>
+<h3>V26JJ が電波を出していた場所</h3>
+<figure class="scene"><svg viewBox="0 0 760 330" role="img" aria-label="真夜中のカリブ海の浜辺のイラスト。星空と月、月明かりが映る穏やかな海、白い砂浜、ヤシの木のシルエット、浜辺に立つ縦型のアンテナ。">
+<defs>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#05081A"/><stop offset=".75" stop-color="#14254A"/><stop offset="1" stop-color="#1F3A63"/></linearGradient>
+<linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#123A5C"/><stop offset="1" stop-color="#0A2236"/></linearGradient>
+<linearGradient id="sand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5C5440"/><stop offset="1" stop-color="#2E2A20"/></linearGradient>
+<radialGradient id="moonglow"><stop offset="0" stop-color="#FFF6DA" stop-opacity=".35"/><stop offset="1" stop-color="#FFF6DA" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="760" height="210" fill="url(#sky)"/>
+<circle cx="336" cy="43" r="1.4" fill="#FFF6DA" opacity="0.9"/><circle cx="54" cy="23" r="0.7" fill="#FFF6DA" opacity="0.7"/><circle cx="601" cy="19" r="0.9" fill="#FFF6DA" opacity="0.5"/><circle cx="93" cy="116" r="1.4" fill="#FFF6DA" opacity="0.5"/><circle cx="251" cy="28" r="1.4" fill="#FFF6DA" opacity="0.5"/><circle cx="584" cy="36" r="0.9" fill="#FFF6DA" opacity="0.9"/><circle cx="647" cy="20" r="1.4" fill="#FFF6DA" opacity="0.5"/><circle cx="231" cy="16" r="0.9" fill="#FFF6DA" opacity="0.7"/><circle cx="434" cy="41" r="0.7" fill="#FFF6DA" opacity="0.9"/><circle cx="320" cy="148" r="0.9" fill="#FFF6DA" opacity="0.5"/><circle cx="600" cy="53" r="1.1" fill="#FFF6DA" opacity="0.5"/><circle cx="565" cy="21" r="0.7" fill="#FFF6DA" opacity="0.9"/><circle cx="215" cy="132" r="1.4" fill="#FFF6DA" opacity="0.7"/><circle cx="481" cy="121" r="1.1" fill="#FFF6DA" opacity="0.7"/><circle cx="259" cy="51" r="0.9" fill="#FFF6DA" opacity="0.5"/><circle cx="593" cy="81" r="1.4" fill="#FFF6DA" opacity="0.7"/><circle cx="751" cy="119" r="1.1" fill="#FFF6DA" opacity="0.9"/><circle cx="79" cy="35" r="1.4" fill="#FFF6DA" opacity="0.5"/><circle cx="355" cy="43" r="1.4" fill="#FFF6DA" opacity="0.7"/><circle cx="45" cy="24" r="1.1" fill="#FFF6DA" opacity="0.7"/><circle cx="716" cy="94" r="1.4" fill="#FFF6DA" opacity="0.9"/><circle cx="472" cy="22" r="0.7" fill="#FFF6DA" opacity="0.7"/><circle cx="490" cy="21" r="0.7" fill="#FFF6DA" opacity="0.9"/><circle cx="723" cy="84" r="1.4" fill="#FFF6DA" opacity="0.7"/><circle cx="738" cy="103" r="1.1" fill="#FFF6DA" opacity="0.5"/><circle cx="477" cy="95" r="0.9" fill="#FFF6DA" opacity="0.9"/><circle cx="124" cy="131" r="0.7" fill="#FFF6DA" opacity="0.5"/><circle cx="299" cy="38" r="0.9" fill="#FFF6DA" opacity="0.7"/><circle cx="405" cy="132" r="0.7" fill="#FFF6DA" opacity="0.5"/><circle cx="464" cy="107" r="1.1" fill="#FFF6DA" opacity="0.5"/><circle cx="445" cy="145" r="1.1" fill="#FFF6DA" opacity="0.9"/><circle cx="430" cy="96" r="1.4" fill="#FFF6DA" opacity="0.5"/><circle cx="159" cy="26" r="0.9" fill="#FFF6DA" opacity="0.5"/><circle cx="242" cy="64" r="0.7" fill="#FFF6DA" opacity="0.7"/><circle cx="608" cy="51" r="1.1" fill="#FFF6DA" opacity="0.7"/><circle cx="9" cy="42" r="1.4" fill="#FFF6DA" opacity="0.9"/><circle cx="383" cy="149" r="1.1" fill="#FFF6DA" opacity="0.5"/><circle cx="712" cy="136" r="0.7" fill="#FFF6DA" opacity="0.7"/><circle cx="701" cy="148" r="1.4" fill="#FFF6DA" opacity="0.7"/><circle cx="413" cy="105" r="0.7" fill="#FFF6DA" opacity="0.7"/><circle cx="654" cy="107" r="0.7" fill="#FFF6DA" opacity="0.5"/><circle cx="73" cy="58" r="1.4" fill="#FFF6DA" opacity="0.5"/><circle cx="117" cy="92" r="0.7" fill="#FFF6DA" opacity="0.5"/><circle cx="5" cy="150" r="0.9" fill="#FFF6DA" opacity="0.9"/><circle cx="108" cy="98" r="0.7" fill="#FFF6DA" opacity="0.5"/><circle cx="217" cy="101" r="0.9" fill="#FFF6DA" opacity="0.9"/><circle cx="263" cy="93" r="1.1" fill="#FFF6DA" opacity="0.7"/><circle cx="130" cy="34" r="1.4" fill="#FFF6DA" opacity="0.7"/><circle cx="496" cy="128" r="1.1" fill="#FFF6DA" opacity="0.5"/><circle cx="152" cy="31" r="1.1" fill="#FFF6DA" opacity="0.9"/><circle cx="276" cy="127" r="0.9" fill="#FFF6DA" opacity="0.9"/><circle cx="28" cy="57" r="1.1" fill="#FFF6DA" opacity="0.5"/><circle cx="711" cy="144" r="0.7" fill="#FFF6DA" opacity="0.9"/><circle cx="310" cy="28" r="1.1" fill="#FFF6DA" opacity="0.9"/><circle cx="380" cy="47" r="1.1" fill="#FFF6DA" opacity="0.5"/><circle cx="550" cy="143" r="1.1" fill="#FFF6DA" opacity="0.9"/><circle cx="233" cy="54" r="0.9" fill="#FFF6DA" opacity="0.7"/><circle cx="237" cy="56" r="1.4" fill="#FFF6DA" opacity="0.7"/><circle cx="753" cy="12" r="0.7" fill="#FFF6DA" opacity="0.7"/><circle cx="488" cy="71" r="0.9" fill="#FFF6DA" opacity="0.9"/><circle cx="624" cy="93" r="1.4" fill="#FFF6DA" opacity="0.9"/><circle cx="362" cy="98" r="0.7" fill="#FFF6DA" opacity="0.5"/><circle cx="109" cy="63" r="1.4" fill="#FFF6DA" opacity="0.5"/><circle cx="350" cy="57" r="1.4" fill="#FFF6DA" opacity="0.9"/><circle cx="629" cy="5" r="1.4" fill="#FFF6DA" opacity="0.9"/><circle cx="357" cy="26" r="0.7" fill="#FFF6DA" opacity="0.7"/><circle cx="733" cy="56" r="1.4" fill="#FFF6DA" opacity="0.5"/><circle cx="449" cy="90" r="0.7" fill="#FFF6DA" opacity="0.9"/><circle cx="410" cy="123" r="1.4" fill="#FFF6DA" opacity="0.9"/><circle cx="91" cy="45" r="0.9" fill="#FFF6DA" opacity="0.5"/>
+<circle cx="560" cy="70" r="60" fill="url(#moonglow)"/>
+<circle cx="560" cy="70" r="20" fill="#F4E9C8"/>
+<path d="M0 205 Q120 190 230 200 T470 196 T760 204 V214 H0Z" fill="#0E1C33"/>
+<rect y="210" width="760" height="70" fill="url(#sea)"/>
+<g fill="#F4E9C8" opacity=".55">
+<rect x="548" y="214" width="24" height="2" rx="1"/><rect x="540" y="222" width="40" height="2" rx="1" opacity=".8"/>
+<rect x="552" y="231" width="18" height="2" rx="1"/><rect x="536" y="241" width="48" height="2" rx="1" opacity=".6"/>
+<rect x="546" y="252" width="28" height="2" rx="1" opacity=".7"/><rect x="530" y="264" width="60" height="2" rx="1" opacity=".45"/>
+</g>
+<path d="M0 274 Q90 266 190 272 T380 270 T570 276 T760 270 V330 H0Z" fill="url(#sand)"/>
+<path d="M0 276 Q95 268 190 274 T380 272 T570 278 T760 272" fill="none" stroke="#D9D2BE" stroke-opacity=".5" stroke-width="2"/>
+<g fill="#05070D">
+<path d="M118 300 C122 250 128 190 150 132 L156 134 C136 192 130 252 128 302Z"/>
+<path d="M152 132 C120 112 88 118 62 140 C92 126 120 126 150 138Z"/>
+<path d="M152 132 C130 100 100 92 72 98 C102 104 126 116 150 136Z"/>
+<path d="M153 131 C170 98 200 88 230 94 C202 100 178 114 156 136Z"/>
+<path d="M154 133 C188 116 222 120 246 142 C216 130 188 130 157 139Z"/>
+<path d="M153 133 C150 104 160 80 178 66 C168 90 162 110 157 135Z"/>
+<path d="M150 134 C132 136 114 152 104 174 C120 156 136 146 152 140Z"/>
+<path d="M156 134 C176 140 192 156 198 178 C186 160 172 150 154 140Z"/>
+<path d="M60 312 C64 278 70 248 84 214 L88 215 C76 250 70 280 70 314Z"/>
+<path d="M86 214 C66 202 46 206 30 220 C50 212 66 212 85 219Z"/>
+<path d="M86 214 C100 196 120 192 138 198 C118 200 102 208 88 219Z"/>
+<path d="M86 213 C84 194 92 182 104 174 C96 190 92 202 89 216Z"/>
+</g>
+<g stroke="#9AA3B5" stroke-width="2.2" fill="none">
+<line x1="660" y1="283" x2="660" y2="168"/>
+<line x1="660" y1="200" x2="628" y2="282" stroke-width="1" opacity=".6"/>
+<line x1="660" y1="200" x2="692" y2="282" stroke-width="1" opacity=".6"/>
+<line x1="645" y1="283" x2="675" y2="283" stroke-width="3"/>
+</g>
+<circle cx="660" cy="166" r="2.5" fill="#E9806E"/>
+<g fill="none" stroke="#7FCFE3" stroke-linecap="round" opacity=".75">
+<path d="M672 150 a22 22 0 0 1 0 32" stroke-width="1.6"/>
+<path d="M680 140 a36 36 0 0 1 0 52" stroke-width="1.4" opacity=".7"/>
+<path d="M688 130 a50 50 0 0 1 0 72" stroke-width="1.2" opacity=".5"/>
+</g>
+<text x="20" y="34" font-family="BIZ UDPGothic, sans-serif" font-size="14" fill="#C9C3B2">Antigua　02:42（現地時刻）</text>
+</svg><figcaption>交信したとき、アンティグアは真夜中でした（イメージ。筆者作成のイラスト）</figcaption></figure>
+<p>アンティグア・バーブーダは、カリブ海の東側、小アンティル諸島のリーワード諸島に浮かぶ島国です。アンティグア島は北緯17度付近にあり、海岸線には白い砂浜と小さな入り江が数多く並び、透き通った青い海に囲まれています。</p>
+<p>NG3K ADXO によると、今回の V26JJ の運用は、JA3FHL、JA3PJL、JH3UHG、JJ2RCJ、JA0JHQ の各局によるものでした。日本の仲間がはるばるカリブ海の島へ出かけ、そこから日本へ電波を届けてくれていたのです。</p>
+<p>受信したのは日本時間の15時42分、まだ明るい午後でした。そのとき、アンティグアは午前2時42分の真夜中です。日本からアンティグアまでは、大圏距離で約1万3700km。電波の通り道は、日本から北北東（方位およそ25度）へ向かい、ベーリング海からアラスカ、カナダの上空を通ってカリブ海へ至ります。地磁気緯度の高い地域を通る経路なので、地磁気が乱れると影響を受けやすい経路の一つです（第2章）。この日は Kp 2.0 と落ち着いていました。もちろん、それだけで交信できたと言えるわけではありませんが、通り道を思い浮かべながら値を眺めると、一つの交信がぐっと立体的に見えてきます。</p>
+
 <h3>スマートフォンに届いた通知（全体）</h3>
 <p>シャックを離れていても、未交信のエンティティが聞こえたことがスマートフォンに届き、そこから交信につながりました。実際に届いた通知を、そのまま掲載します。</p>
 <div class="mailcase">
