@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>蓄電波現象への招待 ― 160m で自分の電波が遅れて帰ってくる謎｜JA1BBE</title>
+<meta name="description" content="160m で自分の電波が数秒遅れて聞こえる「蓄電波現象」（長遅延エコー）。その謎を、時間と距離、電離層の特別な周波数、宇宙天気から読み解く JA1BBE の仮説。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #000000; --panel: #141414; --ink: #EDEAE2; --sub: #A9A59B;
+  --gold: #D9B44A; --olive: #A7B44A; --coral: #E9806E; --aqua: #7FCFE3; --rule: #3A3732;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 1rem); }
+body { margin: 0; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--bg); color: var(--ink);
+  font-family: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif;
+  font-size: 17px; line-height: 1.9; -webkit-text-size-adjust: 100%; }
+.wrap { max-width: 46rem; margin: 0 auto; padding: 0 1.25rem 4rem; }
+a { color: var(--aqua); text-underline-offset: 3px; }
+a:focus-visible { outline: 3px solid var(--aqua); outline-offset: 3px; }
+strong { color: #FFF6DA; }
+
+.hero { padding: 3.2rem 0 2rem; border-bottom: 1px solid var(--rule); }
+.kicker { margin: 0; color: var(--sub); font-size: .92rem; letter-spacing: .04em; }
+h1 { margin: .4rem 0 .2rem; color: var(--gold); font-size: clamp(2rem, 6vw, 2.8rem); line-height: 1.3; font-weight: 700; }
+.sub { margin: 0; font-size: 1.15rem; color: var(--ink); }
+.date { margin: .8rem 0 0; color: var(--sub); font-size: .9rem; }
+
+.toc { margin: 2rem 0 1rem; padding: 1rem 1.2rem; background: var(--panel); border-left: 4px solid var(--gold); }
+.toctitle { margin: 0 0 .3rem; color: var(--gold); font-weight: 700; }
+.toc ol { list-style: none; padding: 0; margin: 0; columns: 2; column-gap: 2rem; }
+.toc li { margin: .15rem 0; break-inside: avoid; }
+.toc a { color: var(--ink); text-decoration: none; }
+.toc a:hover { color: var(--gold); text-decoration: underline; }
+@media (max-width: 560px) { .toc ol { columns: 1; } }
+
+h2 { color: var(--gold); font-size: 1.45rem; line-height: 1.45; margin: 3.2rem 0 .8rem; padding-top: 1.4rem;
+     border-top: 1px solid var(--rule); font-weight: 700; display: flex; gap: .7rem; align-items: baseline; }
+h2 .no { flex: none; display: inline-grid; place-items: center; min-width: 2.1rem; height: 2.1rem; padding: 0 .35rem;
+         border: 2px solid var(--gold); border-radius: 50%; font-size: 1.05rem; line-height: 1; }
+h3 { color: var(--gold); font-size: 1.12rem; margin: 2.2rem 0 .5rem; }
+p { margin: .8rem 0; }
+ul, ol { padding-left: 1.4rem; }
+li { margin: .5rem 0; }
+.small { font-size: .92rem; color: var(--sub); }
+.links { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; }
+
+ol.three { list-style: none; padding: 0; counter-reset: n; }
+ol.three li { counter-increment: n; position: relative; padding-left: 2.6rem; margin: 1rem 0; }
+ol.three li::before { content: counter(n); position: absolute; left: 0; top: .15rem; width: 1.8rem; height: 1.8rem;
+  display: grid; place-items: center; border-radius: 50%; background: var(--gold); color: #000; font-weight: 700; font-size: .95rem; }
+
+.tbl { overflow-x: auto; margin: 1.2rem 0; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; font-size: .95rem; line-height: 1.7; }
+th, td { text-align: left; vertical-align: top; padding: .55rem .7rem; border-bottom: 1px solid var(--rule); }
+thead th { color: var(--gold); font-weight: 700; border-bottom: 2px solid #5A4C22; white-space: nowrap; }
+tbody tr:nth-child(even) td { background: #0B0B0B; }
+.first-nowrap td:first-child { white-space: nowrap; font-weight: 700; color: #FFF6DA; }
+.wide table { min-width: 44rem; }
+.glossary td:first-child { color: var(--gold); }
+.kp { display: inline-block; min-width: 3.2rem; text-align: center; padding: .05rem .4rem; border-radius: 3px; color: #000; font-weight: 700; }
+.k0 { background: #7DBB6A; } .k3 { background: #C9CB5A; } .k4 { background: #E3B64A; }
+.k5 { background: #E9935A; } .k6 { background: #E9806E; } .k7 { background: #DA5F5F; } .k8 { background: #C04A8A; color: #fff; }
+
+.box { margin: 1.6rem 0; padding: .9rem 1.2rem; background: var(--panel); border-left: 4px solid; }
+.box p, .box li { font-size: .97rem; }
+.box .boxtitle { margin: 0 0 .3rem; font-weight: 700; }
+.box.key { border-color: var(--gold); } .box.key .boxtitle { color: var(--gold); }
+.box.note { border-color: var(--aqua); } .box.note .boxtitle { color: var(--aqua); }
+.box.example { border-color: var(--olive); } .box.example .boxtitle { color: #C4D06A; }
+.box.warn { border-color: var(--coral); } .box.warn .boxtitle { color: var(--coral); }
+.box .data { font-variant-numeric: tabular-nums; color: #FFF6DA; }
+
+.terms dt { margin-top: 1.1rem; color: var(--gold); font-weight: 700; }
+.terms dd { margin: .2rem 0 0 0; }
+
+.fig { margin: 1.8rem 0; }
+.figbox { background: #FFFFFF; border-radius: 6px; padding: .6rem; }
+.fig img { display: block; width: 100%; height: auto; }
+.fig figcaption { margin-top: .5rem; color: var(--sub); font-size: .9rem; }
+
+footer { margin-top: 4rem; padding-top: 1.2rem; border-top: 1px solid var(--rule); color: var(--sub); font-size: .88rem; }
+footer p { margin: .3rem 0; }
+
+@media print {
+  :root { --bg: #fff; --panel: #F5F3EE; --ink: #111; --sub: #555; --gold: #7A5A00; --rule: #CCC; color-scheme: light; }
+  body { font-size: 11pt; }
+  strong, .first-nowrap td:first-child, .box .data { color: #000; }
+  tbody tr:nth-child(even) td { background: #FAF8F3; }
+  .toc { display: none; }
+  h2 { break-after: avoid; } .fig, .box, tr { break-inside: avoid; }
+  a { color: #000; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+.scrollhint { display: none; margin: 1rem 0 -.6rem; color: var(--sub); font-size: .82rem; text-align: right; }
+@media (max-width: 760px) { .scrollhint { display: block; } }
+@media print { .scrollhint { display: none !important; } .wide table { min-width: 0; } }
+.topnav { margin: 0 0 1.4rem; font-size: .88rem; }
+.topnav a { color: var(--sub); text-decoration: none; }
+.topnav a:hover { color: var(--ink); text-decoration: underline; }
+@media print { .topnav { display: none; } }
+
+/* 実践事例のカード */
+.case { margin: 1.6rem 0; border: 1px solid #5A4C22; border-radius: 6px; background: var(--panel); overflow: hidden; }
+.casehead { padding: 1rem 1.2rem .8rem; border-bottom: 1px solid var(--rule); }
+.casehead p { margin: 0; }
+.call { color: var(--gold); font-size: 2rem; font-weight: 700; line-height: 1.2; letter-spacing: .02em; }
+.ent { color: var(--ink); font-weight: 700; }
+.when { color: var(--sub); font-size: .92rem; }
+.vals { display: grid; grid-template-columns: repeat(4, 1fr); }
+.vals > div { padding: .8rem 1rem; border-right: 1px solid var(--rule); }
+.vals > div:last-child { border-right: 0; }
+.vals p { margin: 0; line-height: 1.5; }
+.lab { color: var(--sub); font-size: .82rem; }
+.num { color: #FFF6DA; font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.num span { font-size: .85rem; font-weight: 400; color: var(--sub); }
+.cm { color: var(--sub); font-size: .8rem; }
+.flow { margin: 0; padding: .7rem 1.2rem; border-top: 1px solid var(--rule); color: #C4D06A; font-size: .92rem; }
+@media (max-width: 620px) {
+  .vals { grid-template-columns: repeat(2, 1fr); }
+  .vals > div:nth-child(2) { border-right: 0; }
+  .vals > div:nth-child(-n+2) { border-bottom: 1px solid var(--rule); }
+}
+@media print { .call { color: #000; } .num { color: #000; } }
+
+h4 { color: #E8CB7A; font-size: 1.02rem; margin: 1.8rem 0 .3rem; padding-left: .7rem; border-left: 3px solid var(--gold); }
+/* 実際の通知メール */
+.mailcase { display: grid; grid-template-columns: minmax(0, 340px) 1fr; gap: 1.6rem; align-items: start; margin: 1.4rem 0 2rem; }
+.mailshot { margin: 0; }
+.mailshot img { display: block; width: 100%; height: auto; border-radius: 10px; border: 6px solid #2A2E36; }
+.mailshot figcaption { margin-top: .5rem; color: var(--sub); font-size: .85rem; }
+.mailguide { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1rem); }
+.guidetitle { margin: 0 0 .3rem; color: var(--gold); font-weight: 700; }
+.mailguide ol { padding-left: 1.3rem; margin: 0; }
+.mailguide li { font-size: .95rem; margin: .7rem 0; }
+@media (max-width: 760px) {
+  .mailcase { grid-template-columns: 1fr; }
+  .mailshot { max-width: 360px; margin: 0 auto; }
+  .mailguide { position: static; }
+}
+@media print { .mailcase { grid-template-columns: 220px 1fr; } .mailguide { position: static; } }
+.scene { margin: 1.4rem 0; }
+.scene svg { display: block; width: 100%; height: auto; border-radius: 8px; border: 1px solid #2A2E36; }
+.scene figcaption { margin-top: .5rem; color: var(--sub); font-size: .88rem; }
+.map { margin: 1.4rem 0; }
+.map svg { display: block; width: 100%; height: auto; border-radius: 8px; border: 1px solid #2A2E36; }
+.map.round svg { max-width: 560px; margin: 0 auto; border: 0; }
+.map figcaption { margin-top: .5rem; color: var(--sub); font-size: .88rem; }
+
+/* 蓄電波ページ */
+.hero.starry { position: relative; overflow: hidden; }
+.hero.starry svg.sky { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; opacity: .7; }
+.hero.starry > *:not(svg) { position: relative; z-index: 1; }
+.figsvg { margin: 1.8rem 0; }
+.figsvg svg { display: block; width: 100%; height: auto; background: #0A0F1A; border: 1px solid #2A2E36; border-radius: 8px; }
+.figsvg figcaption { margin-top: .5rem; color: var(--sub); font-size: .9rem; }
+.hypo { margin: 2rem 0; padding: 1.2rem 1.4rem; border: 2px solid var(--gold); border-radius: 8px; background: #120F06; }
+.hypo .boxtitle { color: var(--gold); font-weight: 700; margin: 0 0 .4rem; font-size: 1.05rem; }
+.calc { font-variant-numeric: tabular-nums; }
+.prologue { font-size: 1.08rem; border-left: 3px solid var(--gold); padding-left: 1.1rem; color: #E8E2D2; }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero starry">
+<svg class="sky" viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><circle cx="243" cy="278" r="0.8" fill="#FFF6DA" opacity="0.5"/><circle cx="937" cy="242" r="0.6" fill="#FFF6DA" opacity="0.8"/><circle cx="13" cy="240" r="1" fill="#FFF6DA" opacity="0.8"/><circle cx="239" cy="98" r="1.3" fill="#FFF6DA" opacity="0.8"/><circle cx="856" cy="281" r="1.3" fill="#FFF6DA" opacity="0.5"/><circle cx="654" cy="77" r="0.8" fill="#FFF6DA" opacity="0.8"/><circle cx="155" cy="267" r="1.3" fill="#FFF6DA" opacity="0.8"/><circle cx="15" cy="32" r="0.8" fill="#FFF6DA" opacity="0.8"/><circle cx="43" cy="154" r="0.6" fill="#FFF6DA" opacity="0.5"/><circle cx="484" cy="198" r="1.3" fill="#FFF6DA" opacity="0.5"/><circle cx="745" cy="295" r="1.3" fill="#FFF6DA" opacity="0.3"/><circle cx="899" cy="187" r="0.6" fill="#FFF6DA" opacity="0.3"/><circle cx="139" cy="253" r="0.8" fill="#FFF6DA" opacity="0.5"/><circle cx="988" cy="223" r="1" fill="#FFF6DA" opacity="0.5"/><circle cx="519" cy="197" r="1" fill="#FFF6DA" opacity="0.8"/><circle cx="599" cy="208" r="0.8" fill="#FFF6DA" opacity="0.5"/><circle cx="698" cy="14" r="1" fill="#FFF6DA" opacity="0.8"/><circle cx="687" cy="83" r="1" fill="#FFF6DA" opacity="0.8"/><circle cx="926" cy="292" r="0.6" fill="#FFF6DA" opacity="0.8"/><circle cx="671" cy="108" r="1" fill="#FFF6DA" opacity="0.5"/><circle cx="127" cy="32" r="1.3" fill="#FFF6DA" opacity="0.8"/><circle cx="495" cy="45" r="1" fill="#FFF6DA" opacity="0.3"/><circle cx="420" cy="77" r="0.6" fill="#FFF6DA" opacity="0.5"/><circle cx="437" cy="212" r="0.6" fill="#FFF6DA" opacity="0.3"/><circle cx="619" cy="23" r="1.3" fill="#FFF6DA" opacity="0.8"/><circle cx="600" cy="169" r="1" fill="#FFF6DA" opacity="0.8"/><circle cx="241" cy="18" r="1" fill="#FFF6DA" opacity="0.3"/><circle cx="78" cy="55" r="0.6" fill="#FFF6DA" opacity="0.3"/><circle cx="994" cy="208" r="1" fill="#FFF6DA" opacity="0.8"/><circle cx="269" cy="79" r="0.6" fill="#FFF6DA" opacity="0.5"/><circle cx="321" cy="184" r="0.8" fill="#FFF6DA" opacity="0.5"/><circle cx="385" cy="235" r="1.3" fill="#FFF6DA" opacity="0.8"/><circle cx="887" cy="286" r="0.6" fill="#FFF6DA" opacity="0.8"/><circle cx="996" cy="259" r="1" fill="#FFF6DA" opacity="0.5"/><circle cx="649" cy="121" r="1" fill="#FFF6DA" opacity="0.5"/><circle cx="264" cy="266" r="1" fill="#FFF6DA" opacity="0.8"/><circle cx="347" cy="5" r="1.3" fill="#FFF6DA" opacity="0.8"/><circle cx="322" cy="10" r="1.3" fill="#FFF6DA" opacity="0.8"/><circle cx="603" cy="68" r="0.6" fill="#FFF6DA" opacity="0.8"/><circle cx="642" cy="170" r="1.3" fill="#FFF6DA" opacity="0.5"/><circle cx="695" cy="180" r="1" fill="#FFF6DA" opacity="0.8"/><circle cx="501" cy="11" r="0.6" fill="#FFF6DA" opacity="0.8"/><circle cx="21" cy="189" r="1" fill="#FFF6DA" opacity="0.8"/><circle cx="467" cy="152" r="1" fill="#FFF6DA" opacity="0.3"/><circle cx="372" cy="94" r="1" fill="#FFF6DA" opacity="0.5"/><circle cx="864" cy="135" r="1" fill="#FFF6DA" opacity="0.5"/><circle cx="107" cy="13" r="0.8" fill="#FFF6DA" opacity="0.5"/><circle cx="512" cy="113" r="1" fill="#FFF6DA" opacity="0.3"/><circle cx="335" cy="95" r="1.3" fill="#FFF6DA" opacity="0.8"/><circle cx="714" cy="49" r="0.6" fill="#FFF6DA" opacity="0.8"/><circle cx="329" cy="170" r="0.8" fill="#FFF6DA" opacity="0.5"/><circle cx="829" cy="86" r="0.6" fill="#FFF6DA" opacity="0.5"/><circle cx="759" cy="111" r="1.3" fill="#FFF6DA" opacity="0.5"/><circle cx="230" cy="61" r="0.6" fill="#FFF6DA" opacity="0.8"/><circle cx="980" cy="97" r="1" fill="#FFF6DA" opacity="0.8"/><circle cx="187" cy="142" r="1" fill="#FFF6DA" opacity="0.8"/><circle cx="87" cy="176" r="0.8" fill="#FFF6DA" opacity="0.5"/><circle cx="298" cy="265" r="1" fill="#FFF6DA" opacity="0.5"/><circle cx="354" cy="213" r="1" fill="#FFF6DA" opacity="0.5"/><circle cx="581" cy="209" r="0.6" fill="#FFF6DA" opacity="0.5"/><circle cx="159" cy="102" r="0.6" fill="#FFF6DA" opacity="0.5"/><circle cx="965" cy="261" r="1.3" fill="#FFF6DA" opacity="0.8"/><circle cx="972" cy="113" r="0.6" fill="#FFF6DA" opacity="0.8"/><circle cx="467" cy="265" r="1" fill="#FFF6DA" opacity="0.8"/><circle cx="349" cy="116" r="0.6" fill="#FFF6DA" opacity="0.8"/><circle cx="994" cy="146" r="0.6" fill="#FFF6DA" opacity="0.3"/><circle cx="46" cy="17" r="0.8" fill="#FFF6DA" opacity="0.5"/><circle cx="590" cy="25" r="0.6" fill="#FFF6DA" opacity="0.5"/><circle cx="763" cy="61" r="0.8" fill="#FFF6DA" opacity="0.8"/><circle cx="307" cy="122" r="0.6" fill="#FFF6DA" opacity="0.8"/><circle cx="549" cy="211" r="0.6" fill="#FFF6DA" opacity="0.8"/><circle cx="116" cy="174" r="0.8" fill="#FFF6DA" opacity="0.5"/><circle cx="995" cy="276" r="1.3" fill="#FFF6DA" opacity="0.3"/><circle cx="360" cy="113" r="0.8" fill="#FFF6DA" opacity="0.3"/><circle cx="547" cy="61" r="0.8" fill="#FFF6DA" opacity="0.3"/><circle cx="810" cy="140" r="0.8" fill="#FFF6DA" opacity="0.3"/><circle cx="499" cy="292" r="1.3" fill="#FFF6DA" opacity="0.3"/><circle cx="774" cy="138" r="0.8" fill="#FFF6DA" opacity="0.5"/><circle cx="632" cy="269" r="1.3" fill="#FFF6DA" opacity="0.3"/><circle cx="484" cy="165" r="0.6" fill="#FFF6DA" opacity="0.3"/><circle cx="793" cy="64" r="0.6" fill="#FFF6DA" opacity="0.3"/><circle cx="51" cy="35" r="1.3" fill="#FFF6DA" opacity="0.3"/><circle cx="874" cy="44" r="1.3" fill="#FFF6DA" opacity="0.5"/><circle cx="160" cy="161" r="0.6" fill="#FFF6DA" opacity="0.5"/><circle cx="395" cy="199" r="1" fill="#FFF6DA" opacity="0.5"/><circle cx="271" cy="97" r="1" fill="#FFF6DA" opacity="0.5"/><circle cx="126" cy="65" r="0.6" fill="#FFF6DA" opacity="0.8"/><circle cx="740" cy="194" r="0.6" fill="#FFF6DA" opacity="0.8"/><circle cx="182" cy="21" r="1" fill="#FFF6DA" opacity="0.5"/><circle cx="618" cy="277" r="1.3" fill="#FFF6DA" opacity="0.8"/></svg>
+<p class="topnav"><a href="https://ja1bbe.wixsite.com/mysite">← JA1BBE ホームページ</a></p>
+<p class="kicker">JA1BBE の仮説</p>
+<h1>蓄電波現象への招待</h1>
+<p class="sub">160m で、自分の電波が数秒遅れて帰ってくる謎</p>
+<p class="date">2026年11月</p>
+</header>
+<nav class="toc" aria-label="目次"><p class="toctitle">目次</p><ol><li><a href="#p0">序　夜の160m で</a></li><li><a href="#s1">1. 世界の記録</a></li><li><a href="#s2">2. 遅れを距離に直す</a></li><li><a href="#s3">3. 二つの道</a></li><li><a href="#s4">4. 「プラズマに変わる」では足りない</a></li><li><a href="#s5">5. 160m が特別な理由</a></li><li><a href="#s6">6. 電離層の窓</a></li><li><a href="#s7">7. 月まで行ってくる？</a></li><li><a href="#s8">8. 筆者の仮説</a></li><li><a href="#s9">9. 一緒に観測しませんか</a></li><li><a href="#end">結び</a></li></ol></nav>
+<main>
+
+<section id="p0">
+<h2>序　夜の160m で、自分の電波が帰ってきた</h2>
+<p class="prologue">冬の夜、160m で短い符号を送ったあと、受信に戻ると、数秒遅れて自分の符号が、かすかに、しかし確かに聞こえてくる――。</p>
+<p>筆者（JA1BBE）は、160m でこうした「自分の電波が遅れて聞こえる」珍しい現象に出会ってきました。電波がどこかに蓄えられて、あとから出てくるように見えることから、筆者はこれを<strong>「蓄電波現象」</strong>と呼んでいます。</p>
+<p>電波は1秒間に地球を7周半も回る速さで進みます。それが数秒も遅れて帰ってくるとは、いったい何が起きているのでしょうか。このページでは、分かっていることと分かっていないことを区別しながら、その謎に少しずつ近づいていきます。最後に、宇宙天気と結びつけた筆者の仮説を紹介します。</p>
+</section>
+
+<section id="s1">
+<h2><span class="no">1</span>世界で語り継がれる「長遅延エコー」</h2>
+<p>自分の電波が数秒から数十秒遅れて戻ってくる現象は、世界では<strong>長遅延エコー（LDE：Long Delayed Echoes）</strong>と呼ばれています。1927年、ノルウェーのオスロで、オランダの短波放送局の信号が数秒遅れて重なって聞こえたのが、最初の報告とされています。</p>
+<p>それから100年近く、世界中の無線家や研究者が観測例を報告してきましたが、<strong>原因はいまも決着していません</strong>。いつ起きるか分からず、起きても短い時間で消えてしまうため、詳しく調べるのが難しいのです。筆者の「蓄電波現象」は、この長遅延エコーの仲間と考えられます。</p>
+</section>
+
+<section id="s2">
+<h2><span class="no">2</span>遅れの時間を、距離に直してみる</h2>
+<p>謎に迫る最初の手がかりは、<strong>「数秒」という時間の長さ</strong>です。電波は光と同じく、秒速約30万km で進みます。遅れの時間を、電波が進む道のりに直してみましょう。</p>
+<figure class="figsvg"><svg viewBox="0 0 780 250" role="img" aria-label="遅れの時間を、光の速さで進んだ道のりに直した物差し。地球一周は約0.13秒、月までの往復は約2.6秒、5秒は約150万km、10秒は約300万km、30秒は約900万km。長遅延エコーの報告が多い数秒から数十秒の範囲を帯で示す。" font-family="BIZ UDPGothic, sans-serif"><rect x="408" y="70" width="281" height="60" fill="#E9806E" fill-opacity=".14" stroke="#E9806E" stroke-opacity=".5" stroke-dasharray="4 3"/><text x="548" y="62" text-anchor="middle" font-size="13" fill="#E9806E">長遅延エコー（蓄電波）の遅れ：数秒〜数十秒</text><line x1="50" y1="100" x2="730" y2="100" stroke="#A9A59B" stroke-width="2"/><line x1="98" y1="95" x2="98" y2="105" stroke="#A9A59B"/><text x="98" y="122" text-anchor="middle" font-size="11" fill="#7D786E">0.1秒</text><line x1="212" y1="95" x2="212" y2="105" stroke="#A9A59B"/><text x="212" y="122" text-anchor="middle" font-size="11" fill="#7D786E">0.3秒</text><line x1="336" y1="95" x2="336" y2="105" stroke="#A9A59B"/><text x="336" y="122" text-anchor="middle" font-size="11" fill="#7D786E">1秒</text><line x1="450" y1="95" x2="450" y2="105" stroke="#A9A59B"/><text x="450" y="122" text-anchor="middle" font-size="11" fill="#7D786E">3秒</text><line x1="575" y1="95" x2="575" y2="105" stroke="#A9A59B"/><text x="575" y="122" text-anchor="middle" font-size="11" fill="#7D786E">10秒</text><line x1="689" y1="95" x2="689" y2="105" stroke="#A9A59B"/><text x="689" y="122" text-anchor="middle" font-size="11" fill="#7D786E">30秒</text><circle cx="128" cy="100" r="6" fill="#7FCFE3" stroke="#000"/><line x1="128" y1="106" x2="128" y2="156" stroke="#7FCFE3" stroke-opacity=".5"/><text x="128" y="170" text-anchor="middle" font-size="13" fill="#7FCFE3" font-weight="700">世界一周</text><text x="128" y="187" text-anchor="middle" font-size="11" fill="#A9A59B">約4万km</text><circle cx="434" cy="100" r="6" fill="#D9B44A" stroke="#000"/><line x1="434" y1="106" x2="434" y2="191" stroke="#D9B44A" stroke-opacity=".5"/><text x="434" y="205" text-anchor="middle" font-size="13" fill="#D9B44A" font-weight="700">月まで往復</text><text x="434" y="222" text-anchor="middle" font-size="11" fill="#A9A59B">約77万km</text><circle cx="503" cy="100" r="6" fill="#EDEAE2" stroke="#000"/><line x1="503" y1="106" x2="503" y2="156" stroke="#EDEAE2" stroke-opacity=".5"/><text x="503" y="170" text-anchor="middle" font-size="13" fill="#EDEAE2" font-weight="700">5秒</text><text x="503" y="187" text-anchor="middle" font-size="11" fill="#A9A59B">約150万km</text><circle cx="575" cy="100" r="6" fill="#EDEAE2" stroke="#000"/><line x1="575" y1="106" x2="575" y2="191" stroke="#EDEAE2" stroke-opacity=".5"/><text x="575" y="205" text-anchor="middle" font-size="13" fill="#EDEAE2" font-weight="700">10秒</text><text x="575" y="222" text-anchor="middle" font-size="11" fill="#A9A59B">約300万km</text><circle cx="689" cy="100" r="6" fill="#EDEAE2" stroke="#000"/><line x1="689" y1="106" x2="689" y2="156" stroke="#EDEAE2" stroke-opacity=".5"/><text x="689" y="170" text-anchor="middle" font-size="13" fill="#EDEAE2" font-weight="700">30秒</text><text x="689" y="187" text-anchor="middle" font-size="11" fill="#A9A59B">約900万km</text><text x="50" y="30" font-size="12" fill="#A9A59B">光の速さ（秒速約30万km）で進んだとき、遅れの時間はどれだけの道のりに当たるか（対数目盛）</text></svg><figcaption>図1　遅れの時間を道のりに直した物差し（筆者作成）</figcaption></figure>
+<p>地球を一周しても、遅れはわずか約0.13秒です。月まで行って帰ってきても約2.6秒。5秒の遅れは約150万km、10秒なら約300万km もの道のりに当たります。地球のまわりの宇宙空間を、とてつもない距離だけ旅してきたことになります。</p>
+<aside class="box key"><p class="boxtitle">ここが最初の「なるほど」</p><p>数秒の遅れを説明するには、二つの道しかありません。電波が<strong>とても遠くまで行って帰ってきた</strong>か、どこかで<strong>ゆっくり進んだり、足止めされたりした</strong>か、です。</p></aside>
+</section>
+
+<section id="s3">
+<h2><span class="no">3</span>蓄電波の二つの道 ― 遠くへ行くか、どこかで待つか</h2>
+<figure class="figsvg"><svg viewBox="0 0 780 360" role="img" aria-label="蓄電波の二つの考え方。Aは電離層の窓を抜けて宇宙へ出た電波が、地球の磁力線に沿って遠回りして戻ってくる道。Bは電離層の中で電波がゆっくり進む波に姿を変えて足止めされ、あとで電波に戻る道。" font-family="BIZ UDPGothic, sans-serif">
+<defs><radialGradient id="earth" cx=".5" cy="1" r="1"><stop offset="0" stop-color="#1F4E79"/><stop offset="1" stop-color="#0E2A44"/></radialGradient></defs>
+<path d="M0 360 Q390 220 780 360Z" fill="url(#earth)"/>
+<path d="M0 330 Q390 175 780 330" fill="none" stroke="#7FCFE3" stroke-opacity=".35" stroke-width="26"/>
+<text x="700" y="296" font-size="11" fill="#7FCFE3">電離層</text>
+<path d="M300 268 C250 60 530 60 480 268" fill="none" stroke="#7DD3A0" stroke-opacity=".5" stroke-dasharray="3 4"/>
+<path d="M230 290 C140 -40 640 -40 550 290" fill="none" stroke="#7DD3A0" stroke-opacity=".35" stroke-dasharray="3 4"/>
+<text x="600" y="70" font-size="11" fill="#7DD3A0">地球の磁力線</text>
+<circle cx="250" cy="285" r="5" fill="#E9806E"/><text x="240" y="312" font-size="12" fill="#EDEAE2" text-anchor="middle">自局</text>
+<path d="M252 282 L300 240 C255 40 525 40 480 240 L470 250" fill="none" stroke="#D9B44A" stroke-width="2.4"/>
+<path d="M470 250 C520 60 260 60 300 245 L256 284" fill="none" stroke="#D9B44A" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="390" y="40" text-anchor="middle" font-size="14" fill="#D9B44A" font-weight="700">A　遠くへ行って帰ってくる</text>
+<text x="390" y="58" text-anchor="middle" font-size="11" fill="#A9A59B">電離層の窓を抜け、磁力線に沿って遠回り？</text>
+<g transform="translate(560 225)">
+<path d="M0 30 q6 -18 12 0 q6 18 12 0 q5 -18 10 0 q4 18 8 0 q3 -18 6 0 q2 18 4 0 q2 -18 4 0 q2 18 4 0" fill="none" stroke="#E9806E" stroke-width="2"/>
+<circle cx="80" cy="28" r="12" fill="none" stroke="#E9806E" stroke-width="1.6"/><line x1="80" y1="28" x2="80" y2="20" stroke="#E9806E" stroke-width="1.6"/><line x1="80" y1="28" x2="86" y2="31" stroke="#E9806E" stroke-width="1.6"/>
+</g>
+<text x="640" y="200" text-anchor="middle" font-size="14" fill="#E9806E" font-weight="700">B　どこかで待って帰ってくる</text>
+<text x="640" y="218" text-anchor="middle" font-size="11" fill="#A9A59B">ゆっくり進む波に姿を変えて足止め？</text>
+</svg><figcaption>図2　蓄電波を説明する二つの考え方（模式図。どちらも確かめられた説ではありません）</figcaption></figure>
+<p><strong>A　遠くへ行って帰ってくる道</strong>：電離層をすり抜けて宇宙へ出た電波が、地球の磁力線に沿って遠回りしたり、遠くの何かに当たったりして戻ってくる、という考えです。地球のまわりには、磁力線に沿ってプラズマが並んだ「通り道」があり、ごく低い周波数の電波（ホイッスラー）がそこを伝わって地球の反対側まで行き来することは、よく知られています。</p>
+<p><strong>B　どこかで待って帰ってくる道</strong>：電離層の中で、電波がふつうよりずっとゆっくり進む状態になり、しばらく足止めされてから、また電波として出てくる、という考えです。「蓄電波」という名前は、こちらの姿をよく表しています。</p>
+</section>
+
+<section id="s4">
+<h2><span class="no">4</span>「プラズマに変わって戻る」では足りない理由</h2>
+<p>電波のエネルギーが電離層のプラズマに吸収され、あとで再び電波として出てくる。エネルギーの保存という点では、これはあり得ることです。けれども、それだけでは蓄電波は説明できません。</p>
+<p>吸収されたエネルギーは、プラズマの中の粒子のばらばらな動き（熱）に変わってしまいます。そこから出てくる電波は、四方八方へ散らばる<strong>雑音のような電波</strong>です。送った符号の「トン・ツー」の形は、熱になった時点で失われてしまいます。</p>
+<aside class="box key"><p class="boxtitle">二つ目の「なるほど」</p><p>蓄電波では、<strong>自分の送った符号が、そのままの形で</strong>戻ってきます。ですから、電波は熱に変わったのではなく、<strong>波としての姿を保ったまま</strong>、どこかを旅したり、足止めされたりしていたはずです。これが、謎を解くうえでの大切な条件になります。</p></aside>
+<p>プラズマの中には、ふつうの電波よりはるかにゆっくり伝わる波（プラズマ波など）があります。電波がいったんそうした波に姿を変え、あとで再び電波に戻るなら、形を保ったまま足止めされるかもしれない――そうした考えも提案されています。ただし、そのような変換が都合よく起き、符号の形まで保たれるかどうかは、確かめられていません。</p>
+</section>
+
+<section id="s5">
+<h2><span class="no">5</span>160m が特別な理由 ― 電離層の「特別な周波数」のすぐそば</h2>
+<p>なぜ筆者は、160m でこの現象に出会うのでしょうか。周波数の物差しを見ると、160m がとても面白い位置にいることが分かります。</p>
+<figure class="figsvg"><svg viewBox="0 0 780 260" role="img" aria-label="周波数の物差し。月の電離層が反射できるのは多く見積もっても数百キロヘルツまで。日本付近の電離層の高さでの電子のジャイロ周波数は約1.1〜1.3メガヘルツ。160メートルバンドは1.8〜1.9メガヘルツで、夜のF層の臨界周波数のおよそ2〜4メガヘルツのすぐ下にある。" font-family="BIZ UDPGothic, sans-serif"><line x1="50" y1="150" x2="730" y2="150" stroke="#A9A59B" stroke-width="2"/><line x1="50" y1="145" x2="50" y2="155" stroke="#A9A59B"/><text x="50" y="172" text-anchor="middle" font-size="11" fill="#7D786E">0.1MHz</text><line x1="152" y1="145" x2="152" y2="155" stroke="#A9A59B"/><text x="152" y="172" text-anchor="middle" font-size="11" fill="#7D786E">0.2MHz</text><line x1="288" y1="145" x2="288" y2="155" stroke="#A9A59B"/><text x="288" y="172" text-anchor="middle" font-size="11" fill="#7D786E">0.5MHz</text><line x1="390" y1="145" x2="390" y2="155" stroke="#A9A59B"/><text x="390" y="172" text-anchor="middle" font-size="11" fill="#7D786E">1MHz</text><line x1="492" y1="145" x2="492" y2="155" stroke="#A9A59B"/><text x="492" y="172" text-anchor="middle" font-size="11" fill="#7D786E">2MHz</text><line x1="628" y1="145" x2="628" y2="155" stroke="#A9A59B"/><text x="628" y="172" text-anchor="middle" font-size="11" fill="#7D786E">5MHz</text><line x1="730" y1="145" x2="730" y2="155" stroke="#A9A59B"/><text x="730" y="172" text-anchor="middle" font-size="11" fill="#7D786E">10MHz</text><rect x="50" y="120" width="162" height="24" fill="#9AA3B5" fill-opacity=".3" stroke="#9AA3B5"/><text x="131" y="90" text-anchor="middle" font-size="13" fill="#9AA3B5" font-weight="700">月の電離層</text><text x="131" y="106" text-anchor="middle" font-size="11" fill="#A9A59B">反射できる目安</text><rect x="404" y="120" width="25" height="24" fill="#7DD3A0" fill-opacity=".3" stroke="#7DD3A0"/><text x="416" y="70" text-anchor="middle" font-size="13" fill="#7DD3A0" font-weight="700">電子のジャイロ周波数</text><text x="416" y="86" text-anchor="middle" font-size="11" fill="#A9A59B">約1.1〜1.3MHz</text><rect x="477" y="112" width="8" height="40" fill="#D9B44A" fill-opacity=".3" stroke="#D9B44A"/><text x="481" y="200" text-anchor="middle" font-size="13" fill="#D9B44A" font-weight="700">160m</text><text x="481" y="216" text-anchor="middle" font-size="11" fill="#A9A59B">1.8〜1.9MHz</text><rect x="492" y="120" width="102" height="24" fill="#7FCFE3" fill-opacity=".3" stroke="#7FCFE3"/><text x="544" y="92" text-anchor="middle" font-size="13" fill="#7FCFE3" font-weight="700">夜の F 層の臨界周波数</text><text x="544" y="108" text-anchor="middle" font-size="11" fill="#A9A59B">およそ2〜4MHz（太陽活動の低い冬は下がる）</text><rect x="575" y="186" width="12" height="14" fill="#A9A59B" fill-opacity=".3" stroke="#A9A59B"/><text x="581" y="216" text-anchor="middle" font-size="13" fill="#A9A59B" font-weight="700">80m</text><text x="581" y="232" text-anchor="middle" font-size="11" fill="#A9A59B"></text><rect x="677" y="186" width="4" height="14" fill="#A9A59B" fill-opacity=".3" stroke="#A9A59B"/><text x="679" y="216" text-anchor="middle" font-size="13" fill="#A9A59B" font-weight="700">40m</text><text x="679" y="232" text-anchor="middle" font-size="11" fill="#A9A59B"></text><text x="50" y="30" font-size="12" fill="#A9A59B">160m は、電離層の「特別な周波数」二つのあいだに挟まれている（対数目盛、値は目安）</text></svg><figcaption>図3　160m のまわりにある、電離層の「特別な周波数」（値は目安。筆者作成）</figcaption></figure>
+<p><strong>一つ目は、夜の F 層の臨界周波数</strong>です。電離層がまっすぐ上に向けた電波を反射できる上限で、夜はおよそ2〜4MHz。160m（1.8〜1.9MHz）はそのすぐ下にあります。電波は、反射する高さの近くで、エネルギーの進む速さ（群速度）がぐっと遅くなります。イオノゾンデの記録で、臨界周波数に近づくほど見かけの高さが急に高くなるのは、このためです。160m は、夜の電離層の中で、この「ゆっくりになる領域」の近くを通りやすいバンドといえます。</p>
+<p><strong>二つ目は、電子のジャイロ周波数</strong>です。地球の磁場の中で、電子がくるくる回る周期で決まる周波数で、日本付近の電離層の高さではおよそ1.1〜1.3MHz。160m はこれにも近く、電離層の中で電波が二つの性質の違う波（O 波と X 波）に分かれ、片方が強く吸収されるなど、ほかのバンドにはない複雑なふるまいをします。</p>
+<aside class="box note"><p class="boxtitle">正直に書いておきたいこと</p><p>反射の近くで電波がゆっくりになっても、ふつうの電離層でできる遅れは1000分の数秒程度で、数秒には遠く及びません。数秒の遅れが生まれるには、ふだんとは違う、何か特別な条件が重なる必要がありそうです。160m が二つの特別な周波数のあいだにいることは、その「特別な条件」に出会いやすい理由かもしれない、というのが筆者の考えの出発点です。</p></aside>
+</section>
+
+<section id="s6">
+<h2><span class="no">6</span>電離層に「窓」が開くとき</h2>
+<p>夜の160m の電波は、ふつうは F 層に反射されて地上へ戻ります。宇宙へは出ていかない、というのが一般的な理解です。ところが、電離層がいつも同じ厚さで空をおおっているわけではありません。</p>
+<figure class="figsvg"><svg viewBox="0 0 780 300" role="img" aria-label="夜の電離層の模式図。ふだんの160メートルの電波はF層で地上へ戻るが、電離の薄い穴（窓）の部分では、電波が電離層を突き抜けて宇宙へ出ていく可能性がある。" font-family="BIZ UDPGothic, sans-serif">
+<rect width="780" height="300" fill="#060A14"/>
+<rect x="0" y="80" width="420" height="70" fill="#7FCFE3" fill-opacity=".22"/>
+<rect x="520" y="80" width="260" height="70" fill="#7FCFE3" fill-opacity=".22"/>
+<path d="M420 80 Q470 40 520 80 L520 150 Q470 190 420 150Z" fill="#060A14"/>
+<path d="M420 80 Q470 40 520 80" fill="none" stroke="#7FCFE3" stroke-opacity=".4" stroke-dasharray="3 3"/>
+<path d="M420 150 Q470 190 520 150" fill="none" stroke="#7FCFE3" stroke-opacity=".4" stroke-dasharray="3 3"/>
+<text x="20" y="72" font-size="12" fill="#7FCFE3">夜の F 層</text>
+<text x="470" y="30" text-anchor="middle" font-size="12" fill="#E9806E" font-weight="700">電離の薄い「窓」</text>
+<text x="470" y="46" text-anchor="middle" font-size="11" fill="#A9A59B">（プラズマバブルなど）</text>
+<rect x="0" y="270" width="780" height="30" fill="#2C3A2E"/>
+<circle cx="130" cy="268" r="5" fill="#E9806E"/>
+<path d="M130 266 L230 120 L330 266" fill="none" stroke="#D9B44A" stroke-width="2.2"/>
+<text x="230" y="190" text-anchor="middle" font-size="12" fill="#D9B44A">ふだん：F 層で地上へ戻る</text>
+<circle cx="370" cy="268" r="5" fill="#E9806E"/>
+<path d="M370 266 L470 110 L520 10" fill="none" stroke="#E9806E" stroke-width="2.2" stroke-dasharray="7 5"/>
+<text x="540" y="22" font-size="12" fill="#E9806E">宇宙へ？</text>
+<text x="640" y="230" text-anchor="middle" font-size="11" fill="#A9A59B">160m の電波が抜けるには、</text>
+<text x="640" y="246" text-anchor="middle" font-size="11" fill="#A9A59B">電離が 1.9MHz を反射できないほど薄いこと</text>
+</svg><figcaption>図4　電離層に「窓」が開いたときの模式図（筆者作成）</figcaption></figure>
+<ul>
+<li><strong>臨界周波数が下がる夜</strong>：太陽活動の低い時期の冬の深夜には、F 層の臨界周波数が2MHz を下回ることがあります。そのとき、160m の電波は真上に近い向きなら電離層を突き抜けられます。</li>
+<li><strong>電離の薄い「穴」ができる夜</strong>：日没後の赤道付近の電離層には、電離の薄い泡のような構造（プラズマバブル）ができることがあり、大きな磁気嵐のときには日本の上空まで広がることが観測されています。そうした穴の中では、ふだんなら反射される周波数の電波も抜けていける可能性があります。</li>
+</ul>
+<p>窓を抜けた電波が宇宙で何に出会うのかは、まだ分かりません。図2の A の道のように、磁力線に沿った通り道に捕まって戻ってくることがあるのかもしれません。</p>
+</section>
+
+<section id="s7">
+<h2><span class="no">7</span>月まで行って、帰ってくる？</h2>
+<p>宇宙へ出た電波が、月に当たって帰ってくることはあるのでしょうか。とても夢のある考えなので、数字で確かめてみました。</p>
+<div class="tbl calc"><table><thead><tr><th>確かめること</th><th>計算の結果</th></tr></thead><tbody><tr><td>月までの往復の時間</td><td>約2.56秒（いつもほぼ同じ）</td></tr><tr><td>月に当たって戻る信号の強さ</td><td>1kW、アンテナの利得なしで約 −154dBm（月面での反射率をマイクロ波での値 6.5% と仮定）</td></tr><tr><td>160m の夜の雑音</td><td>空電や人工雑音のため、一般にこれより数十dB 以上強い</td></tr><tr><td>月の電離層</td><td>とても薄く、反射できるのは多く見積もっても数百kHz まで。1.9MHz を反射するには濃さが数十分の1しかない</td></tr></tbody></table></div>
+<p>月の電離層では160m の電波を反射できず、月面で反射されたとしても、戻ってくる信号は雑音よりはるかに弱くなります。残念ながら、月は蓄電波の犯人ではなさそうです。</p>
+<aside class="box example"><p class="boxtitle">でも、月は大切な「物差し」になる</p><p>もし月の反射なら、遅れはいつも約2.56秒にそろうはずです。観測した蓄電波の遅れが、2.56秒にそろわず、日によって3秒、8秒、15秒とばらつくなら、それは月以外の何かで起きている証拠になります。月は、謎の候補を一つずつ消していくための、確かな物差しになってくれるのです。</p></aside>
+</section>
+
+<section id="s8">
+<h2><span class="no">8</span>筆者の仮説 ― 宇宙天気が「特別な夜」をつくる</h2>
+<p>ここまでをまとめると、蓄電波には、(1) 電波が波の姿を保ったまま、(2) 遠くまで旅するか、どこかで足止めされる、という特別な条件が必要です。そして、電離層の状態を大きく変えるのが、太陽から地球に届く宇宙天気です。</p>
+<div class="hypo"><p class="boxtitle">筆者（JA1BBE）の仮説</p>
+<p>蓄電波現象は、宇宙天気の変化によって、電離層に「窓」や「通り道」や「足止めの場」が生まれた<strong>特別な夜</strong>に起きやすいのではないか。そして160m は、電離層の特別な周波数のすぐそばにいるために、その影響を最も受けやすいバンドなのではないか。</p></div>
+<p>この仮説は、まだ確かめられたものではありません。筆者はいま、国分寺の電離層の観測値（foF2、h'F）、太陽風、Bz、Kp 指数などの宇宙天気のデータを集め続けています。蓄電波に出会った夜のデータを並べていけば、「この条件のときに起きやすい」という傾向が見えてくるかもしれません。</p>
+<div class="tbl "><table><thead><tr><th>記録したいこと</th><th>理由</th></tr></thead><tbody><tr><td>日時（UTC）、周波数</td><td>時間帯・季節・バンドによる傾向を見るため</td></tr><tr><td>遅れの時間（秒）と回数</td><td>月の2.56秒との比較。決まった値にそろうか、ばらつくか</td></tr><tr><td>国分寺の foF2・h'F</td><td>電離層の窓が開いていたか（160m を反射できる濃さだったか）</td></tr><tr><td>Kp、Bz、太陽風の速さ</td><td>磁気嵐の前後、地磁気の乱れとの関係</td></tr><tr><td>月齢、季節、太陽活動の時期</td><td>大気の潮汐や、太陽活動の周期との関係</td></tr></tbody></table></div>
+</section>
+
+<section id="s9">
+<h2><span class="no">9</span>一緒に観測しませんか</h2>
+<p>蓄電波は、一人の観測だけでは正体に迫れません。もし出会えたら、ぜひ記録を残してください。</p>
+<ul>
+<li><strong>録音する</strong>：SDR で受信音や画面（ウォーターフォール）を録画しておくと、遅れの時間をあとから正確に測れます。PC の時計は、インターネットの時刻と合わせておきます。</li>
+<li><strong>短い符号を送る</strong>：短い点を数回送ると、戻ってきた信号と区別しやすくなります。</li>
+</ul>
+<aside class="box warn"><p class="boxtitle">取り違えに注意</p><ul><li><strong>インターネット経由の受信機（WebSDR など）は、それ自体が数秒遅れます。</strong>自分の信号を遠くの WebSDR で聞くと、蓄電波とそっくりに聞こえることがあります。</li><li>SDR のソフトや、無線機・PC の音声処理にも遅れがあります。</li><li>近くの局の送信、レピーター、ほかの機器の動作を、戻ってきた信号と取り違えることもあります。</li><li>送信は無線局の免許の範囲で、使われていない周波数を選び、短い時間で行い、必ずコールサインを送ってください。</li></ul></aside>
+<p>観測できた方は、日時と周波数、遅れの時間を添えて、筆者までお知らせいただけると、とても嬉しいです。</p>
+</section>
+
+<section id="end">
+<h2>結び　宇宙の向こうから、自分の電波が帰ってくる</h2>
+<p>私たちが毎晩何気なく使っている電離層は、太陽の光と、太陽から吹く風と、地球の磁場がつくる、巨大な天然のプラズマ実験室です。数秒遅れて帰ってくる自分の符号は、その実験室のどこかで、電波が誰も知らない旅をしてきた証なのかもしれません。</p>
+<p>答えは、まだ空の上にあります。宇宙天気のデータと、一つひとつの不思議な夜の記録を重ねていけば、いつか「蓄電波」の正体に手が届く日が来ると信じています。</p>
+<p class="small">このページは、仕組みを分かりやすく説明するための概要と、筆者の仮説の紹介です。蓄電波（長遅延エコー）の原因は確かめられておらず、ここで紹介した考えはいずれも仮説です。数値は目安です。宇宙天気の基本は、<a href="space-weather-guide.html">「通信から見た宇宙天気」</a>で解説しています。</p>
+</section>
+
+</main>
+<footer><p>蓄電波現象への招待（2026年11月）　JA1BBE 出野義則</p><p><a href="space-weather-guide.html">通信から見た宇宙天気</a>　／　<a href="https://ja1bbe.wixsite.com/mysite">JA1BBE ホームページへ戻る</a></p></footer>
+</div>
+</body>
+</html>
