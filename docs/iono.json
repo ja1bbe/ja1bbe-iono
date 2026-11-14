@@ -3,180 +3,180 @@
  "name": "国分寺",
  "source": "出典：情報通信研究機構（NICT） 電離圏観測データ https://wdc.nict.go.jp/Ionosphere/index.html",
  "note": "観測値は自動処理の結果を含みます",
- "latest": "2026-11-13T11:45:00Z",
+ "latest": "2026-11-14T10:45:00Z",
  "recent": [
   {
-   "time": "2026-11-13T05:45:00Z",
+   "time": "2026-11-14T04:45:00Z",
+   "foF2": 8.42,
+   "hF": 260.0,
+   "hF2": null,
+   "spreadF": false
+  },
+  {
+   "time": "2026-11-14T05:00:00Z",
+   "foF2": 8.46,
+   "hF": 242.0,
+   "hF2": null,
+   "spreadF": false
+  },
+  {
+   "time": "2026-11-14T05:15:00Z",
    "foF2": 8.26,
-   "hF": 230.0,
+   "hF": 240.0,
    "hF2": null,
    "spreadF": false
   },
   {
-   "time": "2026-11-13T06:00:00Z",
-   "foF2": 8.1,
-   "hF": 238.0,
+   "time": "2026-11-14T05:30:00Z",
+   "foF2": 8.3,
+   "hF": 258.0,
    "hF2": null,
    "spreadF": false
   },
   {
-   "time": "2026-11-13T06:15:00Z",
-   "foF2": 7.9,
-   "hF": 230.0,
+   "time": "2026-11-14T05:45:00Z",
+   "foF2": 8.3,
+   "hF": 262.0,
    "hF2": null,
    "spreadF": false
   },
   {
-   "time": "2026-11-13T06:30:00Z",
-   "foF2": 7.86,
-   "hF": 236.0,
+   "time": "2026-11-14T06:00:00Z",
+   "foF2": 8.22,
+   "hF": 284.0,
    "hF2": null,
    "spreadF": false
   },
   {
-   "time": "2026-11-13T06:45:00Z",
-   "foF2": 7.9,
+   "time": "2026-11-14T06:15:00Z",
+   "foF2": 8.26,
+   "hF": 254.0,
+   "hF2": null,
+   "spreadF": false
+  },
+  {
+   "time": "2026-11-14T06:30:00Z",
+   "foF2": 7.98,
+   "hF": 252.0,
+   "hF2": null,
+   "spreadF": false
+  },
+  {
+   "time": "2026-11-14T06:45:00Z",
+   "foF2": 7.98,
    "hF": 232.0,
    "hF2": null,
    "spreadF": false
   },
   {
-   "time": "2026-11-13T07:00:00Z",
-   "foF2": 7.86,
-   "hF": 226.0,
+   "time": "2026-11-14T07:00:00Z",
+   "foF2": 7.54,
+   "hF": 254.0,
    "hF2": null,
    "spreadF": false
   },
   {
-   "time": "2026-11-13T07:15:00Z",
+   "time": "2026-11-14T07:15:00Z",
    "foF2": 7.5,
-   "hF": 218.0,
+   "hF": 240.0,
    "hF2": null,
    "spreadF": false
   },
   {
-   "time": "2026-11-13T07:30:00Z",
-   "foF2": 7.18,
-   "hF": 216.0,
-   "hF2": null,
-   "spreadF": false
-  },
-  {
-   "time": "2026-11-13T07:45:00Z",
-   "foF2": 6.98,
-   "hF": 218.0,
-   "hF2": null,
-   "spreadF": false
-  },
-  {
-   "time": "2026-11-13T08:00:00Z",
+   "time": "2026-11-14T07:30:00Z",
    "foF2": 6.86,
-   "hF": 218.0,
-   "hF2": null,
-   "spreadF": false
-  },
-  {
-   "time": "2026-11-13T08:15:00Z",
-   "foF2": 6.66,
-   "hF": 230.0,
-   "hF2": null,
-   "spreadF": false
-  },
-  {
-   "time": "2026-11-13T08:30:00Z",
-   "foF2": 6.1,
-   "hF": 228.0,
-   "hF2": null,
-   "spreadF": false
-  },
-  {
-   "time": "2026-11-13T08:45:00Z",
-   "foF2": 5.66,
-   "hF": 226.0,
-   "hF2": null,
-   "spreadF": false
-  },
-  {
-   "time": "2026-11-13T09:00:00Z",
-   "foF2": 4.98,
-   "hF": 214.0,
-   "hF2": null,
-   "spreadF": false
-  },
-  {
-   "time": "2026-11-13T09:15:00Z",
-   "foF2": 4.78,
    "hF": 224.0,
    "hF2": null,
    "spreadF": false
   },
   {
-   "time": "2026-11-13T09:30:00Z",
-   "foF2": 4.78,
-   "hF": 226.0,
+   "time": "2026-11-14T07:45:00Z",
+   "foF2": 5.62,
+   "hF": 286.0,
    "hF2": null,
    "spreadF": false
   },
   {
-   "time": "2026-11-13T09:45:00Z",
-   "foF2": 4.66,
-   "hF": 224.0,
+   "time": "2026-11-14T08:00:00Z",
+   "foF2": 5.22,
+   "hF": 248.0,
    "hF2": null,
    "spreadF": false
   },
   {
-   "time": "2026-11-13T10:00:00Z",
-   "foF2": 4.22,
-   "hF": 220.0,
-   "hF2": null,
-   "spreadF": false
-  },
-  {
-   "time": "2026-11-13T10:15:00Z",
-   "foF2": 3.74,
-   "hF": 218.0,
-   "hF2": null,
-   "spreadF": false
-  },
-  {
-   "time": "2026-11-13T10:30:00Z",
-   "foF2": 3.58,
-   "hF": 228.0,
-   "hF2": null,
-   "spreadF": false
-  },
-  {
-   "time": "2026-11-13T10:45:00Z",
-   "foF2": 3.54,
+   "time": "2026-11-14T08:15:00Z",
+   "foF2": 4.9,
    "hF": 244.0,
    "hF2": null,
    "spreadF": false
   },
   {
-   "time": "2026-11-13T11:00:00Z",
-   "foF2": 3.3,
+   "time": "2026-11-14T08:30:00Z",
+   "foF2": 4.38,
+   "hF": 224.0,
+   "hF2": null,
+   "spreadF": false
+  },
+  {
+   "time": "2026-11-14T08:45:00Z",
+   "foF2": 4.22,
+   "hF": 234.0,
+   "hF2": null,
+   "spreadF": false
+  },
+  {
+   "time": "2026-11-14T09:00:00Z",
+   "foF2": 4.34,
+   "hF": 246.0,
+   "hF2": null,
+   "spreadF": false
+  },
+  {
+   "time": "2026-11-14T09:15:00Z",
+   "foF2": 4.46,
+   "hF": 244.0,
+   "hF2": null,
+   "spreadF": false
+  },
+  {
+   "time": "2026-11-14T09:30:00Z",
+   "foF2": 4.54,
+   "hF": 284.0,
+   "hF2": null,
+   "spreadF": false
+  },
+  {
+   "time": "2026-11-14T09:45:00Z",
+   "foF2": 4.54,
+   "hF": 258.0,
+   "hF2": null,
+   "spreadF": false
+  },
+  {
+   "time": "2026-11-14T10:00:00Z",
+   "foF2": 4.5,
+   "hF": 244.0,
+   "hF2": null,
+   "spreadF": false
+  },
+  {
+   "time": "2026-11-14T10:15:00Z",
+   "foF2": 4.38,
+   "hF": 244.0,
+   "hF2": null,
+   "spreadF": false
+  },
+  {
+   "time": "2026-11-14T10:30:00Z",
+   "foF2": 4.18,
+   "hF": 242.0,
+   "hF2": null,
+   "spreadF": false
+  },
+  {
+   "time": "2026-11-14T10:45:00Z",
+   "foF2": 4.3,
    "hF": 256.0,
-   "hF2": null,
-   "spreadF": false
-  },
-  {
-   "time": "2026-11-13T11:15:00Z",
-   "foF2": 3.22,
-   "hF": 328.0,
-   "hF2": null,
-   "spreadF": false
-  },
-  {
-   "time": "2026-11-13T11:30:00Z",
-   "foF2": 3.26,
-   "hF": 274.0,
-   "hF2": null,
-   "spreadF": false
-  },
-  {
-   "time": "2026-11-13T11:45:00Z",
-   "foF2": 3.42,
-   "hF": 420.0,
    "hF2": null,
    "spreadF": false
   }
