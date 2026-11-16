@@ -545,17 +545,21 @@ footer a{color:var(--link)}
     if (!SUMMARY) ePart = SUMMARY_P ? `<p class="gfine">実績のデータを読み込んでいます…</p>` : `<p class="gfine">実績のデータを読み込めませんでした。物理の目安だけを表示しています。</p>`;
     else if (!eData) ePart = `<p class="gfine">この相手（周辺を含む）との実績は、直近${SUMMARY.days}日間の記録にまだありません。物理の目安を参考にしてください。</p>`;
     else {
-      const bands = G_BANDS.filter(b => eData[b]);
-      const rows = bands.map(b => `<tr><th class="gb">${b}</th>${[...eData[b].a].map(cellE).join('')}</tr>`).join('');
-      const best = bands.map(b => ({ b, s: [...eData[b].a].reduce((a, c) => a + gLv(c), 0), hs: [...eData[b].a].map((c, h) => gLv(c) >= 3 ? h : -1).filter(h => h >= 0) }))
+      const has = (b, k) => eData[b] && /[1-9A]/.test(eData[b][k]);
+    const bands = G_BANDS.filter(b => has(b, 'r'));   // 受信（日本の局が相手を受信）を中心に示す
+      const rows = bands.map(b => `<tr><th class="gb">${b}</th>${[...eData[b].r].map(cellE).join('')}</tr>`).join('');
+      const best = bands.map(b => ({ b, s: [...eData[b].r].reduce((a, c) => a + gLv(c), 0), hs: [...eData[b].r].map((c, h) => gLv(c) >= 3 ? h : -1).filter(h => h >= 0) }))
         .filter(x => x.hs.length);   // 低いバンドから順に
-      const txt = best.length ? best.map(x => `<b>${x.b}</b> ${gWindows(x.hs)}`).join('<br>') : 'よく開いていた時間帯（抜き取りの3割以上で報告あり）はまだありません。まれに開いた時間帯は表の薄い色のところです。';
+      const txt = best.length ? best.map(x => `<b>${x.b}</b> ${gWindows(x.hs)}`).join('<br>') : 'よく受信できていた時間帯（抜き取りの3割以上で受信の報告あり）はまだありません。まれに受信できた時間帯は表の薄い色のところです。';
       // 実績と物理の目安がそろう時間帯
       for (const x of best) { const p = phys[G_GROUP[x.b]]; const hs = x.hs.filter(h => p[h].v === 2); if (hs.length) agree.push(`<b>${x.b}</b> ${gWindows(hs)}`); }
-      const nn = SUMMARY.n.filter(Boolean);
-      ePart = `<div class="gsub">実績：${gEsc(eLabel)}（直近${SUMMARY.days}日間、日本全体）</div><div class="gtxt">${txt}</div>
+      const tx = G_BANDS.filter(b => has(b, 't')).map(b => ({ b, hs: [...eData[b].t].map((c, h) => gLv(c) >= 3 ? h : -1).filter(h => h >= 0) })).filter(x => x.hs.length);
+    const txTxt = tx.length ? `<div class="gtxt" style="margin-top:6px;opacity:.85">参考：日本の局の信号が相手側で受信されていた時間帯<br>${tx.map(x => `<b>${x.b}</b> ${gWindows(x.hs)}`).join('<br>')}</div>` : '';
+    const noRx = !bands.length ? '<p class="gfine">この相手からの信号を日本の局が受信した記録は、まだありません。</p>' : '';
+    const nn = SUMMARY.n.filter(Boolean);
+      ePart = `<div class="gsub">実績：${gEsc(eLabel)}の信号を日本で受信できた時間帯（直近${SUMMARY.days}日間、日本全体）</div>${noRx}<div class="gtxt">${txt}</div>${txTxt}
         <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">日本</th>${headJ}</tr>${rows}</table></div>
-        <p class="gfine">PSK Reporter のリアルタイム配信を、20分ごとに8分間（1時間あたり24分）受信して集めた記録です。${SUMMARY.since}以降の抜き取り${SUMMARY.samples}回（時刻ごとに${Math.min(...nn)}〜${Math.max(...nn)}回）のうち、日本の局とこの相手のあいだで報告（送受信のどちらか）があった回の割合を色で示します（濃い黄：6割以上、青緑：3割以上、薄い青緑：まれ）。件数ではなく回数で数えるので、一つの局の運用で大きく振れることは避けられますが、FT8などデジタルモードの記録で、相手の地域で運用している局の多さにも左右されます。毎日お昼ごろ（11:50）に更新。</p>`;
+        <p class="gfine">PSK Reporter のリアルタイム配信を、20分ごとに8分間（1時間あたり24分）受信して集めた記録です。${SUMMARY.since}以降の抜き取り${SUMMARY.samples}回（時刻ごとに${Math.min(...nn)}〜${Math.max(...nn)}回）のうち、日本の局がこの相手の信号を受信した報告があった回の割合を色で示します（濃い黄：6割以上、青緑：3割以上、薄い青緑：まれ）。送信の届き方は出力やアンテナ（ミドル・ハイバンドの3〜4エレ八木、ローバンドの1エレなど）で大きく変わるため、局の設備に左右されにくい受信を中心にしています。件数ではなく回数で数えるので、一つの局の運用で大きく振れることは避けられますが、FT8などデジタルモードの記録で、相手の地域で運用している局の多さにも左右されます。毎日お昼ごろ（11:50）に更新。</p>`;
     }
     // 物理の目安
     const pw = k => gWindows(phys[k].map((x, h) => x.v === 2 ? h : -1).filter(h => h >= 0));
