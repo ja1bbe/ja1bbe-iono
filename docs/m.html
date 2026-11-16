@@ -75,6 +75,16 @@ footer a{color:var(--link)}
 .az{font-size:26px;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums}
 .leg .sub{font-size:11px}
 .sum{font-size:14px;line-height:1.7;margin-top:8px}
+.tgt-form{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;align-items:center;font-size:13px;color:var(--sub)}
+.tgt-form input{width:100%;font:600 16px ui-monospace,Menlo,Consolas,monospace;text-transform:uppercase;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 9px}
+.tgt-btns{display:flex;gap:8px;margin-top:10px}
+.tgt-btns button{flex:1}
+.tgt-btns .go{background:var(--link);color:var(--paper);border-color:var(--link)}
+#dxMap{width:100%;aspect-ratio:1/1;display:block;margin:12px auto 0}
+.legend{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:11px;color:var(--sub);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:9px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.tgt-who{font-size:15px;font-weight:700;margin-top:12px}
+.tgt-who small{display:block;font-size:12px;font-weight:400;color:var(--sub)}
 </style>
 </head>
 <body>
@@ -89,13 +99,29 @@ footer a{color:var(--link)}
     <div class="mx" id="hero-mx"></div>
   </section>
 
+  <section class="card" id="target">
+    <h2>交信したい相手までの経路</h2>
+    <div class="tgt-form">
+      <label for="myGrid">自局</label><input id="myGrid" value="PM95" maxlength="15" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="PM95RN / JA1BBE">
+      <label for="dxIn">相手</label><input id="dxIn" maxlength="15" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ZF2AA / FK89">
+    </div>
+    <div class="tgt-btns"><button id="dxGo" class="go" type="button">経路を調べる</button><button id="dxClr" type="button">消す</button></div>
+    <div class="fine" id="stInfo"></div>
+    <canvas id="dxMap" role="img" aria-label="自局を中心にした正距方位図。短経路と長経路、昼夜、オーロラ帯を表示"></canvas>
+    <div class="legend"><span><i style="background:#d8b14a"></i>短経路</span><span><i style="background:repeating-linear-gradient(90deg,#7fd3c6 0 4px,transparent 4px 7px)"></i>長経路</span><span><i style="background:#05080d"></i>夜</span><span><i style="background:#3a3550"></i>薄明</span><span><i style="background:rgba(80,220,140,.8)"></i>オーロラ10〜30%</span><span><i style="background:rgba(240,90,80,.8)"></i>30%以上</span></div>
+    <div id="dxOut"></div>
+    <details><summary>地図と入力の見方</summary>
+      <div class="fine">自局と相手は、グリッドロケータ（4桁または6桁）か、コールサインで入れます。コールサインの場合はcty.datにもとづくエンティティの代表位置で計算します（登録済みの局はそのグリッド）。地図は自局を中心にした正距方位図で、中心から見た方向がそのまま大圏方位（上が真北）、中心からの距離が実際の距離です。外周は地球の裏側（約20,000km）で、長経路は外周を越えて反対側から相手に届きます。橙色の丸は、短経路の上で地磁気緯度が最も高くなる地点です。入力した内容は、この端末のブラウザが覚えています。</div>
+    </details>
+  </section>
+
   <section class="card">
     <h2>方面別の経路判定（ローテーター方位つき）</h2>
     <div id="dests"><div class="fine">計算しています…</div></div>
     <div class="fine" id="jaSun"></div>
     <div class="fine" id="aurInfo"></div>
     <details><summary>方位と判定の見方</summary>
-      <div class="fine">方位は真北を0°とした大圏方位で、東京を基準に計算しています（湯河原・横浜との差は1°未満）。ローテーターが磁北基準の場合は、日本付近の磁気偏角（西へ約7〜9°）の分だけ補正してください。「暗さ」は経路上の地点のうち太陽高度が−6°以下の割合です。「地磁気緯度」は地磁気を双極子で近似した経路上の最高値で、北米上空は地磁気の極に近いため、地理的な緯度より高くなります。オーロラ確率はNOAAのOVATIONモデルによる30〜90分先の推定値を、経路上で最も高い地点で示しています（30%以上を「通過」、10〜30%を「縁」）。オーロラ帯ではD層・E層への電子の降り込みで吸収が強まり、特に160m・80mが大きく弱まることがあります。判定は主にローバンド向けの目安です。</div>
+      <div class="fine">方位は真北を0°とした大圏方位で、上の「自局」に入れた位置（既定はPM95）を基準に計算しています。ローテーターが磁北基準の場合は、日本付近の磁気偏角（西へ約7〜9°）の分だけ補正してください。「暗さ」は経路上の地点のうち太陽高度が−6°以下の割合です。「地磁気緯度」は地磁気を双極子で近似した経路上の最高値で、北米上空は地磁気の極に近いため、地理的な緯度より高くなります。オーロラ確率はNOAAのOVATIONモデルによる30〜90分先の推定値を、経路上で最も高い地点で示しています（30%以上を「通過」、10〜30%を「縁」）。オーロラ帯ではD層・E層への電子の降り込みで吸収が強まり、特に160m・80mが大きく弱まることがあります。判定は主にローバンド向けの目安です。</div>
     </details>
   </section>
 
@@ -278,7 +304,7 @@ footer a{color:var(--link)}
   }
 
   // ---- 方面別の経路判定（PC版と同じ計算と判定の文）
-  const STATION = { name: '東京', lat: 35.68, lon: 139.69 };   // 基準地点
+  let STATION = { name: 'PM95', lat: 35.5, lon: 139.0 };      // 基準地点（「自局」の欄で変えられる。既定はPM95）
   const GMPOLE = { lat: 80.8, lon: -72.6 };                     // 地磁気北極（双極子近似）
   const RAD = Math.PI / 180, EARTH = 6371;
   const DESTS = [['欧州（ロンドン）', 51.5, -0.13], ['北米東部（ニューヨーク）', 40.7, -74.0], ['北米西部（ロサンゼルス）', 34.05, -118.24],
@@ -349,7 +375,7 @@ footer a{color:var(--link)}
     $('dests').innerHTML = DESTS.map(([n, la, lo]) => {
       const [l, c] = dnState(sunElev(la, lo, now)), g = bearingDist(STATION.lat, STATION.lon, la, lo);
       const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
-      return `<div class="dest"><div class="dest-h"><b>${esc(n)}</b><span>相手<span class="tag ${c}">${l}</span> 日本<span class="tag ${jc}">${jl}</span></span></div>` +
+      return `<div class="dest"><div class="dest-h"><b>${esc(n)}</b><span>相手<span class="tag ${c}">${l}</span> 自局<span class="tag ${jc}">${jl}</span></span></div>` +
         `<div class="adv">${advise(sp, lp)}</div><div class="legs">${leg('短経路', sp)}${leg('長経路', lp)}</div></div>`;
     }).join('');
     $('aurInfo').textContent = AUR ? `オーロラ（OVATION）：観測 ${jst(AUR.obs)}、予測対象 ${jst(AUR.fc)}（日本時間）。北半球の最大確率 ${AUR.nmax.toFixed(0)}%。`
@@ -357,7 +383,120 @@ footer a{color:var(--link)}
     const j = new Date(now + 9 * 3600e3), b0 = Date.UTC(j.getUTCFullYear(), j.getUTCMonth(), j.getUTCDate()) - 9 * 3600e3;
     let rise, set, prev = sunElev(STATION.lat, STATION.lon, b0);
     for (let m = 1; m <= 1440; m++) { const t = b0 + m * 60e3, e = sunElev(STATION.lat, STATION.lon, t); if (prev < -0.833 && e >= -0.833) rise = t; if (prev >= -0.833 && e < -0.833) set = t; prev = e; }
-    $('jaSun').textContent = `東京の今日の日の出 ${rise ? jst(rise) : '―'}・日の入り ${set ? jst(set) : '―'}（日本時間、計算値）。`;
+    $('jaSun').textContent = `自局（${STATION.name}）の今日の日の出 ${rise ? jst(rise) : '―'}・日の入り ${set ? jst(set) : '―'}（日本時間、計算値）。`;
+    targetRender();
+  }
+
+  // ---- 交信したい相手（PC版と同じ計算）
+  const KNOWN = { 'JA1BBE': 'PM95RN' };      // 位置がわかっている局（コールサインで入れてもこのグリッドで計算）
+  let CTY = null, TARGET = null, LAND = null, LASTP = null;
+  const LS = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
+  async function getJ(u) { const r = await fetch(u, { cache: 'no-store' }); if (!r.ok) throw new Error(r.status); return r.json(); }
+  function gridToLL(g) {
+    g = String(g || '').trim().toUpperCase();
+    if (!/^[A-R]{2}[0-9]{2}([A-X]{2})?$/.test(g)) return null;
+    let lon = (g.charCodeAt(0) - 65) * 20 - 180 + (+g[2]) * 2, lat = (g.charCodeAt(1) - 65) * 10 - 90 + (+g[3]);
+    if (g.length === 6) { lon += (g.charCodeAt(4) - 65) * (2 / 24) + 1 / 24; lat += (g.charCodeAt(5) - 65) * (1 / 24) + 1 / 48; } else { lon += 1; lat += 0.5; }
+    return { grid: g, lat, lon };
+  }
+  const llToGrid = (lat, lon) => { lon += 180; lat += 90; return String.fromCharCode(65 + Math.floor(lon / 20)) + String.fromCharCode(65 + Math.floor(lat / 10)) + Math.floor((lon % 20) / 2) + Math.floor(lat % 10); };
+  async function loadCty() { if (!CTY) CTY = await getJ('cty.json'); return CTY; }
+  function ent(v) { const i = Array.isArray(v) ? v[0] : v, e = CTY.ent[i]; return { name: e[0], lat: Array.isArray(v) ? v[1] : e[1], lon: Array.isArray(v) ? v[2] : e[2] }; }
+  function lookupCall(call) {
+    call = call.toUpperCase().replace(/\s+/g, '');
+    if (CTY.exact[call] != null) return ent(CTY.exact[call]);
+    if (/\/MM$/.test(call)) return null;
+    const parts = call.split('/'), IGN = /^(P|M|MM|AM|QRP|A|B|LH|\d)$/, longest = parts.reduce((a, b) => b.length > a.length ? b : a, '');
+    let key = parts[0];
+    const others = parts.filter(p => p && !IGN.test(p) && p !== longest);
+    if (parts.length > 1 && others.length) key = others[0].length <= parts[0].length ? others[0] : parts[0];
+    for (let n = key.length; n > 0; n--) { const p = key.slice(0, n); if (CTY.prefix[p] != null) return ent(CTY.prefix[p]); }
+    return null;
+  }
+  async function resolve(raw) {      // グリッド・登録済み・コールサイン → {name, lat, lon, note}
+    if (KNOWN[raw]) { const k = gridToLL(KNOWN[raw]); return { name: raw, lat: k.lat, lon: k.lon, note: `登録済みのグリッド ${k.grid}` }; }
+    const g = gridToLL(raw); if (g) return { name: g.grid, lat: g.lat, lon: g.lon, note: `グリッド ${g.grid} の中心` };
+    if (!/^[A-Z0-9\/]{3,15}$/.test(raw)) return null;
+    try { await loadCty(); } catch (e) { return { err: 'コールサインの表（cty.json）を読み込めませんでした。グリッドロケータで入れてください。' }; }
+    const r = lookupCall(raw); if (!r) return null;
+    return { name: raw, lat: r.lat, lon: r.lon, note: `${r.name} の代表位置 ${llToGrid(r.lat, r.lon)}`, ent: r.name, approx: true };
+  }
+  async function setStation() {
+    const raw = $('myGrid').value.trim().toUpperCase(), r = await resolve(raw);
+    if (r && !r.err) { STATION = { name: r.name, lat: r.lat, lon: r.lon }; $('myGrid').value = r.name; LS('m.myGrid', r.name);
+      $('stInfo').textContent = `自局：${r.name}（${r.note}）を基準に計算しています。` + (r.approx ? '正確にはグリッドロケータで入れてください。' : ''); return; }
+    const d = gridToLL('PM95'); STATION = { name: 'PM95', lat: d.lat, lon: d.lon };
+    $('stInfo').innerHTML = `<span class="t4">自局の「${esc(raw)}」を判別できなかったため、PM95 を基準にしています。</span>`;
+  }
+  async function findTarget() {
+    await setStation();
+    const raw = $('dxIn').value.trim().toUpperCase(); $('dxIn').value = raw;
+    if (!raw) { TARGET = null; $('dxOut').innerHTML = ''; paths(Date.now()); return; }
+    const r = await resolve(raw);
+    if (!r || r.err) { TARGET = null; $('dxOut').innerHTML = `<div class="fine t4">${r && r.err ? r.err : esc(raw) + ' を判別できませんでした。グリッドロケータ（4桁または6桁）で入れてください。'}</div>`; drawMap(null); return; }
+    TARGET = { short: raw, title: r.ent ? `${raw}　${r.ent}` : raw, loc: `${r.note}（緯度 ${r.lat.toFixed(1)}°・経度 ${r.lon.toFixed(1)}°）`, lat: r.lat, lon: r.lon };
+    LS('m.dx', raw); paths(Date.now());
+  }
+  function targetRender() {
+    if (!TARGET) { drawMap(null); return; }
+    const now = Date.now(), [l, c] = dnState(sunElev(TARGET.lat, TARGET.lon, now)), [jl, jc] = dnState(sunElev(STATION.lat, STATION.lon, now));
+    const g = bearingDist(STATION.lat, STATION.lon, TARGET.lat, TARGET.lon);
+    if (g.km < 50) { $('dxOut').innerHTML = '<div class="fine">自局と同じ場所です。</div>'; drawMap(null); return; }
+    const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
+    drawMap({ sp, az: g.az, km: g.km, label: TARGET.short });
+    $('dxOut').innerHTML = `<div class="tgt-who">${esc(TARGET.title)}<small>${esc(TARGET.loc)}</small></div>` +
+      `<div class="dest" style="border-top:0"><div class="dest-h"><span>相手<span class="tag ${c}">${l}</span> 自局<span class="tag ${jc}">${jl}</span></span></div>` +
+      `<div class="adv">${advise(sp, lp)}</div><div class="legs">${leg('短経路', sp)}${leg('長経路', lp)}</div></div>`;
+  }
+  async function loadLand() { try { LAND = (await getJ('land.json')).rings; } catch (e) { LAND = null; } drawMap(LASTP); }
+  const MAPDIRS = [['欧州', 51.5, -0.13], ['北米東', 40.7, -74.0], ['北米西', 34.05, -118.24], ['カリブ', 18.47, -66.11], ['西アフリカ', 14.69, -17.45], ['南米', -23.55, -46.63], ['南部アフリカ', -26.2, 28.05], ['オセアニア', -33.87, 151.21], ['東南アジア', 1.35, 103.82]];
+  function drawMap(P) {
+    LASTP = P; const cv = $('dxMap'); if (!cv) return;
+    const W = cv.clientWidth || 320, dpr = window.devicePixelRatio || 1;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(W * dpr); const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const S = { cx: W / 2, cy: W / 2, R: W / 2 - 22 }, HALF = Math.PI * EARTH, fs = W < 360 ? 9 : 10;
+    const pr = (lat, lon) => { const g = bearingDist(STATION.lat, STATION.lon, lat, lon), r = g.km / HALF * S.R; return [S.cx + r * Math.sin(g.az * RAD), S.cy - r * Math.cos(g.az * RAD)]; };
+    const pa = (az, km) => { const r = Math.min(km, HALF) / HALF * S.R; return [S.cx + r * Math.sin(az * RAD), S.cy - r * Math.cos(az * RAD)]; };
+    c.clearRect(0, 0, W, W); c.save(); c.beginPath(); c.arc(S.cx, S.cy, S.R, 0, 2 * Math.PI); c.fillStyle = '#163250'; c.fill(); c.clip();
+    if (LAND) for (const ring of LAND) {
+      const pts = ring.map(([lo, la]) => pr(la, lo)); let jump = false; c.beginPath(); let pen = false;
+      for (let i = 0; i < pts.length; i++) { const p = pts[i]; if (i && Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]) > S.R * 0.35) { pen = false; jump = true; }
+        if (!pen) { c.moveTo(p[0], p[1]); pen = true; } else c.lineTo(p[0], p[1]); }
+      if (!jump) { c.closePath(); c.fillStyle = '#355a3e'; c.fill(); }
+      c.strokeStyle = '#7a9a80'; c.lineWidth = .7; c.stroke();
+    }
+    const N = 170, off = document.createElement('canvas'); off.width = N; off.height = N; const oc = off.getContext('2d'), img = oc.createImageData(N, N), now = Date.now();
+    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+      const dx = (i + .5) / N * 2 - 1, dy = (j + .5) / N * 2 - 1, rr = Math.hypot(dx, dy); if (rr > 1) continue;
+      const az = Math.atan2(dx, -dy) / RAD, [la, lo] = dest(STATION.lat, STATION.lon, (az + 360) % 360, rr * HALF), e = sunElev(la, lo, now), k = (j * N + i) * 4;
+      let r = 0, g = 0, b = 0, a = 0;
+      if (e < -6) { r = 2; g = 5; b = 12; a = 175; } else if (e < 0) { r = 40; g = 34; b = 80; a = Math.round(70 + (-e / 6) * 70); }
+      const au = aurAt(la, lo);
+      if (au != null && au >= 10) { const st = au >= 30; r = st ? 240 : 80; g = st ? 90 : 220; b = st ? 80 : 140; a = Math.max(a, st ? 190 : Math.round(70 + au * 3)); }
+      img.data[k] = r; img.data[k + 1] = g; img.data[k + 2] = b; img.data[k + 3] = a;
+    }
+    oc.putImageData(img, 0, 0); c.drawImage(off, S.cx - S.R, S.cy - S.R, 2 * S.R, 2 * S.R);
+    c.setLineDash([3, 4]); c.strokeStyle = '#33404e'; c.lineWidth = 1;
+    for (const km of [5000, 10000, 15000]) { c.beginPath(); c.arc(S.cx, S.cy, km / HALF * S.R, 0, 2 * Math.PI); c.stroke(); }
+    c.setLineDash([]); c.font = fs + 'px sans-serif'; c.textAlign = 'left';
+    for (const [n, la, lo] of MAPDIRS) { const [x, y] = pr(la, lo); c.fillStyle = '#b8c2ce'; c.beginPath(); c.arc(x, y, 2, 0, 2 * Math.PI); c.fill(); c.fillText(n, x + 4, y + 3); }
+    if (P) {
+      const { sp, az, km, label } = P, t = pa(az, km);
+      c.strokeStyle = '#7fd3c6'; c.lineWidth = 1.8; c.setLineDash([6, 4]); c.beginPath(); c.moveTo(S.cx, S.cy); const e1 = pa((az + 180) % 360, HALF); c.lineTo(e1[0], e1[1]);
+      const e2 = pa(az, HALF); c.moveTo(e2[0], e2[1]); c.lineTo(t[0], t[1]); c.stroke(); c.setLineDash([]);
+      c.strokeStyle = '#d8b14a'; c.lineWidth = 3; c.beginPath(); c.moveTo(S.cx, S.cy); c.lineTo(t[0], t[1]); c.stroke();
+      let best = 0, bx = 0; for (let x = 0; x <= km; x += 100) { const [la, lo] = dest(STATION.lat, STATION.lon, az, x), m = Math.abs(magLat(la, lo)); if (m > best) { best = m; bx = x; } }
+      const mp = pa(az, bx); c.strokeStyle = '#f08a4b'; c.lineWidth = 2; c.beginPath(); c.arc(mp[0], mp[1], 5, 0, 2 * Math.PI); c.stroke();
+      c.fillStyle = '#f08a4b'; c.font = 'bold ' + fs + 'px sans-serif'; c.fillText(`${sp.mag >= 0 ? 'N' : 'S'}${Math.abs(sp.mag).toFixed(0)}°`, mp[0] + 7, mp[1] - 5);
+      c.fillStyle = '#e05555'; c.beginPath(); c.arc(t[0], t[1], 5, 0, 2 * Math.PI); c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 1.5; c.stroke();
+      c.fillStyle = '#fff'; c.font = 'bold ' + (fs + 1) + 'px sans-serif'; c.fillText(label, t[0] + 8, t[1] + 4);
+    }
+    c.restore();
+    c.strokeStyle = '#5a6573'; c.lineWidth = 1.2; c.beginPath(); c.arc(S.cx, S.cy, S.R, 0, 2 * Math.PI); c.stroke();
+    c.textAlign = 'center'; c.font = fs + 'px sans-serif';
+    for (let a = 0; a < 360; a += 30) { c.fillStyle = a === 0 ? '#d8b14a' : css('--sub'); c.fillText(a === 0 ? 'N' : a + '°', S.cx + (S.R + 12) * Math.sin(a * RAD), S.cy - (S.R + 12) * Math.cos(a * RAD) + 3); }
+    if (P) { c.fillStyle = '#d8b14a'; c.font = 'bold ' + (fs + 1) + 'px sans-serif'; c.fillText(P.az.toFixed(0) + '°', S.cx + (S.R + 12) * Math.sin(P.az * RAD), S.cy - (S.R + 12) * Math.cos(P.az * RAD) + 3); }
+    c.fillStyle = '#d8b14a'; c.beginPath(); c.arc(S.cx, S.cy, 4, 0, 2 * Math.PI); c.fill(); c.font = 'bold ' + (fs + 1) + 'px sans-serif'; c.textAlign = 'left'; c.fillText(STATION.name, S.cx + 6, S.cy + 13);
   }
 
   const cell = (lab, val, unit, sub) =>
@@ -487,6 +626,12 @@ footer a{color:var(--link)}
 
   let lastNow = 0;
   $('reload').addEventListener('click', load);
+  $('dxGo').addEventListener('click', findTarget);
+  $('dxClr').addEventListener('click', () => { $('dxIn').value = ''; TARGET = null; LS('m.dx', ''); $('dxOut').innerHTML = ''; drawMap(null); });
+  for (const id of ['myGrid', 'dxIn']) $(id).addEventListener('keydown', e => { if (e.key === 'Enter') { e.target.blur(); findTarget(); } });
+  $('myGrid').addEventListener('change', async () => { await setStation(); paths(Date.now()); });
+  window.addEventListener('resize', () => drawMap(LASTP));
+  (async () => { const g = LS('m.myGrid'); if (g) $('myGrid').value = g; await setStation(); const d = LS('m.dx'); if (d) $('dxIn').value = d; loadLand(); if (d) findTarget(); })();
   setInterval(() => { if (!document.hidden && AUR !== undefined) paths(Date.now()); }, 60e3);   // 昼夜と暗さは1分ごとに計算し直す
   document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
   setInterval(() => { if (!document.hidden) load(); }, 5 * 60e3);
