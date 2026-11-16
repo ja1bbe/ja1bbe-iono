@@ -14,18 +14,19 @@
   ・Kpの予報と方面別の経路判定は、PC版（space_weather_now.html）と同じ計算と文。片方を変えたら、もう片方も変える
 -->
 <style>
-.gbox{margin-top:12px;padding:10px 12px;border:1px solid #33404e;border-radius:8px;background:rgba(255,255,255,.02)}
-.gttl{font-weight:700;color:#d8b14a;margin-bottom:6px}
-.gsub{font-weight:700;margin:10px 0 4px;font-size:.92em}
-.gtxt{font-size:.9em;line-height:1.7}
-.gagree{margin:6px 0 4px;padding:6px 8px;border-left:3px solid #d8b14a;background:rgba(216,177,74,.08);font-size:.9em;line-height:1.7}
+.gbox{margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+.gttl{font-weight:700;color:#a87a12;margin-bottom:6px}
+.gsub{font-weight:700;margin:10px 0 4px;font-size:.92em;color:var(--ink)}
+.gtxt{font-size:.9em;line-height:1.7;color:var(--ink)}
+.gagree{margin:6px 0 4px;padding:6px 8px;border-left:3px solid #c9971f;background:rgba(216,177,74,.12);font-size:.9em;line-height:1.7;color:var(--ink)}
 .gtbl{overflow-x:auto;margin-top:6px}
 .gt{border-collapse:collapse;font-size:10px;min-width:100%}
-.gt th,.gt td{border:1px solid #2a3440;padding:1px 0;text-align:center;min-width:14px;height:15px;font-weight:400;color:#9aa6b4}
-.gt td{color:#fff;font-weight:700}
-.gt th.gb{padding:1px 5px;text-align:left;white-space:nowrap;color:#c9d1d9}
-.gt .gj{color:#7d8896}
-.gfine{font-size:11px;color:#8b96a3;line-height:1.6;margin:6px 0 0}
+.gt th,.gt td{border:1px solid var(--line);padding:1px 0;text-align:center;min-width:14px;height:15px;font-weight:400;color:var(--ink)}
+.gt td{color:var(--ink);font-weight:700}
+.gt th.gb{padding:1px 5px;text-align:left;white-space:nowrap;color:var(--ink);font-weight:700}
+.gt .gj{color:var(--sub)}
+.gfine{font-size:11px;color:var(--sub);line-height:1.6;margin:6px 0 0}
+@media (prefers-color-scheme: dark){.gttl{color:#d8b14a}.gagree{border-left-color:#d8b14a;background:rgba(216,177,74,.08)}}
 
 :root{
   --ink:#1b2633; --sub:#5a6573; --line:#d9dee5; --bg:#eef1f5; --paper:#ffffff; --link:#1f5fbf;
