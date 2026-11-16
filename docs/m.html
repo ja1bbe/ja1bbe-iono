@@ -108,10 +108,10 @@ footer a{color:var(--link)}
     <div class="tgt-btns"><button id="dxGo" class="go" type="button">経路を調べる</button><button id="dxClr" type="button">消す</button></div>
     <div class="fine" id="stInfo"></div>
     <canvas id="dxMap" role="img" aria-label="自局を中心にした正距方位図。短経路と長経路、昼夜、オーロラ帯を表示"></canvas>
-    <div class="legend"><span><i style="background:#d8b14a"></i>短経路</span><span><i style="background:repeating-linear-gradient(90deg,#7fd3c6 0 4px,transparent 4px 7px)"></i>長経路</span><span><i style="background:#05080d"></i>夜</span><span><i style="background:#3a3550"></i>薄明</span><span><i style="background:rgba(80,220,140,.8)"></i>オーロラ10〜30%</span><span><i style="background:rgba(240,90,80,.8)"></i>30%以上</span></div>
+    <div class="legend"><span><i style="background:#d8b14a"></i>短経路</span><span><i style="background:repeating-linear-gradient(90deg,#7fd3c6 0 4px,transparent 4px 7px)"></i>長経路</span><span><i style="background:repeating-linear-gradient(90deg,#c77dff 0 3px,transparent 3px 6px)"></i>ずらした方位</span><span><i style="background:#05080d"></i>夜</span><span><i style="background:#3a3550"></i>薄明</span><span><i style="background:rgba(80,220,140,.8)"></i>オーロラ10〜30%</span><span><i style="background:rgba(240,90,80,.8)"></i>30%以上</span></div>
     <div id="dxOut"></div>
     <details><summary>地図と入力の見方</summary>
-      <div class="fine">自局と相手は、グリッドロケータ（4桁または6桁）か、コールサインで入れます。コールサインの場合はcty.datにもとづくエンティティの代表位置で計算します（登録済みの局はそのグリッド）。地図は自局を中心にした正距方位図で、中心から見た方向がそのまま大圏方位（上が真北）、中心からの距離が実際の距離です。外周は地球の裏側（約20,000km）で、長経路は外周を越えて反対側から相手に届きます。橙色の丸は、短経路の上で地磁気緯度が最も高くなる地点です。入力した内容は、この端末のブラウザが覚えています。</div>
+      <div class="fine">自局と相手は、グリッドロケータ（4桁または6桁）か、コールサインで入れます。コールサインの場合はcty.datにもとづくエンティティの代表位置で計算します（登録済みの局はそのグリッド）。地図は自局を中心にした正距方位図で、中心から見た方向がそのまま大圏方位（上が真北）、中心からの距離が実際の距離です。外周は地球の裏側（約20,000km）で、長経路は外周を越えて反対側から相手に届きます。橙色の丸は、短経路の上で地磁気緯度が最も高くなる地点です。短経路がオーロラ帯にかかるときは、左右60°までずらした方位の中から、オーロラ帯を避けて相手に届く経路（途中で曲がる経路として近似）を探し、紫の点線で示します。電離層の傾きや散乱で電波が曲がる経路の目安で、届くことを保証するものではありません。入力した内容は、この端末のブラウザが覚えています。</div>
     </details>
   </section>
 
@@ -357,6 +357,39 @@ footer a{color:var(--link)}
     }
     return { az, km, dark: dark / n, mag: mm, aur: au };
   }
+  // ---- オーロラ帯を避ける「ずらした方位」（試す価値の目安）
+  // 電離層の傾きや散乱で曲がって届く経路を、途中で折れ曲がる2本の大圏で近似する。大圏から左右60°まで5°刻みで、
+  // オーロラ帯（OVATION 10%以上。取得できないときは地磁気緯度60°以上）を通らず、遠回りが大圏の1.3倍以内の経路を探す。
+  function seg(la1, lo1, la2, lo2, step) {
+    const g = bearingDist(la1, lo1, la2, lo2), out = [];
+    for (let x = 0; x < g.km; x += step) out.push(dest(la1, lo1, g.az, x));
+    out.push([la2, lo2]); return { pts: out, km: g.km };
+  }
+  function polyRisk(pts) {
+    let mm = 0, au = null;
+    for (const [la, lo] of pts) { const m = Math.abs(magLat(la, lo)); if (m > mm) mm = m; const a = aurAt(la, lo); if (a != null) au = Math.max(au ?? 0, a); }
+    return { mm, au };
+  }
+  function skewSearch(g, tgt, t) {
+    const cand = [];
+    for (let d = 5; d <= 60; d += 5) for (const s of [1, -1]) {
+      const az = (g.az + s * d + 360) % 360; let best = null;
+      for (let D = 1500; D <= g.km + 1000; D += 500) {
+        const [pla, plo] = dest(STATION.lat, STATION.lon, az, D);
+        const a = seg(STATION.lat, STATION.lon, pla, plo, 250), b = seg(pla, plo, tgt.lat, tgt.lon, 250), tot = a.km + b.km;
+        if (tot > g.km * 1.3) continue;
+        const pts = a.pts.concat(b.pts), r = polyRisk(pts);
+        if (AUR ? (r.au ?? 0) >= 10 : r.mm >= 60) continue;
+        if (!best || tot < best.km) best = { az, off: s * d, km: tot, mag: r.mm, aur: r.au, turn: [pla, plo], pts };
+      }
+      if (best) cand.push(best);
+    }
+    if (!cand.length) return null;
+    cand.sort((x, y) => Math.abs(x.off) - Math.abs(y.off) || x.km - y.km);
+    const c = cand[0]; let dark = 0;
+    for (const [la, lo] of c.pts) if (sunElev(la, lo, t) < -6) dark++;
+    c.dark = dark / c.pts.length; c.extra = c.km - g.km; return c;
+  }
   const aurTxt = a => a == null ? '―' : a >= 30 ? `<span class="t5">${a.toFixed(0)}%（通過）</span>` : a >= 10 ? `<span class="t4">${a.toFixed(0)}%（縁）</span>` : `<span class="t1">${a.toFixed(0)}%（影響小）</span>`;
   function advise(sp, lp) {
     const bad = a => a != null && a >= 30, edge = a => a != null && a >= 10 && a < 30;
@@ -443,10 +476,17 @@ footer a{color:var(--link)}
     const g = bearingDist(STATION.lat, STATION.lon, TARGET.lat, TARGET.lon);
     if (g.km < 50) { $('dxOut').innerHTML = '<div class="fine">自局と同じ場所です。</div>'; drawMap(null); return; }
     const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
-    drawMap({ sp, az: g.az, km: g.km, label: TARGET.short });
+    const needSkew = AUR ? (sp.aur ?? 0) >= 10 : Math.abs(sp.mag) >= 62, sk = needSkew ? skewSearch(g, TARGET, now) : null;
+    const where = AUR ? `オーロラ帯${(sp.aur ?? 0) >= 30 ? 'を通過' : 'の縁を通過'}` : `地磁気緯度 ${Math.abs(sp.mag).toFixed(0)}° の高緯度を通過`;
+    const skTxt = !needSkew ? '' : sk
+      ? `<div class="adv"><b class="t3">ずらした方位 ${sk.az.toFixed(0)}° を試す価値あり</b>：短経路 ${g.az.toFixed(0)}° は${where}。` +
+        `${sk.az.toFixed(0)}° 方向に送り出し、${llToGrid(sk.turn[0], sk.turn[1])} 付近で曲がって届く経路なら、オーロラ帯を避けられます（遠回り 約${(Math.round(sk.extra / 100) * 100).toLocaleString()} km）。` +
+        `電離層の傾きや散乱で曲がる経路なので、届くかどうかは条件しだいです。</div>`
+      : `<div class="adv"><b>ずらした方位</b>：短経路は${where}。左右60°までずらしても、オーロラ帯を避けて届く経路は見つかりませんでした。</div>`;
+    drawMap({ sp, az: g.az, km: g.km, label: TARGET.short, sk });
     $('dxOut').innerHTML = `<div class="tgt-who">${esc(TARGET.title)}<small>${esc(TARGET.loc)}</small></div>` +
       `<div class="dest" style="border-top:0"><div class="dest-h"><span>相手<span class="tag ${c}">${l}</span> 自局<span class="tag ${jc}">${jl}</span></span></div>` +
-      `<div class="adv">${advise(sp, lp)}</div><div class="legs">${leg('短経路', sp)}${leg('長経路', lp)}</div></div>`;
+      `<div class="adv">${advise(sp, lp)}</div>${skTxt}<div class="legs">${leg('短経路', sp)}${leg('長経路', lp)}${sk ? leg('ずらした方位', sk) : ''}</div></div>`;
   }
   async function loadLand() { try { LAND = (await getJ('land.json')).rings; } catch (e) { LAND = null; } drawMap(LASTP); }
   const MAPDIRS = [['欧州', 51.5, -0.13], ['北米東', 40.7, -74.0], ['北米西', 34.05, -118.24], ['カリブ', 18.47, -66.11], ['西アフリカ', 14.69, -17.45], ['南米', -23.55, -46.63], ['南部アフリカ', -26.2, 28.05], ['オセアニア', -33.87, 151.21], ['東南アジア', 1.35, 103.82]];
@@ -481,7 +521,12 @@ footer a{color:var(--link)}
     c.setLineDash([]); c.font = fs + 'px sans-serif'; c.textAlign = 'left';
     for (const [n, la, lo] of MAPDIRS) { const [x, y] = pr(la, lo); c.fillStyle = '#b8c2ce'; c.beginPath(); c.arc(x, y, 2, 0, 2 * Math.PI); c.fill(); c.fillText(n, x + 4, y + 3); }
     if (P) {
-      const { sp, az, km, label } = P, t = pa(az, km);
+      const { sp, az, km, label, sk } = P, t = pa(az, km);
+      if (sk) {
+        c.strokeStyle = '#c77dff'; c.lineWidth = 2.2; c.setLineDash([3, 3]); c.beginPath();
+        sk.pts.forEach(([la, lo], i) => { const q = pr(la, lo); if (i) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); }); c.stroke(); c.setLineDash([]);
+        const q = pr(sk.turn[0], sk.turn[1]); c.fillStyle = '#c77dff'; c.beginPath(); c.arc(q[0], q[1], 3.5, 0, 2 * Math.PI); c.fill();
+      }
       c.strokeStyle = '#7fd3c6'; c.lineWidth = 1.8; c.setLineDash([6, 4]); c.beginPath(); c.moveTo(S.cx, S.cy); const e1 = pa((az + 180) % 360, HALF); c.lineTo(e1[0], e1[1]);
       const e2 = pa(az, HALF); c.moveTo(e2[0], e2[1]); c.lineTo(t[0], t[1]); c.stroke(); c.setLineDash([]);
       c.strokeStyle = '#d8b14a'; c.lineWidth = 3; c.beginPath(); c.moveTo(S.cx, S.cy); c.lineTo(t[0], t[1]); c.stroke();
@@ -495,7 +540,8 @@ footer a{color:var(--link)}
     c.strokeStyle = '#5a6573'; c.lineWidth = 1.2; c.beginPath(); c.arc(S.cx, S.cy, S.R, 0, 2 * Math.PI); c.stroke();
     c.textAlign = 'center'; c.font = fs + 'px sans-serif';
     for (let a = 0; a < 360; a += 30) { c.fillStyle = a === 0 ? '#d8b14a' : css('--sub'); c.fillText(a === 0 ? 'N' : a + '°', S.cx + (S.R + 12) * Math.sin(a * RAD), S.cy - (S.R + 12) * Math.cos(a * RAD) + 3); }
-    if (P) { c.fillStyle = '#d8b14a'; c.font = 'bold ' + (fs + 1) + 'px sans-serif'; c.fillText(P.az.toFixed(0) + '°', S.cx + (S.R + 12) * Math.sin(P.az * RAD), S.cy - (S.R + 12) * Math.cos(P.az * RAD) + 3); }
+    if (P) { c.fillStyle = '#d8b14a'; c.font = 'bold ' + (fs + 1) + 'px sans-serif'; c.fillText(P.az.toFixed(0) + '°', S.cx + (S.R + 12) * Math.sin(P.az * RAD), S.cy - (S.R + 12) * Math.cos(P.az * RAD) + 3);
+      if (P.sk) { c.fillStyle = '#c77dff'; c.fillText(P.sk.az.toFixed(0) + '°', S.cx + (S.R + 12) * Math.sin(P.sk.az * RAD), S.cy - (S.R + 12) * Math.cos(P.sk.az * RAD) + 3); } }
     c.fillStyle = '#d8b14a'; c.beginPath(); c.arc(S.cx, S.cy, 4, 0, 2 * Math.PI); c.fill(); c.font = 'bold ' + (fs + 1) + 'px sans-serif'; c.textAlign = 'left'; c.fillText(STATION.name, S.cx + 6, S.cy + 13);
   }
 
