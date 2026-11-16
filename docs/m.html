@@ -14,6 +14,19 @@
   ・Kpの予報と方面別の経路判定は、PC版（space_weather_now.html）と同じ計算と文。片方を変えたら、もう片方も変える
 -->
 <style>
+.gbox{margin-top:12px;padding:10px 12px;border:1px solid #33404e;border-radius:8px;background:rgba(255,255,255,.02)}
+.gttl{font-weight:700;color:#d8b14a;margin-bottom:6px}
+.gsub{font-weight:700;margin:10px 0 4px;font-size:.92em}
+.gtxt{font-size:.9em;line-height:1.7}
+.gagree{margin:6px 0 4px;padding:6px 8px;border-left:3px solid #d8b14a;background:rgba(216,177,74,.08);font-size:.9em;line-height:1.7}
+.gtbl{overflow-x:auto;margin-top:6px}
+.gt{border-collapse:collapse;font-size:10px;min-width:100%}
+.gt th,.gt td{border:1px solid #2a3440;padding:1px 0;text-align:center;min-width:14px;height:15px;font-weight:400;color:#9aa6b4}
+.gt td{color:#fff;font-weight:700}
+.gt th.gb{padding:1px 5px;text-align:left;white-space:nowrap;color:#c9d1d9}
+.gt .gj{color:#7d8896}
+.gfine{font-size:11px;color:#8b96a3;line-height:1.6;margin:6px 0 0}
+
 :root{
   --ink:#1b2633; --sub:#5a6573; --line:#d9dee5; --bg:#eef1f5; --paper:#ffffff; --link:#1f5fbf;
   --quiet:#2f7a57; --quiet-t:#e9f4ee; --recov:#a66a12; --recov-t:#fbf2e2; --pre:#6a3fb5; --pre-t:#f1ecfa;
@@ -467,8 +480,101 @@ footer a{color:var(--link)}
     if (!raw) { TARGET = null; $('dxOut').innerHTML = ''; paths(Date.now()); return; }
     const r = await resolve(raw);
     if (!r || r.err) { TARGET = null; $('dxOut').innerHTML = `<div class="fine t4">${r && r.err ? r.err : esc(raw) + ' を判別できませんでした。グリッドロケータ（4桁または6桁）で入れてください。'}</div>`; drawMap(null); return; }
-    TARGET = { short: raw, title: r.ent ? `${raw}　${r.ent}` : raw, loc: `${r.note}（緯度 ${r.lat.toFixed(1)}°・経度 ${r.lon.toFixed(1)}°）`, lat: r.lat, lon: r.lon };
+    TARGET = { short: raw, title: r.ent ? `${raw}　${r.ent}` : raw, loc: `${r.note}（緯度 ${r.lat.toFixed(1)}°・経度 ${r.lon.toFixed(1)}°）`, lat: r.lat, lon: r.lon, ent: r.ent || null };
     LS('m.dx', raw); paths(Date.now());
+  }
+  // ---- 交信しやすいバンドと時間帯の目安（実績と物理の目安を並べる）
+  var SUMMARY_URL = 'https://raw.githubusercontent.com/ja1bbe/propagation/main/data/summary/paths.json';
+  var SUMMARY = null, SUMMARY_P = null, SFI_NOW = null;
+  function loadSummary() {
+    if (!SUMMARY_P) SUMMARY_P = fetch(SUMMARY_URL, { cache: 'no-store' })
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(d => (SUMMARY = d)).catch(e => { SUMMARY_P = null; throw e; });
+    return SUMMARY_P;
+  }
+  var G_BANDS = ['160m', '80m', '60m', '40m', '30m', '20m', '17m', '15m', '12m', '10m', '6m'];
+  var G_GROUP = { '160m': 'low', '80m': 'low', '60m': 'low', '40m': 'low', '30m': 'mid', '20m': 'mid', '17m': 'mid', '15m': 'high', '12m': 'high', '10m': 'high', '6m': 'high' };
+  var gLv = c => c === 'A' ? 10 : (parseInt(c, 10) || 0);
+  var gEsc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  // 時刻の集合 → 「21〜24 UTC（日本時間 6〜9時）」。日付をまたぐ続きもまとめる
+  function gWindows(hs) {
+    if (!hs.length) return '';
+    const on = Array(24).fill(false); hs.forEach(h => on[h] = true);
+    if (on.every(Boolean)) return '終日';
+    if (hs.length >= 18) return `ほぼ終日（${gWindows([...Array(24).keys()].filter(h => !on[h]))}を除く）`;
+    let s = 0; while (on[s]) s = (s + 1) % 24;       // 「開いていない」時刻から数え始める
+    const out = []; let i = 0;
+    while (i < 24) {
+      const h = (s + i) % 24;
+      if (!on[h]) { i++; continue; }
+      let n = 0; while (n < 24 && on[(h + n) % 24]) n++;
+      const e = (h + n) % 24;
+      out.push(`${h}〜${e} UTC（日本時間 ${(h + 9) % 24}〜${(e + 9) % 24}時）`); i += n;
+    }
+    return out.join('、');
+  }
+  // 物理の目安：これから24時間の各時刻（毎時30分）の経路の昼夜・いまのオーロラ帯・SFI から
+  function gPhysics(g, now) {
+    const sfi = SFI_NOW ?? 100, res = { low: [], mid: [], high: [] };
+    for (let h = 0; h < 24; h++) {
+      const d = new Date(now); d.setUTCHours(h, 30, 0, 0);
+      let t = d.getTime(); if (t < now - 30 * 60e3) t += 864e5;
+      const sp = pathStats(g.az, g.km, t), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, t);
+      const spBad = sp.aur != null && sp.aur >= 30;
+      let lo = 0, lpUse = false;
+      if (sp.dark >= 0.8 && !spBad) lo = 2;
+      else if (lp.dark >= 0.8 && (spBad || sp.dark < 0.5)) { lo = 2; lpUse = true; }
+      else if (sp.dark >= 0.6) lo = 1;
+      res.low.push({ v: lo, lp: lpUse });
+      res.mid.push({ v: sp.dark > 0.2 && sp.dark < 0.8 ? 2 : 1 });
+      res.high.push({ v: sp.dark <= 0.2 && sfi >= 120 ? 2 : sp.dark <= 0.4 && sfi >= 90 ? 1 : 0 });
+    }
+    return res;
+  }
+  function guideHTML(g, now) {
+    const head = Array.from({ length: 24 }, (_, h) => `<th>${h}</th>`).join(''), headJ = Array.from({ length: 24 }, (_, h) => `<th class="gj">${(h + 9) % 24}</th>`).join('');
+    const cellE = c => { const v = gLv(c), bg = v >= 6 ? 'rgba(216,177,74,.85)' : v >= 3 ? 'rgba(127,211,198,.55)' : v >= 1 ? 'rgba(127,211,198,.22)' : 'transparent'; return `<td style="background:${bg}"></td>`; };
+    const cellP = (x, mark) => { const bg = x.v === 2 ? 'rgba(199,125,255,.55)' : x.v === 1 ? 'rgba(199,125,255,.2)' : 'transparent'; return `<td style="background:${bg}">${x.v === 2 && x.lp ? 'L' : ''}</td>`; };
+    // 実績
+    let ePart = '', eKey = null, eLabel = '', eData = null, agree = [];
+    if (SUMMARY) {
+      if (TARGET.ent && CTY) { const i = CTY.ent.findIndex(e => e[0] === TARGET.ent); if (i >= 0 && SUMMARY.e[String(i)]) { eData = SUMMARY.e[String(i)]; eLabel = TARGET.ent; } }
+      if (!eData) { const f = llToGrid(TARGET.lat, TARGET.lon).slice(0, 2); if (SUMMARY.f[f]) { eData = SUMMARY.f[f]; eLabel = `周辺（グリッドの大区画 ${f}）`; } }
+    }
+    const phys = gPhysics(g, now);
+    if (!SUMMARY) ePart = SUMMARY_P ? `<p class="gfine">実績のデータを読み込んでいます…</p>` : `<p class="gfine">実績のデータを読み込めませんでした。物理の目安だけを表示しています。</p>`;
+    else if (!eData) ePart = `<p class="gfine">この相手（周辺を含む）との実績は、直近${SUMMARY.days}日間の記録にまだありません。物理の目安を参考にしてください。</p>`;
+    else {
+      const bands = G_BANDS.filter(b => eData[b]);
+      const rows = bands.map(b => `<tr><th class="gb">${b}</th>${[...eData[b].a].map(cellE).join('')}</tr>`).join('');
+      const best = bands.map(b => ({ b, s: [...eData[b].a].reduce((a, c) => a + gLv(c), 0), hs: [...eData[b].a].map((c, h) => gLv(c) >= 3 ? h : -1).filter(h => h >= 0) }))
+        .filter(x => x.hs.length);   // 低いバンドから順に
+      const txt = best.length ? best.map(x => `<b>${x.b}</b> ${gWindows(x.hs)}`).join('<br>') : 'よく開いていた時間帯（抜き取りの3割以上で報告あり）はまだありません。まれに開いた時間帯は表の薄い色のところです。';
+      // 実績と物理の目安がそろう時間帯
+      for (const x of best) { const p = phys[G_GROUP[x.b]]; const hs = x.hs.filter(h => p[h].v === 2); if (hs.length) agree.push(`<b>${x.b}</b> ${gWindows(hs)}`); }
+      const nn = SUMMARY.n.filter(Boolean);
+      ePart = `<div class="gsub">実績：${gEsc(eLabel)}（直近${SUMMARY.days}日間、日本全体）</div><div class="gtxt">${txt}</div>
+        <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">日本</th>${headJ}</tr>${rows}</table></div>
+        <p class="gfine">PSK Reporter のリアルタイム配信を、20分ごとに8分間（1時間あたり24分）受信して集めた記録です。${SUMMARY.since}以降の抜き取り${SUMMARY.samples}回（時刻ごとに${Math.min(...nn)}〜${Math.max(...nn)}回）のうち、日本の局とこの相手のあいだで報告（送受信のどちらか）があった回の割合を色で示します（濃い黄：6割以上、青緑：3割以上、薄い青緑：まれ）。件数ではなく回数で数えるので、一つの局の運用で大きく振れることは避けられますが、FT8などデジタルモードの記録で、相手の地域で運用している局の多さにも左右されます。毎日お昼ごろ（11:50）に更新。</p>`;
+    }
+    // 物理の目安
+    const pw = k => gWindows(phys[k].map((x, h) => x.v === 2 ? h : -1).filter(h => h >= 0));
+    const lpH = phys.low.some(x => x.v === 2 && x.lp);
+    const pTxt = [`<b>ローバンド（160・80・40m）</b> ${pw('low') || '経路全体が夜になる時刻はありません'}${lpH ? '（L は長経路が夜側）' : ''}`,
+      `<b>ミドル（30・20・17m）</b> ${pw('mid') || '―'}（昼夜の境目を含む時刻）`,
+      `<b>ハイバンド（15・12・10m）</b> ${pw('high') || (SFI_NOW != null && SFI_NOW < 120 ? 'SFI がやや低く、経路の大半が昼になる時刻はありますが目安としては控えめです' : '経路の大半が昼になる時刻はありません')}`].join('<br>');
+    const pRows = [['ロー', 'low'], ['ミドル', 'mid'], ['ハイ', 'high']].map(([n, k]) => `<tr><th class="gb">${n}</th>${phys[k].map(x => cellP(x)).join('')}</tr>`).join('');
+    const pPart = `<div class="gsub">物理の目安：これから24時間（経路の昼夜・いまのオーロラ帯・SFI ${SFI_NOW != null ? SFI_NOW.toFixed(0) : '―'}）</div><div class="gtxt">${pTxt}</div>
+      <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">日本</th>${headJ}</tr>${pRows}</table></div>
+      <p class="gfine">ローバンドは短経路（夜側にならなければ長経路）の大半が夜（太陽高度−6°以下）になる時刻、ミドルは経路に昼と夜が混ざる時刻、ハイバンドは経路の大半が昼で SFI が十分な時刻を、濃い紫で示します。電離層の詳しい計算（MUFの予測）ではなく、昼夜にもとづく目安です。オーロラ帯はいまの状態で計算しているので、数時間先は変わることがあります。</p>`;
+    const aPart = agree.length ? `<div class="gagree"><b>実績と物理の目安がそろう時間帯</b><br>${agree.join('<br>')}</div>` : '';
+    return `<div class="gbox"><div class="gttl">交信しやすいバンドと時間帯の目安</div>${aPart}${ePart}${pPart}</div>`;
+  }
+  function renderGuide(g, now) {
+    const box = document.getElementById('dxOut'); if (!box || !TARGET) return;
+    box.insertAdjacentHTML('beforeend', '<div id="dxGuide"></div>');
+    const fill = () => { const el = document.getElementById('dxGuide'); if (el) el.innerHTML = guideHTML(g, now); };
+    if (SUMMARY) fill(); else { fill(); loadSummary().then(fill).catch(fill); }
   }
   function targetRender() {
     if (!TARGET) { drawMap(null); return; }
@@ -487,6 +593,7 @@ footer a{color:var(--link)}
     $('dxOut').innerHTML = `<div class="tgt-who">${esc(TARGET.title)}<small>${esc(TARGET.loc)}</small></div>` +
       `<div class="dest" style="border-top:0"><div class="dest-h"><span>相手<span class="tag ${c}">${l}</span> 自局<span class="tag ${jc}">${jl}</span></span></div>` +
       `<div class="adv">${advise(sp, lp)}</div>${skTxt}<div class="legs">${leg('短経路', sp)}${leg('長経路', lp)}${sk ? leg('ずらした方位', sk) : ''}</div></div>`;
+    renderGuide(g, now);
   }
   async function loadLand() { try { LAND = (await getJ('land.json')).rings; } catch (e) { LAND = null; } drawMap(LASTP); }
   const MAPDIRS = [['欧州', 51.5, -0.13], ['北米東', 40.7, -74.0], ['北米西', 34.05, -118.24], ['カリブ', 18.47, -66.11], ['西アフリカ', 14.69, -17.45], ['南米', -23.55, -46.63], ['南部アフリカ', -26.2, 28.05], ['オセアニア', -33.87, 151.21], ['東南アジア', 1.35, 103.82]];
@@ -581,7 +688,7 @@ footer a{color:var(--link)}
     // スケールとSFI
     if (d.scales && d.scales['0']) for (const k of ['R', 'S', 'G']) { const x = (d.scales['0'][k] || {}).Scale; if (x !== null && x !== undefined && x !== '') v[k] = parseInt(x); }
     const sf = rows(d.sfi).filter(r => r.flux !== undefined && r.flux !== null);
-    if (sf.length) v.sfi = parseFloat(sf[sf.length - 1].flux);
+    if (sf.length) { v.sfi = parseFloat(sf[sf.length - 1].flux); SFI_NOW = v.sfi; }
 
     // 傾向（sw_alert.py の trend と同じ。「乱れを経験中か」はメール配信の状態を使う）
     let disturbed = d.state && typeof d.state.disturbed === 'boolean' ? d.state.disturbed : (mx >= 4 && v.kp > 2);
