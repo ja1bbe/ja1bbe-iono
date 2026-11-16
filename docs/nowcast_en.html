@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Space Weather &amp; HF Propagation Nowcast | JA1BBE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0b0c; --panel:#161618; --panel2:#1e1e21; --line:#2c2c31;
+  --ink:#ececec; --muted:#9a9aa3; --gold:#d8b14a;
+  --c1:#2bb3a3; --c2:#7fd3c6; --c3:#e9c46a; --c4:#f08a4b; --c5:#e05555;
+  --sans:"Inter","Segoe UI","Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  --mono:"JetBrains Mono","Consolas","Menlo",monospace;
+  color-scheme:dark;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+/* hide the scrollbar when embedded in a frame (scrolling still works) */
+html,body{scrollbar-width:none;-ms-overflow-style:none}
+html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}
+
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;font-size:15px}
+.wrap{max-width:1040px;margin:0 auto;padding:24px 18px 40px}
+header h1{color:var(--gold);font-size:clamp(1.4rem,3.4vw,2rem);margin:0;font-weight:700;letter-spacing:-.01em}
+header p{color:var(--muted);margin:4px 0 0;font-size:.9rem}
+.bar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:14px 0 20px;font-size:.85rem;color:var(--muted)}
+.bar button,.qth button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 12px;font:inherit;cursor:pointer}
+.bar button:hover,.qth button:hover{border-color:var(--gold)}
+.qth{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:18px;font-size:.88rem}
+.qth label{color:var(--muted)}
+.qth input{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 10px;font:inherit;font-family:var(--mono);width:8.5em;text-transform:uppercase}
+.qth input:focus{outline:none;border-color:var(--gold)}
+.qth .err{color:var(--c4)}
+.msg{background:#2a2216;border:1px solid #5a4620;color:#f1d79a;border-radius:8px;padding:10px 14px;margin-bottom:18px;display:none}
+
+.verdict{border-radius:10px;padding:20px 22px;margin-bottom:18px;border:1px solid var(--line);background:var(--panel)}
+.verdict .lab{font-size:.8rem;color:var(--muted)}
+.verdict .state{font-size:1.6rem;font-weight:700;margin:2px 0 6px}
+.verdict .why{margin:0;color:#d6d6d6}
+.bands{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px}
+@media (max-width:760px){.bands{grid-template-columns:1fr}}
+.verdict.sm .state{font-size:1.3rem}
+.paths-tbl td{vertical-align:top;font-size:.86rem;line-height:1.55}
+.th2{font-size:.75rem;color:#77777f;font-weight:400}
+.fn{color:var(--muted);font-size:.84rem;margin:6px 0 0}
+.az{font-family:var(--mono);font-size:1.05rem;color:var(--gold);font-weight:500}
+.adv{font-weight:700}
+.paths{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+@media (max-width:620px){.paths{grid-template-columns:1fr}}
+.paths div{background:var(--panel2);border-radius:8px;padding:10px 14px;font-size:.9rem}
+.paths b{display:block;font-size:.85rem;color:var(--muted);font-weight:500}
+
+h2{color:var(--gold);font-size:1.1rem;margin:26px 0 10px;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:820px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;border-top:4px solid var(--line)}
+.card .n{font-size:.82rem;color:var(--muted)}
+.card .v{font-family:var(--mono);font-size:1.7rem;font-weight:500;line-height:1.3}
+.card .v small{font-size:.8rem;color:var(--muted);margin-left:4px;font-family:var(--sans)}
+.card .s{font-size:.82rem}
+.stale .card{opacity:.55}
+.stale .card .v::after{content:'(old)';font-size:.75rem;color:var(--muted);margin-left:6px;font-family:var(--sans)}
+.l1{border-top-color:var(--c1)}.l2{border-top-color:var(--c2)}.l3{border-top-color:var(--c3)}.l4{border-top-color:var(--c4)}.l5{border-top-color:var(--c5)}
+.t1{color:var(--c1)}.t2{color:var(--c2)}.t3{color:var(--c3)}.t4{color:var(--c4)}.t5{color:var(--c5)}
+
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:760px){.charts{grid-template-columns:1fr}}
+.chart{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.chart .n{font-size:.85rem;color:var(--muted);margin-bottom:6px}
+.chart svg{width:100%;height:auto;display:block}
+
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.9rem}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--muted);font-weight:500}
+.tag{display:inline-block;border-radius:4px;padding:0 8px;font-size:.82rem}
+.day{background:#3a3420;color:#f1d79a}.gl{background:#3b2a3f;color:#e6b6f0}.night{background:#18283f;color:#9cc3f5}
+
+.note{color:var(--muted);font-size:.84rem;margin-top:24px;border-top:1px solid var(--line);padding-top:14px}
+.note a,.fn a{color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Space Weather &amp; HF Propagation Nowcast</h1>
+  <p>Live NOAA space-weather data, read directly by your browser, with band and path guidance for DXers. By JA1BBE.</p>
+</header>
+
+<div class="qth">
+  <label for="grid">Your grid locator</label>
+  <input id="grid" type="text" maxlength="6" placeholder="PM95" autocomplete="off" spellcheck="false">
+  <button id="setGrid" type="button">Set</button>
+  <span id="qthInfo"></span>
+</div>
+
+<div class="bar">
+  <span id="upd">Loading data…</span>
+  <button id="reload" type="button">Refresh now</button>
+  <button id="demo" type="button">Show sample data</button>
+  <span>Updates every 5 minutes. Times are shown in UTC and in your local time.</span>
+</div>
+<div class="msg" id="msg"></div>
+
+<section class="verdict" id="verdict">
+  <div class="lab">Low bands (160 / 80 / 40 m)</div>
+  <div class="state" id="state">–</div>
+  <p class="why" id="why"></p>
+  <div class="paths">
+    <div><b>Paths crossing high latitudes (polar / auroral routes)</b><span id="pHigh">–</span></div>
+    <div><b>Low-latitude paths</b><span id="pLow">–</span></div>
+  </div>
+</section>
+
+<div class="bands">
+  <div class="verdict sm" id="vMid"><div class="lab">Mid bands (30 / 20 / 17 m)</div><div class="state" id="sMid">–</div><p class="why" id="wMid"></p></div>
+  <div class="verdict sm" id="vHigh"><div class="lab">High bands (15 / 12 / 10 m)</div><div class="state" id="sHigh">–</div><p class="why" id="wHigh"></p></div>
+</div>
+
+<h2>Current values</h2>
+<div class="grid" id="cards"></div>
+
+<h2>Trends</h2>
+<div class="charts">
+  <div class="chart"><div class="n">Kp index (last 48 hours, 3-hour values)</div><div id="kpChart"></div></div>
+  <div class="chart"><div class="n">Bz (last 6 hours, nT): up = northward, down = southward</div><div id="bzChart"></div></div>
+</div>
+<div class="chart" style="margin-top:10px"><div class="n">Kp forecast (NOAA, 3 days, 3-hour blocks): solid bars = observed or estimated, outlined bars = forecast</div><div id="kpfChart"></div>
+<p class="fn" id="kpfSum" style="color:#d6d6d6"></p>
+<p class="fn">The forecast is issued by the NOAA Space Weather Prediction Center and is based mainly on expected CME (coronal mass ejection) arrivals and on high-speed solar wind streams that tend to recur every 27 days. CME arrival times are typically uncertain by around half a day, so treat the forecast times with some latitude. A forecast of Kp 5 or more (G1 or above) means that paths crossing high latitudes may weaken. <a href="https://www.swpc.noaa.gov/products/3-day-forecast" target="_blank" rel="noopener">NOAA 3-day forecast</a></p></div>
+
+<h2>Path guidance by region (with beam headings)</h2>
+<div class="tbl"><table class="paths-tbl">
+  <thead><tr><th>Region</th><th>Day / night<br><span class="th2">DX end / your QTH</span></th><th>Short path<br><span class="th2">Heading, distance, max geomagnetic latitude<br>aurora probability, darkness along the path</span></th><th>Long path<br><span class="th2">Same items</span></th><th>Guidance (mainly low bands)</th></tr></thead>
+  <tbody id="dn"></tbody>
+</table></div>
+<p class="fn" id="qthSun"></p>
+<p class="fn" id="aurInfo"></p>
+<p class="fn">Headings are great-circle bearings from your grid square, measured from true north. If your rotator is calibrated to magnetic north, correct for your local magnetic declination. “Darkness” is the share of points along the path where the sun is at least 6° below the horizon. “Max geomagnetic latitude” uses a simple dipole approximation of the Earth’s field; over North America it is higher than the geographic latitude because the geomagnetic pole lies on that side. The aurora probability is the highest value along the path from NOAA’s OVATION model, which looks 30 to 90 minutes ahead (30% or more is shown as “crossing”, 10–30% as “edge”). Inside the auroral zone, precipitating electrons increase D- and E-layer absorption, and 160 m and 80 m signals can drop sharply.</p>
+
+<h2>Ionosphere over Kokubunji (Tokyo, Japan)</h2>
+<div class="grid" id="ionoCards"></div>
+<div class="charts" id="ionoCharts" style="margin-top:10px"><div class="chart"><div class="n">Virtual height (last 6 hours of data, km)</div><div id="hfChart"></div></div>
+<div class="chart"><div class="n">foF2 (last 6 hours of data, MHz)</div><div id="foChart"></div></div></div>
+<p class="fn" id="ionoMsg"></p>
+<p class="fn">These are ionosonde readings taken directly above Kokubunji, Tokyo, so they are most relevant to East Asia; they do not describe conditions along your own path. Virtual height is the reflection height derived from the echo delay; h’F is used when h’F2 cannot be scaled, for example at night. A sudden rise can precede a disturbance. The MUF estimate is roughly three times foF2 (an approximate value for a single hop of about 3,000 km). The values are automatically scaled and may contain errors. The public data file is updated with a delay, so the readings can be many hours old.</p>
+<p class="fn">Source: National Institute of Information and Communications Technology (NICT), ionospheric observation data. 出典：情報通信研究機構（NICT） 電離圏観測データ <a href="https://wdc.nict.go.jp/Ionosphere/index.html" target="_blank" rel="noopener">https://wdc.nict.go.jp/Ionosphere/index.html</a></p>
+
+<div class="note">
+  <p>The guidance on this page summarizes general tendencies from day and night at your location, the solar flux and the geomagnetic conditions. It is not a guarantee of actual conditions. Low-band propagation also depends strongly on darkness, D-layer absorption and the noise at both ends of the path. In the end, what you actually hear and work is what counts.</p>
+  <p>Space-weather data: NOAA Space Weather Prediction Center. Ionospheric data: NICT (Japan). Page by JA1BBE, Yoshinori Ideno. Free for personal, non-commercial use.</p>
+</div>
+</div>
+
+<script>
+(function(){
+const SWPC='https://services.swpc.noaa.gov';
+const URLS={kp:SWPC+'/products/noaa-planetary-k-index.json',mag:SWPC+'/json/rtsw/rtsw_mag_1m.json',
+  wind:SWPC+'/json/rtsw/rtsw_wind_1m.json',scales:SWPC+'/products/noaa-scales.json',sfi:SWPC+'/products/10cm-flux-30-day.json',
+  aur:SWPC+'/json/ovation_aurora_latest.json',kpf:SWPC+'/products/noaa-planetary-k-index-forecast.json'};
+const IONO_URL='https://ja1bbe.github.io/ja1bbe-iono/iono.json';
+const $=id=>document.getElementById(id);
+const ts=s=>{s=String(s).replace(' ','T');if(!/Z$|[+-]\d\d:?\d\d$/.test(s))s+='Z';return Date.parse(s)};
+const p2=n=>String(n).padStart(2,'0');
+const fmtUTC=t=>{const d=new Date(t);return p2(d.getUTCHours())+':'+p2(d.getUTCMinutes())+' UTC'};
+const fmtUTCd=t=>{const d=new Date(t);return d.getUTCDate()+' '+MON[d.getUTCMonth()]+' '+p2(d.getUTCHours())+':'+p2(d.getUTCMinutes())+' UTC'};
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fmtLoc=t=>{const d=new Date(t);return p2(d.getHours())+':'+p2(d.getMinutes())};
+const fmtLocD=t=>{const d=new Date(t);return d.getDate()+' '+MON[d.getMonth()]+' '+p2(d.getHours())+':'+p2(d.getMinutes())};
+async function getJSON(u){const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error(r.status);return r.json()}
+
+/* ---- your location (Maidenhead grid) */
+const DEFAULT_GRID='PM95';
+function gridToLL(g){g=String(g||'').trim().toUpperCase();if(!/^[A-R]{2}[0-9]{2}([A-X]{2})?$/.test(g))return null;
+  let lon=(g.charCodeAt(0)-65)*20-180+(+g[2])*2,lat=(g.charCodeAt(1)-65)*10-90+(+g[3]);
+  if(g.length===6){lon+=(g.charCodeAt(4)-65)/12+1/24;lat+=(g.charCodeAt(5)-65)/24+1/48}else{lon+=1;lat+=0.5}
+  return{grid:g,lat,lon}}
+let STATION=gridToLL(DEFAULT_GRID);
+try{const s=localStorage.getItem('nowcast_grid');const q=new URLSearchParams(location.search).get('grid');const ll=gridToLL(q)||gridToLL(s);if(ll)STATION=ll}catch(e){}
+function showQth(){$('grid').value=STATION.grid;$('qthInfo').textContent=`Using ${STATION.grid} (${Math.abs(STATION.lat).toFixed(1)}°${STATION.lat>=0?'N':'S'}, ${Math.abs(STATION.lon).toFixed(1)}°${STATION.lon>=0?'E':'W'}). Saved in this browser only.`;$('qthInfo').className=''}
+function setGrid(){const ll=gridToLL($('grid').value);if(!ll){$('qthInfo').textContent='Please enter a 4- or 6-character grid locator, for example PM95 or IO91wm.';$('qthInfo').className='err';return}
+  STATION=ll;try{localStorage.setItem('nowcast_grid',ll.grid)}catch(e){}showQth();dayNight();bandGuide(lastV)}
+
+/* ---- parsing */
+function parseKp(d){
+  if(d&&d.length&&Array.isArray(d[0])){const h=d[0];d=d.slice(1).map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]])))}
+  return d.map(r=>[ts(r.time_tag),parseFloat(r.Kp??r.kp)]).filter(x=>!isNaN(x[1])).sort((a,b)=>a[0]-b[0]).slice(-16);
+}
+function parseRtsw(d,cols){
+  const act=d.filter(r=>r&&r.active===true);if(!act.length)return null;
+  const out={series:{}};const latest=Math.max(...act.map(r=>ts(r.time_tag)));out.at=latest;
+  for(const [n,c] of Object.entries(cols)){
+    const v=act.filter(r=>r[c]!=null).map(r=>[ts(r.time_tag),parseFloat(r[c])]).sort((a,b)=>a[0]-b[0]);
+    if(!v.length)continue;out[n]=v[v.length-1][1];
+    const w=v.filter(x=>x[0]>latest-1800e3).map(x=>x[1]);if(w.length)out[n+'30']=w.reduce((a,b)=>a+b,0)/w.length;
+    out.series[n]=v.filter(x=>x[0]>latest-6*3600e3);
+  }
+  return out;
+}
+function parseScales(d){const c=d['0']||{},o={};for(const k of['S','G','R']){const s=(c[k]||{}).Scale;if(s!==undefined&&s!==null&&s!=='')o[k]=parseInt(s)}
+  const p=((d['1']||{}).S||{}).Prob;if(p!==undefined&&p!==null&&p!=='')o.Sprob=parseInt(p);return o}
+function parseSfi(d){const r=d.filter(x=>x&&x.flux!=null);return r.length?parseFloat(r[r.length-1].flux):null}
+
+/* ---- levels */
+const lvKp=k=>k<2?1:k<4?2:k<5?3:k<7?4:5;
+const lvBz=b=>b>=2?1:b>-2?2:b>-5?3:b>-10?4:5;
+const lvV=v=>v<400?1:v<500?2:v<600?3:v<800?4:5;
+const lvN=n=>n<5?1:n<10?2:n<20?3:n<30?4:5;
+const lvS=s=>s===0?1:s===1?2:s===2?3:s===3?4:5;
+const lvSfi=s=>s<100?2:s<150?3:s<200?4:5;
+function card(name,val,unit,lv,sub){return `<div class="card l${lv}"><div class="n">${name}</div><div class="v">${val}<small>${unit}</small></div><div class="s t${lv}">${sub}</div></div>`}
+
+function render(v){
+  const c=[];
+  if(v.kp!=null)c.push(card('Kp index',v.kp.toFixed(1),'',lvKp(v.kp),['Quiet','Unsettled','Active','Storm','Severe storm'][lvKp(v.kp)-1]));
+  if(v.bz!=null){const b=v.bz30??v.bz;c.push(card('Bz (30-min avg)',(b>=0?'+':'')+b.toFixed(1),'nT',lvBz(b),b<0?'Southward':'Northward'))}
+  if(v.bt!=null)c.push(card('Bt',v.bt.toFixed(1),'nT',v.bt<10?2:v.bt<20?3:4,'Field strength'));
+  if(v.speed!=null){const s=v.speed30??v.speed;c.push(card('Solar wind speed',s.toFixed(0),'km/s',lvV(s),'30-min average'))}
+  if(v.density!=null){const n=v.density30??v.density;c.push(card('Solar wind density',n.toFixed(1),'p/cm³',lvN(n),'30-min average'))}
+  if(v.S!=null)c.push(card('S-scale','S'+v.S,'',lvS(v.S),v.Sprob!=null?`Proton event chance today ${v.Sprob}%`:'Solar radiation storm'));
+  if(v.G!=null)c.push(card('G-scale','G'+v.G,'',v.G===0?1:v.G+1>5?5:v.G+1,'Geomagnetic storm'));
+  if(v.aurMax!=null)c.push(card('Aurora (N. hemisphere)',v.aurMax.toFixed(0),'%',v.aurMax<10?1:v.aurMax<30?2:v.aurMax<50?3:v.aurMax<70?4:5,'OVATION maximum'));
+  if(v.sfi!=null)c.push(card('SFI',v.sfi.toFixed(0),'sfu',lvSfi(v.sfi),'Higher favors high bands'));
+  $('cards').innerHTML=c.join('')||'<p style="color:var(--muted)">No values available.</p>';
+  verdict(v);bandGuide(v);kpChart(v.kpHist||[]);kpfChart(v.kpf||[]);bzChart((v.series&&v.series.bz)||[]);
+  const at=v.rtswAt||(v.kpHist&&v.kpHist.length&&v.kpHist[v.kpHist.length-1][0]);
+  $('upd').textContent=v.demo?'Showing sample data':(at?`Latest data ${fmtUTC(at)} (your time ${fmtLoc(at)})`:'');
+}
+
+/* ---- low-band verdict */
+function verdict(v){
+  const kp=v.kp,bz=v.bz30??v.bz,sp=v.speed30??v.speed,S=v.S??0,hist=v.kpHist||[];
+  let st,col,why=[];
+  const recentStorm=hist.some(([t,k])=>t>Date.now()-86400e3&&k>=4);
+  if(kp==null){st='No assessment';col='var(--muted)';why.push('The Kp index is not available.')}
+  else if(bz!=null&&sp!=null&&bz<-10&&sp>=500){st='Signs of deterioration';col='var(--c5)';why.push('A strongly southward Bz and fast solar wind are persisting. The geomagnetic field may become disturbed within about an hour.')}
+  else if(kp>=5){st='Geomagnetic storm';col='var(--c5)';why.push(`Kp ${kp.toFixed(1)}. The geomagnetic field is strongly disturbed.`)}
+  else if(kp>=4){st='Somewhat disturbed';col='var(--c4)';why.push(`Kp ${kp.toFixed(1)}. Geomagnetic activity is elevated.`)}
+  else if(recentStorm&&kp<=2&&bz!=null&&bz>0&&sp!=null&&sp<450){st='Recovering';col='var(--c1)';why.push('The disturbance of the past 24 hours has subsided, Bz is northward and the solar wind has calmed.')}
+  else if(kp<=2&&(bz==null||bz>-2)){st='Quiet';col='var(--c1)';why.push('The geomagnetic field is quiet, which favors the low bands.')}
+  else{st='Mostly stable';col='var(--c3)';why.push(`Kp ${kp.toFixed(1)}. No major disturbance, but ${bz!=null&&bz<-2?'Bz is southward.':'conditions are slightly unsettled.'}`)}
+  if(S>=1)why.push(`A solar proton event (S${S}) is in progress.`);
+  $('state').textContent=st;$('state').style.color=col;$('verdict').style.borderColor=col;$('why').textContent=why.join(' ');
+  let hi,lo;
+  if(S>=2)hi='Polar cap absorption is strong; signals can be badly weakened, sometimes for days.';
+  else if(S===1)hi='Polar absorption may weaken signals.';
+  else if(kp!=null&&kp>=4)hi='Fading and attenuation are likely to increase.';
+  else if(bz!=null&&sp!=null&&bz<-10&&sp>=500)hi='Conditions may deteriorate soon.';
+  else if(kp!=null&&kp<=2)hi='Geomagnetically favorable.';
+  else hi='No major problems expected.';
+  lo=(S>=1||(kp!=null&&kp>=5))?'Usually less affected than high-latitude paths.':'Relatively little geomagnetic influence.';
+  $('pHigh').dataset.base=hi;$('pHigh').textContent=hi;$('pLow').textContent=lo;
+}
+
+/* ---- mid / high bands (from daylight at your location, SFI, Kp, S) */
+let lastV=null,IONO=null,AUR=null;
+function bandGuide(v){
+  if(!v)return;lastV=v;
+  const ej=sunElev(STATION.lat,STATION.lon,Date.now()),sfi=v.sfi,kp=v.kp,S=v.S??0;
+  const tod=ej>6?'day':ej>-6?'twi':'night';
+  const disturb=[];if(kp!=null&&kp>=4)disturb.push('With the geomagnetic field disturbed, high-latitude paths are likely to be weaker.');
+  if(S>=1)disturb.push(`The proton event (S${S}) may weaken paths across the polar regions.`);
+  let ms,mc,mw;
+  if(tod==='day'){ms='Daytime at your QTH';mc='var(--c1)';mw='20 m and 17 m are the main bands in daytime. The higher the solar flux, the farther 17 m tends to reach. 30 m mostly favors shorter and regional paths.'}
+  else if(tod==='twi'){ms='Sunrise or sunset at your QTH';mc='var(--c1)';mw='Around sunrise and sunset, 30 m and 20 m often open over long distances. Watch for paths along the grey line.'}
+  else{ms='Night at your QTH';mc='var(--c3)';mw='At night 30 m is the main band. On days of high solar activity 20 m can stay open late into the night. 17 m tends to close.'}
+  let hs,hc,hw;
+  if(tod==='night'){hs='Usually closed';hc='var(--c4)';hw='It is night at your QTH. With the F2-layer electron density falling, the high bands are usually closed.'}
+  else if(sfi==null){hs='No assessment';hc='var(--muted)';hw='The solar flux is not available.'}
+  else{
+    if(sfi>=150){hs='Likely open';hc='var(--c1)';hw=`SFI ${sfi.toFixed(0)}. Solar activity is high, and 15 m to 10 m are all likely to open in daytime.`}
+    else if(sfi>=100){hs='Mainly 15 m';hc='var(--c3)';hw=`SFI ${sfi.toFixed(0)}. 15 m opens readily in daytime; 12 m and 10 m open on some days.`}
+    else{hs='Difficult';hc='var(--c4)';hw=`SFI ${sfi.toFixed(0)}. 15 m may open in daytime, but 12 m and 10 m are difficult (sporadic E can open them in summer).`}
+    if(tod==='twi')hw='Sunrise or sunset at your QTH. '+hw;
+  }
+  $('sMid').textContent=ms;$('sMid').style.color=mc;$('vMid').style.borderColor=mc;$('wMid').textContent=mw+(disturb.length?' '+disturb.join(' '):'');
+  $('sHigh').textContent=hs;$('sHigh').style.color=hc;$('vHigh').style.borderColor=hc;$('wHigh').textContent=hw+(disturb.length&&tod!=='night'?' '+disturb.join(' '):'');
+}
+
+/* ---- Kp 3-day forecast */
+function parseKpf(d){
+  if(d&&d.length&&Array.isArray(d[0])){const h=d[0];d=d.slice(1).map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]])))}
+  return d.map(r=>({t:ts(r.time_tag),kp:parseFloat(r.kp??r.Kp),kind:String(r.observed??r.kind??'').toLowerCase()}))
+    .filter(r=>!isNaN(r.kp)&&!isNaN(r.t)).sort((a,b)=>a.t-b.t);
+}
+const gOf=k=>k>=9?'G5':k>=8?'G4':k>=7?'G3':k>=6?'G2':k>=5?'G1':'G0';
+const COLS=['#2bb3a3','#7fd3c6','#e9c46a','#f08a4b','#e05555'];
+function kpfChart(rows){
+  const now=Date.now();rows=rows.filter(r=>r.t>=now-24*3600e3);
+  if(!rows.length){$('kpfChart').innerHTML='<p style="color:var(--muted);margin:0">Forecast data not available.</p>';$('kpfSum').textContent='';return}
+  const W=960,H=140,n=rows.length,bw=W/n;
+  let s=`<svg viewBox="0 0 ${W} ${H+34}">`;
+  for(const y of[4,5,7]){const yy=H-H*y/9;s+=`<line x1="0" x2="${W}" y1="${yy}" y2="${yy}" stroke="#2c2c31"/><text x="${W-2}" y="${yy-2}" fill="#77777f" font-size="10" text-anchor="end">${y}${y===5?' (G1)':''}</text>`}
+  rows.forEach((r,i)=>{const bh=Math.max(2,H*r.kp/9),c=COLS[lvKp(r.kp)-1],pred=r.kind.startsWith('pred');
+    s+=pred?`<rect x="${i*bw+2}" y="${H-bh}" width="${bw-4}" height="${bh}" rx="2" fill="${c}" fill-opacity=".18" stroke="${c}" stroke-dasharray="3 2"><title>${fmtUTCd(r.t)} forecast Kp ${r.kp.toFixed(2)}</title></rect>`
+           :`<rect x="${i*bw+2}" y="${H-bh}" width="${bw-4}" height="${bh}" rx="2" fill="${c}"><title>${fmtUTCd(r.t)} Kp ${r.kp.toFixed(2)}</title></rect>`;
+    const d=new Date(r.t);if(d.getUTCHours()===0)s+=`<line x1="${i*bw}" x2="${i*bw}" y1="0" y2="${H}" stroke="#3a3a40"/><text x="${i*bw+3}" y="${H+14}" fill="#9a9aa3" font-size="11">${d.getUTCDate()} ${MON[d.getUTCMonth()]}</text>`;
+  });
+  const ni=rows.findIndex(r=>r.t+3*3600e3>now);if(ni>=0){const x=ni*bw+bw*((now-rows[ni].t)/(3*3600e3));s+=`<line x1="${x}" x2="${x}" y1="0" y2="${H}" stroke="#d8b14a" stroke-width="1.5"/><text x="${x+3}" y="${H+28}" fill="#d8b14a" font-size="11">Now</text>`}
+  $('kpfChart').innerHTML=s+'</svg><div style="font-size:.75rem;color:var(--muted)">Day boundaries at 00 UTC</div>';
+  const next=rows.filter(r=>r.t+3*3600e3>now&&r.t<now+24*3600e3);
+  if(!next.length){$('kpfSum').textContent='';return}
+  const mx=next.reduce((a,b)=>b.kp>a.kp?b:a),g=gOf(mx.kp);
+  let txt=`Highest forecast in the next 24 hours: Kp ${mx.kp.toFixed(2)} (${g}) in the block starting ${fmtUTCd(mx.t)} (your time ${fmtLocD(mx.t)}).`;
+  if(mx.kp>=5)txt+=' A geomagnetic storm is forecast. Paths crossing high latitudes may weaken around this time.';
+  else if(mx.kp>=4)txt+=' Activity is forecast to rise somewhat. Keep an eye on high-latitude paths.';
+  else txt+=' No major disturbance is forecast.';
+  const all=rows.filter(r=>r.t>now&&r.kind.startsWith('pred')),gmx=all.length?all.reduce((a,b)=>b.kp>a.kp?b:a):null;
+  if(gmx&&gmx.kp>=5&&gmx!==mx)txt+=` Later in the 3-day period, Kp ${gmx.kp.toFixed(2)} (${gOf(gmx.kp)}) is forecast from ${fmtUTCd(gmx.t)}.`;
+  $('kpfSum').textContent=txt;
+}
+
+/* ---- charts */
+function kpChart(h){
+  if(!h.length){$('kpChart').innerHTML='<p style="color:var(--muted);margin:0">No data</p>';return}
+  const W=480,H=150,bw=W/16;let s=`<svg viewBox="0 0 ${W} ${H+18}">`;
+  for(const y of[4,5,7]){const yy=H-H*y/9;s+=`<line x1="0" x2="${W}" y1="${yy}" y2="${yy}" stroke="#2c2c31"/><text x="${W-2}" y="${yy-2}" fill="#77777f" font-size="10" text-anchor="end">${y}</text>`}
+  h.forEach(([t,k],i)=>{const bh=Math.max(2,H*k/9);s+=`<rect x="${i*bw+2}" y="${H-bh}" width="${bw-4}" height="${bh}" rx="2" fill="${COLS[lvKp(k)-1]}"><title>${fmtUTCd(t)} Kp ${k}</title></rect>`;
+    if(i%4===0)s+=`<text x="${i*bw+2}" y="${H+14}" fill="#77777f" font-size="10">${fmtUTC(t).replace(' UTC','')}</text>`});
+  $('kpChart').innerHTML=s+'</svg><div style="font-size:.75rem;color:var(--muted)">Horizontal axis in UTC</div>';
+}
+function bzChart(sr){
+  if(sr.length<2){$('bzChart').innerHTML='<p style="color:var(--muted);margin:0">No data</p>';return}
+  const W=480,H=150,t0=sr[0][0],t1=sr[sr.length-1][0];
+  const m=Math.max(10,...sr.map(x=>Math.abs(x[1])));const X=t=>(t-t0)/(t1-t0||1)*W,Y=b=>H/2-b/m*(H/2-6);
+  let s=`<svg viewBox="0 0 ${W} ${H+18}"><rect x="0" y="${H/2}" width="${W}" height="${H/2}" fill="rgba(224,85,85,.07)"/><line x1="0" x2="${W}" y1="${H/2}" y2="${H/2}" stroke="#55555c"/>`;
+  s+=`<text x="4" y="12" fill="#77777f" font-size="10">+${m.toFixed(0)}</text><text x="4" y="${H-2}" fill="#77777f" font-size="10">-${m.toFixed(0)}</text>`;
+  s+=`<polyline fill="none" stroke="#d8b14a" stroke-width="1.6" points="${sr.map(x=>X(x[0]).toFixed(1)+','+Y(x[1]).toFixed(1)).join(' ')}"/>`;
+  s+=`<text x="0" y="${H+14}" fill="#77777f" font-size="10">${fmtUTC(t0)}</text><text x="${W}" y="${H+14}" fill="#77777f" font-size="10" text-anchor="end">${fmtUTC(t1)}</text>`;
+  $('bzChart').innerHTML=s+'</svg><div style="font-size:.75rem;color:var(--muted)">Red band = southward</div>';
+}
+
+/* ---- sun */
+function sunElev(lat,lon,t){
+  const d=new Date(t),doy=(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())-Date.UTC(d.getUTCFullYear(),0,0))/864e5;
+  const hr=d.getUTCHours()+d.getUTCMinutes()/60,g=2*Math.PI/365*(doy-1+(hr-12)/24);
+  const eq=229.18*(0.000075+0.001868*Math.cos(g)-0.032077*Math.sin(g)-0.014615*Math.cos(2*g)-0.040849*Math.sin(2*g));
+  const dec=0.006918-0.399912*Math.cos(g)+0.070257*Math.sin(g)-0.006758*Math.cos(2*g)+0.000907*Math.sin(2*g)-0.002697*Math.cos(3*g)+0.00148*Math.sin(3*g);
+  const ha=((hr*60+eq+4*lon)/4-180)*Math.PI/180,la=lat*Math.PI/180;
+  return Math.asin(Math.sin(la)*Math.sin(dec)+Math.cos(la)*Math.cos(dec)*Math.cos(ha))*180/Math.PI;
+}
+
+/* ---- ionosphere (Kokubunji) */
+function ionoRender(){
+  const m=$('ionoMsg');
+  $('ionoCharts').style.display=IONO?'':'none';
+  if(!IONO){$('ionoCards').innerHTML='';m.textContent='Ionospheric data could not be loaded.';return}
+  const L=IONO.latest,age=(Date.now()-L.t)/60e3,h=L.hF2??L.hF,hn=L.hF2!=null?"h’F2":"h’F";
+  const kind=L.hF2!=null?'hF2':'hF',prev=IONO.recent.filter(r=>r.t<=L.t-3600e3&&r[kind]!=null).pop(),dh=prev&&h!=null?h-prev[kind]:null;
+  const c=[];
+  if(L.foF2!=null){c.push(card('foF2',L.foF2.toFixed(1),'MHz',2,'F2 critical frequency'));const muf=L.foF2*3;c.push(card('MUF estimate',muf.toFixed(0),'MHz',muf>=28?1:muf>=21?2:muf>=14?3:4,'foF2 × 3 (about 3,000 km)'))}
+  if(h!=null)c.push(card('Virtual height ('+hn+')',h.toFixed(0),'km',dh!=null&&dh>=50?4:2,dh==null?'No 1-hour comparison':(dh>=0?'+':'')+dh.toFixed(0)+' km in 1 hour'+(dh>=50?' (sharp rise)':'')));
+  c.push(card('Spread-F',L.spreadF?'Yes':'No','',L.spreadF?4:1,L.spreadF?'Irregular reflection; more fading':'No sign'));
+  $('ionoCards').innerHTML=c.join('');$('ionoCards').classList.toggle('stale',age>90);
+  line('hfChart',IONO.recent.filter(r=>(r.hF2??r.hF)!=null).map(r=>[r.t,r.hF2??r.hF]),'#d8b14a');
+  line('foChart',IONO.recent.filter(r=>r.foF2!=null).map(r=>[r.t,r.foF2]),'#7fd3c6');
+  m.textContent=`Observed ${fmtUTCd(L.t)} (your time ${fmtLocD(L.t)})`+(age>90?`. This reading is about ${age<180?Math.round(age)+' minutes':Math.round(age/60)+' hours'} old because the public file is updated with a delay. It may not reflect current conditions.`:'.');
+}
+function line(id,sr,col){
+  if(sr.length<2){$(id).innerHTML='<p style="color:var(--muted);margin:0">No data</p>';return}
+  const W=480,H=130,t0=sr[0][0],t1=sr[sr.length-1][0],vs=sr.map(x=>x[1]),lo=Math.min(...vs),hi=Math.max(...vs),pad=(hi-lo)*0.15||1;
+  const X=t=>(t-t0)/(t1-t0||1)*W,Y=v=>H-(v-lo+pad)/(hi-lo+2*pad)*H;
+  $(id).innerHTML=`<svg viewBox="0 0 ${W} ${H+18}"><polyline fill="none" stroke="${col}" stroke-width="1.8" points="${sr.map(x=>X(x[0]).toFixed(1)+','+Y(x[1]).toFixed(1)).join(' ')}"/>`+
+   `<text x="2" y="12" fill="#77777f" font-size="10">${hi.toFixed(hi<30?1:0)}</text><text x="2" y="${H-2}" fill="#77777f" font-size="10">${lo.toFixed(lo<30?1:0)}</text>`+
+   `<text x="0" y="${H+14}" fill="#77777f" font-size="10">${fmtUTCd(t0)}</text><text x="${W}" y="${H+14}" fill="#77777f" font-size="10" text-anchor="end">${fmtUTCd(t1)}</text></svg>`;
+}
+function parseIono(d){const rec=(d.recent||[]).map(r=>({t:ts(r.time),foF2:r.foF2??null,hF:r.hF??null,hF2:r.hF2??null,spreadF:!!r.spreadF})).sort((a,b)=>a.t-b.t);
+  return{recent:rec,latest:rec[rec.length-1]}}
+async function loadIono(){try{const d=await getJSON(IONO_URL);IONO=parseIono(d);if(!IONO.latest)IONO=null}catch(e){IONO=null}ionoRender()}
+
+/* ---- paths */
+const GMPOLE={lat:80.8,lon:-72.6};
+const R=Math.PI/180,EARTH=6371;
+function aurAt(lat,lon){if(!AUR)return null;let L=Math.round(lon);L=((L%360)+360)%360;const la=Math.max(-90,Math.min(90,Math.round(lat)));return AUR.grid[L*181+la+90]}
+function magLat(lat,lon){return Math.asin(Math.sin(lat*R)*Math.sin(GMPOLE.lat*R)+Math.cos(lat*R)*Math.cos(GMPOLE.lat*R)*Math.cos((lon-GMPOLE.lon)*R))/R}
+function bearingDist(la1,lo1,la2,lo2){const q1=la1*R,q2=la2*R,dl=(lo2-lo1)*R;
+  const d=Math.acos(Math.min(1,Math.sin(q1)*Math.sin(q2)+Math.cos(q1)*Math.cos(q2)*Math.cos(dl)));
+  const az=(Math.atan2(Math.sin(dl)*Math.cos(q2),Math.cos(q1)*Math.sin(q2)-Math.sin(q1)*Math.cos(q2)*Math.cos(dl))/R+360)%360;
+  return{az,km:d*EARTH}}
+function dest(la,lo,az,km){const d=km/EARTH,q1=la*R,t=az*R;const q2=Math.asin(Math.sin(q1)*Math.cos(d)+Math.cos(q1)*Math.sin(d)*Math.cos(t));
+  const l2=lo*R+Math.atan2(Math.sin(t)*Math.sin(d)*Math.cos(q1),Math.cos(d)-Math.sin(q1)*Math.sin(q2));return[q2/R,((l2/R+540)%360)-180]}
+function pathStats(az,km,t){let dark=0,n=0,mm=-90,au=null;
+  for(let x=0;x<=km;x+=200){const[la,lo]=dest(STATION.lat,STATION.lon,az,x);n++;
+    if(sunElev(la,lo,t)<-6)dark++;const m=magLat(la,lo);if(Math.abs(m)>Math.abs(mm)||mm===-90)mm=m;
+    const a=aurAt(la,lo);if(a!=null)au=Math.max(au??0,a)}
+  return{az,km,dark:dark/n,mag:mm,aur:au}}
+const aurTxt=a=>a==null?'–':a>=30?`<span class="t5">${a.toFixed(0)}% (crossing)</span>`:a>=10?`<span class="t4">${a.toFixed(0)}% (edge)</span>`:`<span class="t1">${a.toFixed(0)}% (minor)</span>`;
+const pathCell=p=>`<span class="az">${p.az.toFixed(0)}°</span>&nbsp; ${(Math.round(p.km/100)*100).toLocaleString('en')} km<br>Geomag. lat. ${Math.abs(p.mag).toFixed(0)}°${p.mag>=0?'N':'S'}<br>Aurora ${aurTxt(p.aur)}<br>Darkness ${(p.dark*100).toFixed(0)}%`;
+function advise(sp,lp){
+  const bad=a=>a!=null&&a>=30,edge=a=>a!=null&&a>=10&&a<30;
+  if(sp.dark>=0.8&&!bad(sp.aur))return`<span class="adv t1">Short path ${sp.az.toFixed(0)}°: good conditions for the low bands</span>${edge(sp.aur)?' (passes the edge of the auroral zone; may be somewhat weaker)':''}`;
+  if(lp.dark>=0.8&&!bad(lp.aur)&&(bad(sp.aur)||sp.dark<0.5))return`<span class="adv t3">Try the long path ${lp.az.toFixed(0)}°</span> (the short path ${bad(sp.aur)?'crosses the auroral zone':'is largely in daylight'})`;
+  if(bad(sp.aur)&&sp.dark>=0.5)return`<span class="adv t5">Short path crosses the auroral zone</span>: polar routes may be badly weakened. Consider regions that avoid high latitudes.`;
+  if(sp.dark>=0.5)return`<span class="adv t3">Short path ${sp.az.toFixed(0)}°</span>: part of the path is in daylight. Watch the grey line.`;
+  if(sp.dark>=0.2)return`<span class="adv">Short path ${sp.az.toFixed(0)}°</span>: mainly mid-band time.`;
+  return`<span class="adv">Short path ${sp.az.toFixed(0)}°</span>: path mostly in daylight. High- and mid-band time.`;
+}
+const dnState=e=>e>6?['Day','day']:e>-6?['Twilight','gl']:['Night','night'];
+const TARGETS=[['Japan (Tokyo)',35.68,139.69],['Southeast Asia (Singapore)',1.35,103.82],['Oceania (Sydney)',-33.87,151.21],['Europe (London)',51.5,-0.13],['North America, east (New York)',40.7,-74.0],['North America, west (Los Angeles)',34.05,-118.24],['Caribbean (Puerto Rico)',18.47,-66.11],['South America (São Paulo)',-23.55,-46.63],['West Africa (Dakar, Senegal)',14.69,-17.45],['Southern Africa (Johannesburg)',-26.2,28.05],['Middle East (Dubai)',25.2,55.27]];
+function dayNight(){
+  const now=Date.now(),ej=sunElev(STATION.lat,STATION.lon,now),[jl,jc]=dnState(ej);let northBad=[];
+  $('dn').innerHTML=TARGETS.map(([n,la,lo])=>{
+    const g=bearingDist(STATION.lat,STATION.lon,la,lo);if(g.km<500)return'';
+    const e=sunElev(la,lo,now),[l,c]=dnState(e);
+    const sp=pathStats(g.az,g.km,now),lp=pathStats((g.az+180)%360,2*Math.PI*EARTH-g.km,now);
+    if(sp.aur!=null&&sp.aur>=30)northBad.push(n.replace(/ \(.*/,''));
+    return `<tr><td><b>${n}</b></td><td><span class="tag ${c}">${l}</span><br><span class="tag ${jc}">${jl}</span></td><td>${pathCell(sp)}</td><td>${pathCell(lp)}</td><td>${advise(sp,lp)}</td></tr>`}).join('');
+  const base=$('pHigh').dataset.base;if(base!==undefined)$('pHigh').textContent=base+(northBad.length?` The auroral zone currently lies across the short path to: ${northBad.join(', ')}.`:'');
+  if(AUR)$('aurInfo').textContent=`Aurora (OVATION): observed ${fmtUTC(AUR.obs)}, forecast for ${fmtUTC(AUR.fc)}. Northern-hemisphere maximum ${AUR.nmax.toFixed(0)}%.`;
+  else $('aurInfo').textContent='Aurora data are not available, so aurora probabilities are not shown.';
+  const d0=new Date(now);d0.setHours(0,0,0,0);let rise,set,prev=sunElev(STATION.lat,STATION.lon,d0.getTime());
+  for(let m=1;m<=1440;m++){const t=d0.getTime()+m*60e3,e=sunElev(STATION.lat,STATION.lon,t);if(prev<-0.833&&e>=-0.833)rise=t;if(prev>=-0.833&&e<-0.833)set=t;prev=e}
+  $('qthSun').textContent=`Today at ${STATION.grid}: sunrise ${rise?fmtUTC(rise)+' ('+fmtLoc(rise)+' your time)':'–'}, sunset ${set?fmtUTC(set)+' ('+fmtLoc(set)+' your time)':'–'} (calculated).`;
+}
+function parseAur(d){const g=new Float32Array(360*181);let nmax=0;
+  for(const [lo,la,a] of d.coordinates){const L=((Math.round(lo)%360)+360)%360,A=Math.round(la);if(A<-90||A>90)continue;g[L*181+A+90]=a;if(A>0&&a>nmax)nmax=a}
+  return{grid:g,obs:ts(d['Observation Time']),fc:ts(d['Forecast Time']),nmax}}
+
+/* ---- load */
+async function load(){
+  const v={};const errs=[];
+  const res=await Promise.allSettled(Object.entries(URLS).map(async([k,u])=>[k,await getJSON(u)]));
+  for(const r of res){if(r.status!=='fulfilled'){errs.push(r.reason);continue}const[k,d]=r.value;
+    try{
+      if(k==='kp'){v.kpHist=parseKp(d);const l=v.kpHist[v.kpHist.length-1];if(l)v.kp=l[1]}
+      if(k==='mag'){const o=parseRtsw(d,{bz:'bz_gsm',bt:'bt'});if(o){Object.assign(v,{bz:o.bz,bz30:o.bz30,bt:o.bt,rtswAt:o.at});v.series=Object.assign(v.series||{},o.series)}}
+      if(k==='wind'){const o=parseRtsw(d,{speed:'proton_speed',density:'proton_density'});if(o)Object.assign(v,{speed:o.speed,speed30:o.speed30,density:o.density,density30:o.density30})}
+      if(k==='scales')Object.assign(v,parseScales(d));
+      if(k==='sfi')v.sfi=parseSfi(d);
+      if(k==='aur'){AUR=parseAur(d);v.aurMax=AUR.nmax}
+      if(k==='kpf')v.kpf=parseKpf(d);
+    }catch(e){errs.push(e)}}
+  if(errs.length===Object.keys(URLS).length){
+    $('msg').style.display='block';$('msg').textContent='Could not load data from NOAA. Your network or the page that embeds this one may be blocking external connections. Use “Show sample data” to see the layout.';
+    $('upd').textContent='Load failed';
+  }else{$('msg').style.display=errs.length?'block':'none';if(errs.length)$('msg').textContent='Some data could not be loaded. Only the values that loaded are shown.';render(v)}
+  dayNight();
+}
+function demo(){
+  const now=Date.now(),kh=[];for(let i=15;i>=0;i--)kh.push([now-i*3*3600e3,[1,1.3,2,2.7,4.3,4,3.3,2.3,2,1.7,1.3,1.7,1,0.7,1,1.3][15-i]]);
+  const bzs=[];for(let i=360;i>=0;i-=5)bzs.push([now-i*60e3,2.5*Math.sin(i/40)+1.2]);
+  {const g=new Float32Array(360*181);let nm=0;for(let L=0;L<360;L++)for(let A=-90;A<=90;A++){const m=magLat(A,L>180?L-360:L),a=Math.max(0,55*Math.exp(-Math.pow((Math.abs(m)-66)/3.5,2)));g[L*181+A+90]=a;if(A>0&&a>nm)nm=a}AUR={grid:g,obs:now,fc:now+3600e3,nmax:nm}}
+  {const rec=[];for(let i=24;i>=0;i--){const t=now-i*15*60e3;rec.push({t,foF2:6.2+0.8*Math.sin(i/6),hF:null,hF2:265+(i<4?(4-i)*12:0)+6*Math.cos(i/5),spreadF:i<2})}IONO={recent:rec,latest:rec[rec.length-1]}}
+  const kpfDemo=[];{const b=Math.floor(now/(3*3600e3))*3*3600e3;for(let i=-8;i<24;i++){const t=b+i*3*3600e3;kpfDemo.push({t,kp:[2,2.33,1.67,2,2.67,3,2.33,2,1.67,2,2.33,3.67,5.33,4.67,3.33,2.67,2,1.67,2.33,2,2,2.67,3,2.33,2,1.67,2,2.33,2,1.67,2,2][i+8],kind:i<0?'observed':i===0?'estimated':'predicted'})}}
+  render({demo:true,kpf:kpfDemo,aurMax:AUR.nmax,kp:1.3,kpHist:kh,bz:2.1,bz30:1.8,bt:4.6,speed:380,speed30:385,density:3.2,density30:3.5,S:0,Sprob:1,G:0,sfi:93,series:{bz:bzs}});
+  $('msg').style.display='block';$('msg').textContent='Showing sample data (not real values).';dayNight();ionoRender();
+}
+$('reload').onclick=load;$('demo').onclick=demo;$('setGrid').onclick=setGrid;
+$('grid').addEventListener('keydown',e=>{if(e.key==='Enter')setGrid()});
+showQth();load();loadIono();setInterval(load,5*60e3);setInterval(loadIono,15*60e3);setInterval(()=>{dayNight();bandGuide(lastV)},60e3);
+})();
+</script>
+</body>
+</html>
