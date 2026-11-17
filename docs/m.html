@@ -26,6 +26,12 @@
 .gt th.gb{padding:1px 5px;text-align:left;white-space:nowrap;color:var(--ink);font-weight:700}
 .gt .gj{color:var(--sub)}
 .gfine{font-size:11px;color:var(--sub);line-height:1.6;margin:6px 0 0}
+.gwarn{margin:6px 0 8px;padding:6px 8px;border-left:3px solid #d64545;background:rgba(214,69,69,.10);font-size:.88em;line-height:1.7}
+.gdet{margin:6px 0 0}
+.gdet>summary{cursor:pointer;font-size:.85em;font-weight:700;padding:3px 0;list-style:none}
+.gdet>summary::-webkit-details-marker{display:none}
+.gdet>summary::before{content:'▶ ';font-size:.8em}
+.gdet[open]>summary::before{content:'▼ '}
 @media (prefers-color-scheme: dark){.gttl{color:#d8b14a}.gagree{border-left-color:#d8b14a;background:rgba(216,177,74,.08)}}
 
 :root{
@@ -493,7 +499,47 @@ footer a{color:var(--link)}
       .then(d => (SUMMARY = d)).catch(e => { SUMMARY_P = null; throw e; });
     return SUMMARY_P;
   }
-  var G_BANDS = ['160m', '80m', '60m', '40m', '30m', '20m', '17m', '15m', '12m', '10m', '6m'];
+  // 開閉式の欄の状態（1分ごとの描き直しと、次に開いたときにも引き継ぐ）
+// ---- Bz の南向きが強く続くときの、この経路への注意（物理の仕組みにもとづく見込み。検証中）
+var SW_NOW = null;
+// 直近から遡って、10分平均の Bz が −3nT 以下（南向き）で続いている時間（分）
+function gSouthMin(sr) {
+  if (!sr || sr.length < 2) return 0;
+  const end = sr[sr.length - 1][0]; let t0 = end;
+  for (let i = sr.length - 1; i >= 0; i--) {
+    const t = sr[i][0], w = sr.filter(r => r[0] <= t && r[0] > t - 600e3).map(r => r[1]).filter(x => !isNaN(x));
+    if (!w.length) break;
+    if (w.reduce((a, b) => a + b, 0) / w.length > -3) break;
+    t0 = t;
+  }
+  return Math.round((end - t0) / 60e3);
+}
+function gBzWarn(sp) {
+  if (!SW_NOW || SW_NOW.bz30 == null) return '';
+  const bz = SW_NOW.bz30, dur = SW_NOW.south || 0, v = SW_NOW.sp;
+  const strong = bz <= -10, moderate = !strong && bz <= -5 && dur >= 60;
+  if (!strong && !moderate) return '';
+  const head = `Bz が${strong ? '強く' : ''}南向き（30分平均 ${bz.toFixed(1)}nT${dur >= 10 ? `、約${dur}分継続` : ''}）${v != null && v >= 500 ? `。太陽風も速く（${Math.round(v)}km/s）、影響が強まりやすい状態です` : ''}`;
+  const near = Math.abs(sp.mag) >= 55 || (sp.aur != null && sp.aur >= 10);
+  const body = near
+    ? `この経路の短経路は地磁気緯度 ${Math.abs(sp.mag).toFixed(0)}° まで上がり、オーロラ帯の近くを通ります。<br>
+       <b>ローバンド（160・80・40m）</b>：オーロラ帯での吸収で、数十分のうちに信号が弱まるおそれ<br>
+       <b>ミドル（30・20・17m）</b>：信号の揺らぎ（フラッタ）で、FT8 のデコードが減るおそれ<br>
+       <b>ハイバンド（15・12・10m）</b>：数時間後に電離層嵐で MUF が下がり、開きにくくなることがある（乱れの初めに一時的に良くなることもある）`
+    : `この経路の短経路は地磁気緯度 ${Math.abs(sp.mag).toFixed(0)}° までで、極域から離れているため、すぐの影響は小さい見込みです。乱れが長引くと、数時間後にハイバンドが開きにくくなることがあります。`;
+  return `<div class="gwarn"><b>注意：${head}</b><span style="color:#d64545;font-size:.85em">（検証中）</span><br>${body}
+    <p class="gfine" style="margin-top:4px">Bz の南向きが強く続くと、太陽風のエネルギーが流れ込んでオーロラ帯が広がり、極域寄りの経路が影響を受けます。30分平均が −10nT 以下、または −5nT 以下が1時間以上続くときに表示します。物理の仕組みにもとづく見込みで、データでの確認はこれからです。</p></div>`;
+}
+var G_OPEN = (() => { try { return JSON.parse(localStorage.getItem('guide.open') || '{}'); } catch (e) { return {}; } })();
+var gOpen = k => G_OPEN[k] ? ' open' : '';
+function gWatch(el) {
+  if (!el || el.dataset.w) return; el.dataset.w = '1';
+  el.addEventListener('toggle', e => {
+    const d = e.target; if (!d.dataset || !d.dataset.k) return;
+    G_OPEN[d.dataset.k] = d.open; try { localStorage.setItem('guide.open', JSON.stringify(G_OPEN)); } catch (e2) {}
+  }, true);
+}
+var G_BANDS = ['160m', '80m', '60m', '40m', '30m', '20m', '17m', '15m', '12m', '10m', '6m'];
   var G_GROUP = { '160m': 'low', '80m': 'low', '60m': 'low', '40m': 'low', '30m': 'mid', '20m': 'mid', '17m': 'mid', '15m': 'high', '12m': 'high', '10m': 'high', '6m': 'high' };
   var gLv = c => c === 'A' ? 10 : (parseInt(c, 10) || 0);
   var gEsc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -566,13 +612,13 @@ footer a{color:var(--link)}
           : ok - bk >= 0.7 || ov - bv >= 60 ? '<br><span style="color:#d9772b">乱れたとき・速い太陽風のときにも受信できている（参考）</span>' : '') : '';
       return `<b>${b}</b>　受信 Kp ${f1(ok, 1)}・${f1(ov, 0)}km/s・SFI ${f1(of, 0)}（${on}回）<br><span style="color:var(--sub)">　　全体 Kp ${f1(bk, 1)}・${f1(bv, 0)}km/s・SFI ${f1(bf, 0)}（${bn}回）</span>${hint}`;
     });
-    const swPart = swRows.length ? `<div class="gsub" style="font-size:.88em">受信できたときの宇宙天気（中央値）</div><div class="gtxt" style="font-size:.85em">${swRows.join('<br>')}</div>
-      <p class="gfine">「受信」は受信できた回、「全体」は同じ時刻（UTC）の抜き取り全体の、宇宙天気の中央値です（Kp・太陽風の速さ・SFI）。受信できた回のほうが Kp が低く、太陽風が遅ければ、静かなときのほうが受信しやすい傾向を示します。差が小さいときは、この期間では宇宙天気による違いが見えていないということです。受信できた回が5回以上のバンドだけ表示し、傾向の表示は10回以上のときだけです。Kp は GFZ の3時間値、SFI は F10.7 の観測値（その日の値）、太陽風の速さは NOAA の1時間平均。Bz は1時間平均するとほぼゼロになり違いが表れにくいため、載せていません。</p>` : '';
+    const swPart = swRows.length ? `<details class="gdet" data-k="sw"${gOpen('sw')}><summary>受信できたときの宇宙天気（中央値）</summary><div class="gtxt" style="font-size:.85em">${swRows.join('<br>')}</div>
+      <p class="gfine">「受信」は受信できた回、「全体」は同じ時刻（UTC）の抜き取り全体の、宇宙天気の中央値です（Kp・太陽風の速さ・SFI）。受信できた回のほうが Kp が低く、太陽風が遅ければ、静かなときのほうが受信しやすい傾向を示します。差が小さいときは、この期間では宇宙天気による違いが見えていないということです。受信できた回が5回以上のバンドだけ表示し、傾向の表示は10回以上のときだけです。Kp は GFZ の3時間値、SFI は F10.7 の観測値（その日の値）、太陽風の速さは NOAA の1時間平均。Bz は1時間平均するとほぼゼロになり違いが表れにくいため、載せていません。</p></details>` : '';
     const nn = SUMMARY.n.filter(Boolean);
       ePart = `<div class="gsub">実績：${gEsc(eLabel)}の信号を日本で受信できた時間帯（直近${SUMMARY.days}日間、日本全体）</div>${noRx}<div class="gtxt">${txt}</div>${txTxt}
         <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">日本</th>${headJ}</tr>${rows}</table></div>
       ${swPart}
-        <p class="gfine">PSK Reporter のリアルタイム配信を、20分ごとに8分間（1時間あたり24分）受信して集めた記録です。${SUMMARY.since}以降の抜き取り${SUMMARY.samples}回（時刻ごとに${Math.min(...nn)}〜${Math.max(...nn)}回）のうち、日本の局がこの相手の信号を受信した報告があった回の割合を色で示します（濃い黄：6割以上、青緑：3割以上、薄い青緑：まれ）。送信の届き方は出力やアンテナ（ミドル・ハイバンドの3〜4エレ八木、ローバンドの1エレなど）で大きく変わるため、局の設備に左右されにくい受信を中心にしています。件数ではなく回数で数えるので、一つの局の運用で大きく振れることは避けられますが、FT8などデジタルモードの記録で、相手の地域で運用している局の多さにも左右されます。毎日お昼ごろ（11:50）に更新。</p>`;
+        <details class="gdet" data-k="howE"${gOpen('howE')}><summary>この目安の見方</summary><p class="gfine">PSK Reporter のリアルタイム配信を、20分ごとに8分間（1時間あたり24分）受信して集めた記録です。${SUMMARY.since}以降の抜き取り${SUMMARY.samples}回（時刻ごとに${Math.min(...nn)}〜${Math.max(...nn)}回）のうち、日本の局がこの相手の信号を受信した報告があった回の割合を色で示します（濃い黄：6割以上、青緑：3割以上、薄い青緑：まれ）。送信の届き方は出力やアンテナ（ミドル・ハイバンドの3〜4エレ八木、ローバンドの1エレなど）で大きく変わるため、局の設備に左右されにくい受信を中心にしています。件数ではなく回数で数えるので、一つの局の運用で大きく振れることは避けられますが、FT8などデジタルモードの記録で、相手の地域で運用している局の多さにも左右されます。毎日お昼ごろ（11:50）に更新。</p></details>`;
     }
     // 物理の目安
     const pw = k => gWindows(phys[k].map((x, h) => x.v === 2 ? h : -1).filter(h => h >= 0));
@@ -583,14 +629,14 @@ footer a{color:var(--link)}
     const pRows = [['ロー', 'low'], ['ミドル', 'mid'], ['ハイ', 'high']].map(([n, k]) => `<tr><th class="gb">${n}</th>${phys[k].map(x => cellP(x)).join('')}</tr>`).join('');
     const pPart = `<div class="gsub">物理の目安：これから24時間（経路の昼夜・いまのオーロラ帯・SFI ${SFI_NOW != null ? SFI_NOW.toFixed(0) : '―'}）</div><div class="gtxt">${pTxt}</div>
       <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">日本</th>${headJ}</tr>${pRows}</table></div>
-      <p class="gfine">ローバンドは短経路（夜側にならなければ長経路）の大半が夜（太陽高度−6°以下）になる時刻、ミドルは経路に昼と夜が混ざる時刻、ハイバンドは経路の大半が昼で SFI が十分な時刻を、濃い紫で示します。電離層の詳しい計算（MUFの予測）ではなく、昼夜にもとづく目安です。オーロラ帯はいまの状態で計算しているので、数時間先は変わることがあります。</p>`;
+      <details class="gdet" data-k="howP"${gOpen('howP')}><summary>この目安の見方</summary><p class="gfine">ローバンドは短経路（夜側にならなければ長経路）の大半が夜（太陽高度−6°以下）になる時刻、ミドルは経路に昼と夜が混ざる時刻、ハイバンドは経路の大半が昼で SFI が十分な時刻を、濃い紫で示します。電離層の詳しい計算（MUFの予測）ではなく、昼夜にもとづく目安です。オーロラ帯はいまの状態で計算しているので、数時間先は変わることがあります。</p></details>`;
     const aPart = agree.length ? `<div class="gagree"><b>実績と物理の目安がそろう時間帯</b><br>${agree.join('<br>')}</div>` : '';
-    return `<div class="gbox"><div class="gttl" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">交信しやすいバンドと時間帯の目安<span style="color:#d64545;font-size:.85em;white-space:nowrap">検証中</span></div><p class="gfine" style="margin:0 0 6px">実際の交信の結果と照らし合わせて、当たり具合を確かめている段階です。</p>${aPart}${ePart}${pPart}</div>`;
+    return `<div class="gbox"><div class="gttl" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">交信しやすいバンドと時間帯の目安<span style="color:#d64545;font-size:.85em;white-space:nowrap">検証中</span></div><p class="gfine" style="margin:0 0 6px">実際の交信の結果と照らし合わせて、当たり具合を確かめている段階です。</p>${gBzWarn(pathStats(g.az, g.km, now))}${aPart}${ePart}${pPart}</div>`;
   }
   function renderGuide(g, now) {
     const box = document.getElementById('dxOut'); if (!box || !TARGET) return;
     box.insertAdjacentHTML('beforeend', '<div id="dxGuide"></div>');
-    const fill = () => { const el = document.getElementById('dxGuide'); if (el) el.innerHTML = guideHTML(g, now); };
+    const fill = () => { const el = document.getElementById('dxGuide'); if (el) { el.innerHTML = guideHTML(g, now); gWatch(el); } };
     if (SUMMARY) fill(); else { fill(); loadSummary().then(fill).catch(fill); }
   }
   function targetRender() {
@@ -697,6 +743,7 @@ footer a{color:var(--link)}
     const mag = rtsw(d.mag, ['bz_gsm', 'bt']);
     const wind = rtsw(d.wind, ['proton_speed', 'proton_density']);
     const tail30 = (a, i) => { if (!a.length) return []; const tEnd = a[a.length - 1][0]; return a.filter(r => r[0] > tEnd - 1800e3).map(r => r[i]).filter(x => !isNaN(x)); };
+    SW_NOW = { bz30: mag.length ? avg(tail30(mag, 1)) : null, sp: wind.length ? avg(tail30(wind, 1)) : null, south: gSouthMin(mag.map(r => [r[0], r[1]])) };
     if (mag.length) { v.bz30 = avg(tail30(mag, 1)); v.bt = mag[mag.length - 1][2]; v.magAt = mag[mag.length - 1][0]; }
     if (wind.length) { v.sp30 = avg(tail30(wind, 1)); v.den = wind[wind.length - 1][2]; v.windAt = wind[wind.length - 1][0]; }
     v.rtswAt = Math.max(v.magAt || 0, v.windAt || 0) || null;
