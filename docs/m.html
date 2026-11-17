@@ -395,6 +395,7 @@ footer a{color:var(--link)}
     for (const [la, lo] of pts) { const m = Math.abs(magLat(la, lo)); if (m > mm) mm = m; const a = aurAt(la, lo); if (a != null) au = Math.max(au ?? 0, a); }
     return { mm, au };
   }
+const detourTxt = x => x < 100 ? '遠回りはごくわずか' : `遠回り 約${(Math.round(x / 100) * 100).toLocaleString()} km`;
   function skewSearch(g, tgt, t) {
     const cand = [];
     for (let d = 5; d <= 60; d += 5) for (const s of [1, -1]) {
@@ -728,7 +729,7 @@ function renderGuide(g, now) {
     const where = AUR ? `オーロラ帯${(sp.aur ?? 0) >= 30 ? 'を通過' : 'の縁を通過'}` : `地磁気緯度 ${Math.abs(sp.mag).toFixed(0)}° の高緯度を通過`;
     const skTxt = !needSkew ? '' : sk
       ? `<div class="adv"><b class="t3">ずらした方位 ${sk.az.toFixed(0)}° を試す価値あり</b><span style="color:#d64545;font-size:.85em">（検証中）</span>：短経路 ${g.az.toFixed(0)}° は${where}。` +
-        `${sk.az.toFixed(0)}° 方向に送り出し、${llToGrid(sk.turn[0], sk.turn[1])} 付近で曲がって届く経路なら、オーロラ帯を避けられます（遠回り 約${(Math.round(sk.extra / 100) * 100).toLocaleString()} km）。` +
+        `${sk.az.toFixed(0)}° 方向に送り出し、${llToGrid(sk.turn[0], sk.turn[1])} 付近で曲がって届く経路なら、オーロラ帯を避けられます（${detourTxt(sk.extra)}）。` +
         `電離層の傾きや散乱で曲がる経路なので、届くかどうかは条件しだいです。</div>`
       : `<div class="adv"><b>ずらした方位</b>：短経路は${where}。左右60°までずらしても、オーロラ帯を避けて届く経路は見つかりませんでした。</div>`;
     drawMap({ sp, az: g.az, km: g.km, label: TARGET.short, sk });
