@@ -557,9 +557,21 @@ footer a{color:var(--link)}
       const tx = G_BANDS.filter(b => has(b, 't')).map(b => ({ b, hs: [...eData[b].t].map((c, h) => gLv(c) >= 3 ? h : -1).filter(h => h >= 0) })).filter(x => x.hs.length);
     const txTxt = tx.length ? `<div class="gtxt" style="margin-top:6px;opacity:.85">参考：日本の局の信号が相手側で受信されていた時間帯<br>${tx.map(x => `<b>${x.b}</b> ${gWindows(x.hs)}`).join('<br>')}</div>` : '';
     const noRx = !bands.length ? '<p class="gfine">この相手からの信号を日本の局が受信した記録は、まだありません。</p>' : '';
+    // 受信できた回の宇宙天気と、同じ時刻の抜き取り全体の宇宙天気（中央値）
+    const f1 = (v, d) => v == null ? '―' : v.toFixed(d);
+    const swRows = bands.filter(b => eData[b].w).map(b => {
+      const [on, ok, ov, of] = eData[b].w.o, [bn, bk, bv, bf] = eData[b].w.b;
+      const hint = on >= 10 && ok != null && bk != null && ov != null && bv != null
+        ? (bk - ok >= 0.7 || bv - ov >= 60 ? '<br><span style="color:#1f9e8f">静かなとき・遅い太陽風のときに受信しやすい傾向（参考）</span>'
+          : ok - bk >= 0.7 || ov - bv >= 60 ? '<br><span style="color:#d9772b">乱れたとき・速い太陽風のときにも受信できている（参考）</span>' : '') : '';
+      return `<b>${b}</b>　受信 Kp ${f1(ok, 1)}・${f1(ov, 0)}km/s・SFI ${f1(of, 0)}（${on}回）<br><span style="color:var(--sub)">　　全体 Kp ${f1(bk, 1)}・${f1(bv, 0)}km/s・SFI ${f1(bf, 0)}（${bn}回）</span>${hint}`;
+    });
+    const swPart = swRows.length ? `<div class="gsub" style="font-size:.88em">受信できたときの宇宙天気（中央値）</div><div class="gtxt" style="font-size:.85em">${swRows.join('<br>')}</div>
+      <p class="gfine">「受信」は受信できた回、「全体」は同じ時刻（UTC）の抜き取り全体の、宇宙天気の中央値です（Kp・太陽風の速さ・SFI）。受信できた回のほうが Kp が低く、太陽風が遅ければ、静かなときのほうが受信しやすい傾向を示します。差が小さいときは、この期間では宇宙天気による違いが見えていないということです。受信できた回が5回以上のバンドだけ表示し、傾向の表示は10回以上のときだけです。Kp は GFZ の3時間値、SFI は F10.7 の観測値（その日の値）、太陽風の速さは NOAA の1時間平均。Bz は1時間平均するとほぼゼロになり違いが表れにくいため、載せていません。</p>` : '';
     const nn = SUMMARY.n.filter(Boolean);
       ePart = `<div class="gsub">実績：${gEsc(eLabel)}の信号を日本で受信できた時間帯（直近${SUMMARY.days}日間、日本全体）</div>${noRx}<div class="gtxt">${txt}</div>${txTxt}
         <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">日本</th>${headJ}</tr>${rows}</table></div>
+      ${swPart}
         <p class="gfine">PSK Reporter のリアルタイム配信を、20分ごとに8分間（1時間あたり24分）受信して集めた記録です。${SUMMARY.since}以降の抜き取り${SUMMARY.samples}回（時刻ごとに${Math.min(...nn)}〜${Math.max(...nn)}回）のうち、日本の局がこの相手の信号を受信した報告があった回の割合を色で示します（濃い黄：6割以上、青緑：3割以上、薄い青緑：まれ）。送信の届き方は出力やアンテナ（ミドル・ハイバンドの3〜4エレ八木、ローバンドの1エレなど）で大きく変わるため、局の設備に左右されにくい受信を中心にしています。件数ではなく回数で数えるので、一つの局の運用で大きく振れることは避けられますが、FT8などデジタルモードの記録で、相手の地域で運用している局の多さにも左右されます。毎日お昼ごろ（11:50）に更新。</p>`;
     }
     // 物理の目安
@@ -573,7 +585,7 @@ footer a{color:var(--link)}
       <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">日本</th>${headJ}</tr>${pRows}</table></div>
       <p class="gfine">ローバンドは短経路（夜側にならなければ長経路）の大半が夜（太陽高度−6°以下）になる時刻、ミドルは経路に昼と夜が混ざる時刻、ハイバンドは経路の大半が昼で SFI が十分な時刻を、濃い紫で示します。電離層の詳しい計算（MUFの予測）ではなく、昼夜にもとづく目安です。オーロラ帯はいまの状態で計算しているので、数時間先は変わることがあります。</p>`;
     const aPart = agree.length ? `<div class="gagree"><b>実績と物理の目安がそろう時間帯</b><br>${agree.join('<br>')}</div>` : '';
-    return `<div class="gbox"><div class="gttl">交信しやすいバンドと時間帯の目安</div>${aPart}${ePart}${pPart}</div>`;
+    return `<div class="gbox"><div class="gttl" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">交信しやすいバンドと時間帯の目安<span style="color:#d64545;font-size:.85em;white-space:nowrap">検証中</span></div><p class="gfine" style="margin:0 0 6px">実際の交信の結果と照らし合わせて、当たり具合を確かめている段階です。</p>${aPart}${ePart}${pPart}</div>`;
   }
   function renderGuide(g, now) {
     const box = document.getElementById('dxOut'); if (!box || !TARGET) return;
@@ -590,7 +602,7 @@ footer a{color:var(--link)}
     const needSkew = AUR ? (sp.aur ?? 0) >= 10 : Math.abs(sp.mag) >= 62, sk = needSkew ? skewSearch(g, TARGET, now) : null;
     const where = AUR ? `オーロラ帯${(sp.aur ?? 0) >= 30 ? 'を通過' : 'の縁を通過'}` : `地磁気緯度 ${Math.abs(sp.mag).toFixed(0)}° の高緯度を通過`;
     const skTxt = !needSkew ? '' : sk
-      ? `<div class="adv"><b class="t3">ずらした方位 ${sk.az.toFixed(0)}° を試す価値あり</b>：短経路 ${g.az.toFixed(0)}° は${where}。` +
+      ? `<div class="adv"><b class="t3">ずらした方位 ${sk.az.toFixed(0)}° を試す価値あり</b><span style="color:#d64545;font-size:.85em">（検証中）</span>：短経路 ${g.az.toFixed(0)}° は${where}。` +
         `${sk.az.toFixed(0)}° 方向に送り出し、${llToGrid(sk.turn[0], sk.turn[1])} 付近で曲がって届く経路なら、オーロラ帯を避けられます（遠回り 約${(Math.round(sk.extra / 100) * 100).toLocaleString()} km）。` +
         `電離層の傾きや散乱で曲がる経路なので、届くかどうかは条件しだいです。</div>`
       : `<div class="adv"><b>ずらした方位</b>：短経路は${where}。左右60°までずらしても、オーロラ帯を避けて届く経路は見つかりませんでした。</div>`;
