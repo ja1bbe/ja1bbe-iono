@@ -615,7 +615,7 @@ var G_BANDS = ['160m', '80m', '60m', '40m', '30m', '20m', '17m', '15m', '12m', '
     const swPart = swRows.length ? `<details class="gdet" data-k="sw"${gOpen('sw')}><summary>受信できたときの宇宙天気（中央値）</summary><div class="gtxt" style="font-size:.85em">${swRows.join('<br>')}</div>
       <p class="gfine">「受信」は受信できた回、「全体」は同じ時刻（UTC）の抜き取り全体の、宇宙天気の中央値です（Kp・太陽風の速さ・SFI）。受信できた回のほうが Kp が低く、太陽風が遅ければ、静かなときのほうが受信しやすい傾向を示します。差が小さいときは、この期間では宇宙天気による違いが見えていないということです。受信できた回が5回以上のバンドだけ表示し、傾向の表示は10回以上のときだけです。Kp は GFZ の3時間値、SFI は F10.7 の観測値（その日の値）、太陽風の速さは NOAA の1時間平均。Bz は1時間平均するとほぼゼロになり違いが表れにくいため、載せていません。</p></details>` : '';
     const nn = SUMMARY.n.filter(Boolean);
-      ePart = `<div class="gsub">実績：${gEsc(eLabel)}の信号を日本で受信できた時間帯（直近${SUMMARY.days}日間、日本全体）</div>${noRx}<div class="gtxt">${txt}</div>${txTxt}
+      ePart = `<div class="gsub">実績：${gEsc(eLabel)}の信号を日本で受信できた時間帯（直近${SUMMARY.days}日間、日本全体）</div>${noRx}<details class="gdet" data-k="eTxt"${gOpen('eTxt')}><summary>時間帯を文字で見る</summary><div class="gtxt">${txt}</div>${txTxt}</details>
         <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">日本</th>${headJ}</tr>${rows}</table></div>
       ${swPart}
         <details class="gdet" data-k="howE"${gOpen('howE')}><summary>この目安の見方</summary><p class="gfine">PSK Reporter のリアルタイム配信を、20分ごとに8分間（1時間あたり24分）受信して集めた記録です。${SUMMARY.since}以降の抜き取り${SUMMARY.samples}回（時刻ごとに${Math.min(...nn)}〜${Math.max(...nn)}回）のうち、日本の局がこの相手の信号を受信した報告があった回の割合を色で示します（濃い黄：6割以上、青緑：3割以上、薄い青緑：まれ）。送信の届き方は出力やアンテナ（ミドル・ハイバンドの3〜4エレ八木、ローバンドの1エレなど）で大きく変わるため、局の設備に左右されにくい受信を中心にしています。件数ではなく回数で数えるので、一つの局の運用で大きく振れることは避けられますが、FT8などデジタルモードの記録で、相手の地域で運用している局の多さにも左右されます。毎日お昼ごろ（11:50）に更新。</p></details>`;
@@ -627,10 +627,10 @@ var G_BANDS = ['160m', '80m', '60m', '40m', '30m', '20m', '17m', '15m', '12m', '
       `<b>ミドル（30・20・17m）</b> ${pw('mid') || '―'}（昼夜の境目を含む時刻）`,
       `<b>ハイバンド（15・12・10m）</b> ${pw('high') || (SFI_NOW != null && SFI_NOW < 120 ? 'SFI がやや低く、経路の大半が昼になる時刻はありますが目安としては控えめです' : '経路の大半が昼になる時刻はありません')}`].join('<br>');
     const pRows = [['ロー', 'low'], ['ミドル', 'mid'], ['ハイ', 'high']].map(([n, k]) => `<tr><th class="gb">${n}</th>${phys[k].map(x => cellP(x)).join('')}</tr>`).join('');
-    const pPart = `<div class="gsub">物理の目安：これから24時間（経路の昼夜・いまのオーロラ帯・SFI ${SFI_NOW != null ? SFI_NOW.toFixed(0) : '―'}）</div><div class="gtxt">${pTxt}</div>
+    const pPart = `<div class="gsub">物理の目安：これから24時間（経路の昼夜・いまのオーロラ帯・SFI ${SFI_NOW != null ? SFI_NOW.toFixed(0) : '―'}）</div><details class="gdet" data-k="pTxt"${gOpen('pTxt')}><summary>時間帯を文字で見る</summary><div class="gtxt">${pTxt}</div></details>
       <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">日本</th>${headJ}</tr>${pRows}</table></div>
       <details class="gdet" data-k="howP"${gOpen('howP')}><summary>この目安の見方</summary><p class="gfine">ローバンドは短経路（夜側にならなければ長経路）の大半が夜（太陽高度−6°以下）になる時刻、ミドルは経路に昼と夜が混ざる時刻、ハイバンドは経路の大半が昼で SFI が十分な時刻を、濃い紫で示します。電離層の詳しい計算（MUFの予測）ではなく、昼夜にもとづく目安です。オーロラ帯はいまの状態で計算しているので、数時間先は変わることがあります。</p></details>`;
-    const aPart = agree.length ? `<div class="gagree"><b>実績と物理の目安がそろう時間帯</b><br>${agree.join('<br>')}</div>` : '';
+    const aPart = agree.length ? `<details class="gdet gagree" data-k="agree"${gOpen('agree')}><summary>実績と物理の目安がそろう時間帯（${agree.length}バンド）</summary>${agree.join('<br>')}</details>` : '';
     return `<div class="gbox"><div class="gttl" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">交信しやすいバンドと時間帯の目安<span style="color:#d64545;font-size:.85em;white-space:nowrap">検証中</span></div><p class="gfine" style="margin:0 0 6px">実際の交信の結果と照らし合わせて、当たり具合を確かめている段階です。</p>${gBzWarn(pathStats(g.az, g.km, now))}${aPart}${ePart}${pPart}</div>`;
   }
   function renderGuide(g, now) {
