@@ -403,7 +403,7 @@ function skewSearch(g,tla,tlo,t){const cand=[];
   const c=cand[0];c.extra=c.km-g.km;return c}
 function skewNote(g,sp,tla,tlo,t){const need=AUR?(sp.aur??0)>=10:Math.abs(sp.mag)>=62;if(!need)return'';
   const sk=skewSearch(g,tla,tlo,t);
-  return sk?`<br><span class="adv t3">Try a skewed heading of ${sk.az.toFixed(0)}°</span>: it bends around the auroral zone (about ${(Math.round(sk.extra/100)*100).toLocaleString('en')} km longer). Signals can follow such bent paths through ionospheric tilts or scattering, but it is not guaranteed.`
+  return sk?`<br><span class="adv t3">Try a skewed heading of ${sk.az.toFixed(0)}°</span>: it bends around the auroral zone (${sk.extra<100?'only slightly longer':'about '+(Math.round(sk.extra/100)*100).toLocaleString('en')+' km longer'}). Signals can follow such bent paths through ionospheric tilts or scattering, but it is not guaranteed.`
     :`<br><span class="adv">No skewed heading within 60° avoids the auroral zone.</span>`}
 const aurTxt=a=>a==null?'–':a>=30?`<span class="t5">${a.toFixed(0)}% (crossing)</span>`:a>=10?`<span class="t4">${a.toFixed(0)}% (edge)</span>`:`<span class="t1">${a.toFixed(0)}% (minor)</span>`;
 const pathCell=p=>`<span class="az">${p.az.toFixed(0)}°</span>&nbsp; ${(Math.round(p.km/100)*100).toLocaleString('en')} km<br>Geomag. lat. ${Math.abs(p.mag).toFixed(0)}°${p.mag>=0?'N':'S'}<br>Aurora ${aurTxt(p.aur)}<br>Darkness ${(p.dark*100).toFixed(0)}%`;
