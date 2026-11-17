@@ -103,6 +103,7 @@ footer a{color:var(--link)}
 .tgt-btns button{flex:1}
 .tgt-btns .go{background:var(--link);color:var(--paper);border-color:var(--link)}
 #dxMap{width:100%;aspect-ratio:1/1;display:block;margin:12px auto 0}
+.magbtn{background:transparent;border:1px solid #c9971f;color:inherit;border-radius:6px;padding:3px 10px;font-size:.85em;cursor:pointer}
 .legend{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:11px;color:var(--sub);margin-top:6px}
 .legend i{display:inline-block;width:14px;height:9px;border-radius:2px;margin-right:4px;vertical-align:-1px}
 .tgt-who{font-size:15px;font-weight:700;margin-top:12px}
@@ -131,6 +132,8 @@ footer a{color:var(--link)}
     <div class="fine" id="stInfo"></div>
     <canvas id="dxMap" role="img" aria-label="自局を中心にした正距方位図。短経路と長経路、昼夜、オーロラ帯を表示"></canvas>
     <div class="legend"><span><i style="background:#d8b14a"></i>短経路</span><span><i style="background:repeating-linear-gradient(90deg,#7fd3c6 0 4px,transparent 4px 7px)"></i>長経路</span><span><i style="background:repeating-linear-gradient(90deg,#c77dff 0 3px,transparent 3px 6px)"></i>ずらした方位</span><span><i style="background:#05080d"></i>夜</span><span><i style="background:#3a3550"></i>薄明</span><span><i style="background:rgba(80,220,140,.8)"></i>オーロラ10〜30%</span><span><i style="background:rgba(240,90,80,.8)"></i>30%以上</span></div>
+    <div style="margin-top:6px;text-align:center"><button id="magBtn" type="button" class="magbtn">▶ 地磁気緯度線を重ねる</button></div>
+    <p id="magNote" class="fine" style="display:none;text-align:center">点線は地磁気緯度 0°・±30°・±70°、<span style="color:#f08a4b">橙は ±60°</span>（静穏時のオーロラ帯の赤道側の縁の目安。Kp が上がるとこれより低緯度まで広がります）。地球の磁場を一つの棒磁石とみなす近似（経路の判定と同じ計算）で、実際の地磁気とは場所によって数度ずれます。</p>
     <div id="dxOut"></div>
     <details><summary>地図と入力の見方</summary>
       <div class="fine">自局と相手は、グリッドロケータ（4桁または6桁）か、コールサインで入れます。コールサインの場合はcty.datにもとづくエンティティの代表位置で計算します（登録済みの局はそのグリッド）。地図は自局を中心にした正距方位図で、中心から見た方向がそのまま大圏方位（上が真北）、中心からの距離が実際の距離です。外周は地球の裏側（約20,000km）で、長経路は外周を越えて反対側から相手に届きます。橙色の丸は、短経路の上で地磁気緯度が最も高くなる地点です。短経路がオーロラ帯にかかるときは、左右60°までずらした方位の中から、オーロラ帯を避けて相手に届く経路（途中で曲がる経路として近似）を探し、紫の点線で示します。電離層の傾きや散乱で電波が曲がる経路の目安で、届くことを保証するものではありません。入力した内容は、この端末のブラウザが覚えています。</div>
@@ -706,6 +709,9 @@ function renderGuide(g, now) {
   }
   async function loadLand() { try { LAND = (await getJ('land.json')).rings; } catch (e) { LAND = null; } drawMap(LASTP); }
   const MAPDIRS = [['欧州', 51.5, -0.13], ['北米東', 40.7, -74.0], ['北米西', 34.05, -118.24], ['カリブ', 18.47, -66.11], ['西アフリカ', 14.69, -17.45], ['南米', -23.55, -46.63], ['南部アフリカ', -26.2, 28.05], ['オセアニア', -33.87, 151.21], ['東南アジア', 1.35, 103.82]];
+  // 地磁気緯度線の表示の切り替え（状態は覚えておく）
+  var MAGLINES = (() => { try { return localStorage.getItem('magLines') === '1'; } catch (e) { return false; } })();
+  function magBtnSet() { const b = $('magBtn'), n = $('magNote'); if (b) b.textContent = (MAGLINES ? '▼ ' : '▶ ') + '地磁気緯度線を重ねる'; if (n) n.style.display = MAGLINES ? '' : 'none'; }
   function drawMap(P) {
     LASTP = P; const cv = $('dxMap'); if (!cv) return;
     const W = cv.clientWidth || 320, dpr = window.devicePixelRatio || 1;
@@ -732,6 +738,24 @@ function renderGuide(g, now) {
       img.data[k] = r; img.data[k + 1] = g; img.data[k + 2] = b; img.data[k + 3] = a;
     }
     oc.putImageData(img, 0, 0); c.drawImage(off, S.cx - S.R, S.cy - S.R, 2 * S.R, 2 * S.R);
+
+    // 地磁気緯度線（双極子近似。開閉ボタンで重ねる）
+    if (MAGLINES) {
+      for (const L of [-70, -60, -30, 0, 30, 60, 70]) {
+        const pts = []; for (let a = 0; a <= 360; a += 2) { const [la, lo] = dest(GMPOLE.lat, GMPOLE.lon, a, (90 - L) * RAD * EARTH); pts.push(pr(la, lo)); }
+        const key = Math.abs(L) === 60;
+        c.setLineDash(key ? [6, 3] : [2, 4]); c.strokeStyle = key ? 'rgba(240,138,75,.95)' : 'rgba(225,225,235,.6)'; c.lineWidth = key ? 1.7 : 1;
+        c.beginPath(); let pen = false;
+        for (let i = 0; i < pts.length; i++) { const p = pts[i]; if (i && Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]) > S.R * 0.35) pen = false; if (!pen) { c.moveTo(p[0], p[1]); pen = true; } else c.lineTo(p[0], p[1]); }
+        c.stroke();
+        // 数字は、自局の近くと短経路の線上を避けた位置に置く（重なりを減らすため）
+        const tg = P && P.az != null ? pa(P.az, P.km) : null;
+        const segD = p => { if (!tg) return 1e9; const vx = tg[0] - S.cx, vy = tg[1] - S.cy, t = Math.max(0, Math.min(1, ((p[0] - S.cx) * vx + (p[1] - S.cy) * vy) / (vx * vx + vy * vy))); return Math.hypot(p[0] - S.cx - t * vx, p[1] - S.cy - t * vy); };
+        let best = null; for (const p of pts) { const d = Math.hypot(p[0] - S.cx, p[1] - S.cy); if (d < S.R * 0.92 && d > S.R * 0.12 && segD(p) > S.R * 0.12 && (!best || d < best.d)) best = { p, d }; }
+        if (best) { c.setLineDash([]); c.font = 'bold ' + (S.R < 200 ? 9 : 10) + 'px sans-serif'; c.fillStyle = key ? '#f08a4b' : '#e1e1eb'; c.fillText(L === 0 ? '0°' : (L > 0 ? 'N' : 'S') + Math.abs(L) + '°', best.p[0] + 4, best.p[1] - 3); }
+      }
+      c.setLineDash([]);
+    }
     c.setLineDash([3, 4]); c.strokeStyle = '#33404e'; c.lineWidth = 1;
     for (const km of [5000, 10000, 15000]) { c.beginPath(); c.arc(S.cx, S.cy, km / HALF * S.R, 0, 2 * Math.PI); c.stroke(); }
     c.setLineDash([]); c.font = fs + 'px sans-serif'; c.textAlign = 'left';
@@ -894,6 +918,7 @@ function renderGuide(g, now) {
   for (const id of ['myGrid', 'dxIn']) $(id).addEventListener('keydown', e => { if (e.key === 'Enter') { e.target.blur(); findTarget(); } });
   $('myGrid').addEventListener('change', async () => { await setStation(); paths(Date.now()); });
   window.addEventListener('resize', () => drawMap(LASTP));
+  if ($('magBtn')) { magBtnSet(); $('magBtn').addEventListener('click', () => { MAGLINES = !MAGLINES; try { localStorage.setItem('magLines', MAGLINES ? '1' : '0'); } catch (e) {} magBtnSet(); drawMap(LASTP); }); }
   (async () => { const g = LS('m.myGrid'); if (g) $('myGrid').value = g; await setStation(); const d = LS('m.dx'); if (d) $('dxIn').value = d; loadLand(); if (d) findTarget(); })();
   setInterval(() => { if (!document.hidden && AUR !== undefined) paths(Date.now()); }, 60e3);   // 昼夜と暗さは1分ごとに計算し直す
   document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
