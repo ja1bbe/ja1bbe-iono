@@ -26,6 +26,8 @@
 .gt th.gb{padding:1px 5px;text-align:left;white-space:nowrap;color:var(--ink);font-weight:700}
 .gt .gj{color:var(--sub)}
 .gfine{font-size:11px;color:var(--sub);line-height:1.6;margin:6px 0 0}
+.grec{margin:4px 0 10px;padding:6px 10px;border:1px solid #c9971f;border-radius:8px;background:rgba(216,177,74,.08)}
+.grec>summary{font-size:.95em}
 .gwarn{margin:6px 0 8px;padding:6px 8px;border-left:3px solid #d64545;background:rgba(214,69,69,.10);font-size:.88em;line-height:1.7}
 .gdet{margin:6px 0 0}
 .gdet>summary{cursor:pointer;font-size:.85em;font-weight:700;padding:3px 0;list-style:none}
@@ -633,10 +635,54 @@ var G_BANDS = ['160m', '80m', '60m', '40m', '30m', '20m', '17m', '15m', '12m', '
     const aPart = agree.length ? `<details class="gdet gagree" data-k="agree"${gOpen('agree')}><summary>実績と物理の目安がそろう時間帯（${agree.length}バンド）</summary>${agree.join('<br>')}</details>` : '';
     return `<div class="gbox"><div class="gttl" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">交信しやすいバンドと時間帯の目安<span style="color:#d64545;font-size:.85em;white-space:nowrap">検証中</span></div><p class="gfine" style="margin:0 0 6px">実際の交信の結果と照らし合わせて、当たり具合を確かめている段階です。</p>${gBzWarn(pathStats(g.az, g.km, now))}${aPart}${ePart}${pPart}</div>`;
   }
-  function renderGuide(g, now) {
+  // ---- いまお勧めのバンド（PSK の実績＋いまの物理の条件・宇宙天気。検証中）
+var B36 = '0123456789abcdefghijklmnopqrstuvwxyz';
+function gBzActive() {
+  if (!SW_NOW || SW_NOW.bz30 == null) return false;
+  return SW_NOW.bz30 <= -10 || (SW_NOW.bz30 <= -5 && (SW_NOW.south || 0) >= 60);
+}
+function recHTML(g, now) {
+  const h = new Date(now).getUTCHours(), title = `いまお勧めのバンド（UTC ${h}時台・日本時間 ${(h + 9) % 24}時台）`;
+  const wrap = body => `<details class="gdet grec" data-k="rec"${gOpen('rec')}><summary>${title}<span style="color:#d64545;font-size:.85em">（検証中）</span></summary>${body}</details>`;
+  if (!SUMMARY) return wrap(`<p class="gfine">${SUMMARY_P ? '実績のデータを読み込んでいます…' : '実績のデータを読み込めませんでした。'}</p>`);
+  let data = null, isEnt = false, label = '';
+  if (TARGET.ent && CTY) { const i = CTY.ent.findIndex(e => e[0] === TARGET.ent); if (i >= 0 && SUMMARY.e[String(i)]) { data = SUMMARY.e[String(i)]; isEnt = true; } }
+  if (!data) { const f = llToGrid(TARGET.lat, TARGET.lon).slice(0, 2); if (SUMMARY.f[f]) { data = SUMMARY.f[f]; label = `（相手の周辺・大区画 ${f} の記録のため、最高でも○）`; } }
+  const win = [(h + 23) % 24, h, (h + 1) % 24], nWin = win.reduce((a, w) => a + (SUMMARY.n[w] || 0), 0);
+  const how = `<details class="gdet" data-k="recHow"${gOpen('recHow')}><summary>この判定の見方</summary><p class="gfine">いまの時刻の前後1時間（UTC ${win[0]}〜${(h + 2) % 24}時）について、直近${SUMMARY.days}日間の抜き取りのうち、日本の局がこの相手の信号を受信できた回の割合で判定します。◎は5割以上、○は2割以上（△：1割以上、×：1割未満は表示しません）。前後1時間の抜き取りが10回未満のときは判定しません。一時的な運用（DXペディションなど）に引っ張られないよう、受信できた日が3日以上あれば◎まで、2日なら○まで、1日だけなら表示しません。相手そのものの記録がなく周辺の大区画の記録で代用するときは、最高でも○とします。さらに、いまの条件で一段下げます：ローバンドで経路の大半が昼側のとき、ハイバンドで経路の大半が夜側または SFI が低いとき、短経路がオーロラ帯の濃い部分（30%以上）を通るときのローバンド、Bz の注意が出ていて経路がオーロラ帯の近くを通るときのロー・ミドルバンド。しきい値は出発点としての案で、実際の交信の結果と照らし合わせて見直していきます。</p></details>`;
+  if (!data) return wrap(`<p class="gtxt">この相手（周辺を含む）の受信の記録が、まだありません。</p>${how}`);
+  if (nWin < 10) return wrap(`<p class="gtxt">この時刻の抜き取りがまだ少なく（${nWin}回）、判定できません。</p>${how}`);
+  const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
+  const sfi = SFI_NOW ?? 100, near = Math.abs(sp.mag) >= 55 || (sp.aur != null && sp.aur >= 10), bz = gBzActive();
+  const out = [];
+  for (const b of G_BANDS) {
+    const d = data[b]; if (!d) continue;
+    let rate, days = null;
+    if (isEnt && d.wr) { rate = B36.indexOf(d.wr[h]) * 5; days = B36.indexOf(d.wd[h]); }
+    else if (d.r) { const lv = win.map(w => gLv(d.r[w])), nn = win.map(w => SUMMARY.n[w] || 0); rate = Math.round(lv.reduce((a, v, k) => a + v * 10 * nn[k], 0) / nWin); }
+    else continue;
+    let gr = rate >= 50 ? 2 : rate >= 20 ? 1 : rate >= 10 ? 0 : -1;
+    const why = [];
+    if (days != null) { if (days <= 1) gr = Math.min(gr, 0); else if (days === 2 && gr > 1) { gr = 1; why.push('受信できた日が2日のため○まで'); } }
+    if (!isEnt && gr > 1) gr = 1;
+    const grp = G_GROUP[b];
+    if (grp === 'low' && !(sp.dark >= 0.6 || lp.dark >= 0.8)) { gr--; why.push('いま経路の大半が昼側'); }
+    if (grp === 'high' && (sp.dark > 0.4 || sfi < 90)) { gr--; why.push(sp.dark > 0.4 ? 'いま経路の大半が夜側' : 'SFI が低い'); }
+    if (grp === 'low' && sp.aur != null && sp.aur >= 30) { gr--; why.push('短経路がオーロラ帯の濃い部分を通過'); }
+    if (bz && near && (grp === 'low' || grp === 'mid')) { gr--; why.push('Bz の注意'); }
+    if (gr >= 1) out.push({ b, gr, rate, days, why });
+  }
+  const list = out.length
+    ? out.map(x => `<div><b style="font-size:1.1em">${x.gr === 2 ? '◎' : '○'}</b> <b>${x.b}</b>　受信できた割合 ${x.rate}%${x.days != null ? `（${x.days}日）` : ''}${x.why.length ? `<span style="color:var(--sub, var(--muted))">　※${x.why.join('、')}${x.why.some(w => !w.includes('まで')) ? 'のため一段下げ' : ''}</span>` : ''}</div>`).join('')
+    : `<p class="gtxt">いまの時刻は、お勧めできるバンドがありません（記録が少ない、または開いていない時間帯です）。</p>`;
+  return wrap(`<div class="gtxt">${list}</div>${label ? `<p class="gfine">${label}</p>` : ''}<p class="gfine">前後1時間の抜き取り ${nWin}回のうち、この相手の信号が日本で受信できた割合です。</p>${how}`);
+}
+function renderGuide(g, now) {
     const box = document.getElementById('dxOut'); if (!box || !TARGET) return;
-    box.insertAdjacentHTML('beforeend', '<div id="dxGuide"></div>');
-    const fill = () => { const el = document.getElementById('dxGuide'); if (el) { el.innerHTML = guideHTML(g, now); gWatch(el); } };
+    box.insertAdjacentHTML('afterbegin', '<div id="dxRec"></div>');
+  box.insertAdjacentHTML('beforeend', '<div id="dxGuide"></div>');
+    const fill = () => { const el = document.getElementById('dxGuide'); if (el) { el.innerHTML = guideHTML(g, now); gWatch(el); }
+    const er = document.getElementById('dxRec'); if (er) { er.innerHTML = recHTML(g, now); gWatch(er); } };
     if (SUMMARY) fill(); else { fill(); loadSummary().then(fill).catch(fill); }
   }
   function targetRender() {
