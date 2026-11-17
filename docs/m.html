@@ -585,8 +585,8 @@ var G_BANDS = ['160m', '80m', '60m', '40m', '30m', '20m', '17m', '15m', '12m', '
     // 実績
     let ePart = '', eKey = null, eLabel = '', eData = null, agree = [];
     if (SUMMARY) {
-      if (TARGET.ent && CTY) { const i = CTY.ent.findIndex(e => e[0] === TARGET.ent); if (i >= 0 && SUMMARY.e[String(i)]) { eData = SUMMARY.e[String(i)]; eLabel = TARGET.ent; } }
-      if (!eData) { const f = llToGrid(TARGET.lat, TARGET.lon).slice(0, 2); if (SUMMARY.f[f]) { eData = SUMMARY.f[f]; eLabel = `周辺（グリッドの大区画 ${f}）`; } }
+      if (TARGET.ent && CTY) { const i = CTY.ent.findIndex(e => e[0] === TARGET.ent); if (i >= 0 && SUMMARY.e[String(i)]) { eData = SUMMARY.e[String(i)]; eLabel = TARGET.short && TARGET.short.toUpperCase() !== TARGET.ent.toUpperCase() ? `${TARGET.short}（${TARGET.ent}）` : TARGET.ent; } }
+      if (!eData) { const f = llToGrid(TARGET.lat, TARGET.lon).slice(0, 2); if (SUMMARY.f[f]) { eData = SUMMARY.f[f]; eLabel = `${TARGET.short ? TARGET.short + ' の' : '相手の'}周辺（グリッドの大区画 ${f}）`; } }
     }
     const phys = gPhysics(g, now);
     if (!SUMMARY) ePart = SUMMARY_P ? `<p class="gfine">実績のデータを読み込んでいます…</p>` : `<p class="gfine">実績のデータを読み込めませんでした。物理の目安だけを表示しています。</p>`;
