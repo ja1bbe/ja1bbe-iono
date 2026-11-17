@@ -636,13 +636,43 @@ var G_BANDS = ['160m', '80m', '60m', '40m', '30m', '20m', '17m', '15m', '12m', '
       <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">日本</th>${headJ}</tr>${pRows}</table></div>
       <details class="gdet" data-k="howP"${gOpen('howP')}><summary>この目安の見方</summary><p class="gfine">ローバンドは短経路（夜側にならなければ長経路）の大半が夜（太陽高度−6°以下）になる時刻、ミドルは経路に昼と夜が混ざる時刻、ハイバンドは経路の大半が昼で SFI が十分な時刻を、濃い紫で示します。電離層の詳しい計算（MUFの予測）ではなく、昼夜にもとづく目安です。オーロラ帯はいまの状態で計算しているので、数時間先は変わることがあります。</p></details>`;
     const aPart = agree.length ? `<details class="gdet gagree" data-k="agree"${gOpen('agree')}><summary>実績と物理の目安がそろう時間帯（${agree.length}バンド）</summary>${agree.join('<br>')}</details>` : '';
-    return `<div class="gbox"><div class="gttl" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">交信しやすいバンドと時間帯の目安<span style="color:#d64545;font-size:.85em;white-space:nowrap">検証中</span></div><p class="gfine" style="margin:0 0 6px">実際の交信の結果と照らし合わせて、当たり具合を確かめている段階です。</p>${gBzWarn(pathStats(g.az, g.km, now))}${aPart}${ePart}${pPart}</div>`;
+    return `<div class="gbox"><div class="gttl" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">交信しやすいバンドと時間帯の目安<span style="color:#d64545;font-size:.85em;white-space:nowrap">検証中</span></div><p class="gfine" style="margin:0 0 6px">実際の交信の結果と照らし合わせて、当たり具合を確かめている段階です。</p>${gBzWarn(pathStats(g.az, g.km, now))}${aPart}${ePart}${plHTML(g, now)}${pPart}</div>`;
   }
   // ---- いまお勧めのバンド（PSK の実績＋いまの物理の条件・宇宙天気。検証中）
 var B36 = '0123456789abcdefghijklmnopqrstuvwxyz';
 function gBzActive() {
   if (!SW_NOW || SW_NOW.bz30 == null) return false;
   return SW_NOW.bz30 <= -10 || (SW_NOW.bz30 <= -5 && (SW_NOW.south || 0) >= 60);
+}
+// ---- 短経路・長経路の手がかり（ローバンド。PSK の受信の時刻の昼夜による判別と、DXクラスターのコメント。検証中）
+function plHTML(g, now) {
+  if (!SUMMARY || !TARGET) return '';
+  let ei = -1; if (TARGET.ent && CTY) ei = CTY.ent.findIndex(e => e[0] === TARGET.ent);
+  const ed = ei >= 0 ? SUMMARY.e[String(ei)] : null, cd = ei >= 0 && SUMMARY.c ? SUMMARY.c[String(ei)] : null;
+  const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
+  const pc = x => Math.round(x * 100);
+  const nowTxt = `いま：短経路は途中の${pc(sp.dark)}%が夜、長経路は${pc(lp.dark)}%が夜。ローバンドは` +
+    (sp.dark >= 0.7 && lp.dark >= 0.7 ? '両方の経路が通り得る時間帯です。' : sp.dark >= 0.7 ? '短経路が通り得る時間帯です。' : lp.dark >= 0.7 ? '<b>長経路</b>が通り得る時間帯です。' : 'どちらの経路も昼側が多く、厳しい時間帯です。');
+  const rows = [];
+  if (ed) for (const b of ['160m', '80m', '40m']) {
+    const x = ed[b]; if (!x || !x.pl) continue;
+    const [n, so, lo, bo, no] = x.pl, hs = [...(x.plh || '')].map((c, h) => B36.indexOf(c) > 0 ? h : -1).filter(h => h >= 0);
+    const verdict = so + lo === 0 ? '' : lo >= so * 2 && lo >= 3 ? '　→ <b>長経路で届いていた可能性が高い</b>' : so >= lo * 2 ? '　→ 主に短経路' : '　→ 短経路・長経路の両方';
+    rows.push(`<b>${b}</b>　受信できた${n}回：短経路だけが夜 ${so}回／長経路だけが夜 ${lo}回${lo && hs.length ? `（${gWindows(hs)}）` : ''}／両方 ${bo}回／どちらも昼 ${no}回${verdict}`);
+  }
+  const cl = [];
+  if (cd) for (const b of G_BANDS) {
+    const x = cd[b]; if (!x) continue;
+    const hs = [...x.lph].map((c, h) => B36.indexOf(c) > 0 ? h : -1).filter(h => h >= 0);
+    cl.push(`<b>${b}</b>　スポット ${x.n}件のうち LP の記載 ${x.lp}件${x.lp && hs.length ? `（${gWindows(hs)}）` : ''}、SP ${x.sp}件、skew ${x.sk}件`);
+  }
+  const body = `<p class="gtxt">${nowTxt}</p>
+    <div class="gsub" style="font-size:.88em">PSK の受信の時刻から見た経路（直近${SUMMARY.days}日間）</div>
+    <div class="gtxt" style="font-size:.85em">${rows.length ? rows.join('<br>') : 'この相手のローバンドの受信の記録が、まだ少なく判別できません。'}</div>
+    <div class="gsub" style="font-size:.88em">DXクラスターの日本の局のスポット（コメントの LP・SP・skew）</div>
+    <div class="gtxt" style="font-size:.85em">${cl.length ? cl.join('<br>') : 'この相手のスポットは、まだ集まっていません（2026年11月から収集）。'}</div>
+    <details class="gdet" data-k="plHow"${gOpen('plHow')}><summary>この手がかりの見方</summary><p class="gfine">FT8 などの受信の報告からは、電波がどちらの経路で届いたかは分かりません。そこで、受信できた時刻に、短経路と長経路のそれぞれの途中（両端1,000kmを除く）の7割以上が夜だったかを計算しました。ローバンドは昼側で吸収が強いので、片方の経路だけが夜なら、その経路で届いた可能性が高いと考えます。日本側は東京付近、相手側はエンティティの代表位置で計算しており、オーロラ帯の影響は含めていません。DXクラスターは、日本の局がスポットしたもののうち、コメントに LP（ロングパス）・SP（ショートパス）・skew の記載があったものを数えています。人がアンテナを向けて確かめた情報なので、上の推定の答え合わせに使えますが、件数はまだわずかです。</p></details>`;
+  return `<details class="gdet" data-k="pl"${gOpen('pl')}><summary>短経路・長経路の手がかり（ローバンド）<span style="color:#d64545;font-size:.85em">（検証中）</span></summary>${body}</details>`;
 }
 function recHTML(g, now) {
   const h = new Date(now).getUTCHours(), title = `いまお勧めのバンド（UTC ${h}時台・日本時間 ${(h + 9) % 24}時台）`;
