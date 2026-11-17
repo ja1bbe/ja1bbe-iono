@@ -26,6 +26,8 @@
 .gt th.gb{padding:1px 5px;text-align:left;white-space:nowrap;color:var(--ink);font-weight:700}
 .gt .gj{color:var(--sub)}
 .gfine{font-size:11px;color:var(--sub);line-height:1.6;margin:6px 0 0}
+#dxLb input,#dxLb select{background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:2px 4px;font:inherit;font-size:16px}
+#dxLb label{white-space:nowrap}
 .grec{margin:4px 0 10px;padding:6px 10px;border:1px solid #c9971f;border-radius:8px;background:rgba(216,177,74,.08)}
 .grec>summary{font-size:.95em}
 .gwarn{margin:6px 0 8px;padding:6px 8px;border-left:3px solid #d64545;background:rgba(214,69,69,.10);font-size:.88em;line-height:1.7}
@@ -132,7 +134,8 @@ footer a{color:var(--link)}
     <div class="fine" id="stInfo"></div>
     <canvas id="dxMap" role="img" aria-label="自局を中心にした正距方位図。短経路と長経路、昼夜、オーロラ帯を表示"></canvas>
     <div class="legend"><span><i style="background:#d8b14a"></i>短経路</span><span><i style="background:repeating-linear-gradient(90deg,#7fd3c6 0 4px,transparent 4px 7px)"></i>長経路</span><span><i style="background:repeating-linear-gradient(90deg,#c77dff 0 3px,transparent 3px 6px)"></i>ずらした方位</span><span><i style="background:#05080d"></i>夜</span><span><i style="background:#3a3550"></i>薄明</span><span><i style="background:rgba(80,220,140,.8)"></i>オーロラ10〜30%</span><span><i style="background:rgba(240,90,80,.8)"></i>30%以上</span></div>
-    <div style="margin-top:6px;text-align:center"><button id="magBtn" type="button" class="magbtn">▶ 地磁気緯度線を重ねる</button></div>
+    <div style="margin-top:6px;text-align:center"><button id="magBtn" type="button" class="magbtn">▶ 地磁気緯度線を重ねる</button> <button id="stormBtn" type="button" class="magbtn">▶ 嵐の影響を重ねる</button><br><span style="color:#d64545;font-size:.75em">（嵐の影響は検証中）</span></div>
+    <p id="stormNote" class="fine" style="display:none;text-align:left"></p>
     <p id="magNote" class="fine" style="display:none;text-align:center">点線は地磁気緯度 0°・±30°・±70°、<span style="color:#f08a4b">橙は ±60°</span>（静穏時のオーロラ帯の赤道側の縁の目安。Kp が上がるとこれより低緯度まで広がります）。地球の磁場を一つの棒磁石とみなす近似（経路の判定と同じ計算）で、実際の地磁気とは場所によって数度ずれます。</p>
     <div id="dxOut"></div>
     <details><summary>地図と入力の見方</summary>
@@ -714,11 +717,94 @@ function recHTML(g, now) {
 function renderGuide(g, now) {
     const box = document.getElementById('dxOut'); if (!box || !TARGET) return;
     box.insertAdjacentHTML('afterbegin', '<div id="dxRec"></div>');
+  { const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
+    box.insertAdjacentHTML('afterbegin', `<div id="dxLb">${lbHTML(g, sp, lp, now)}</div>`); lbWire(); }
   box.insertAdjacentHTML('beforeend', '<div id="dxGuide"></div>');
     const fill = () => { const el = document.getElementById('dxGuide'); if (el) { el.innerHTML = guideHTML(g, now); gWatch(el); }
     const er = document.getElementById('dxRec'); if (er) { er.innerHTML = recHTML(g, now); gWatch(er); } };
     if (SUMMARY) fill(); else { fill(); loadSummary().then(fill).catch(fill); }
   }
+// ---- 届く強さの見込み（送信電力・アンテナ利得・周波数から。簡易な回線計算。検証中）
+var LB_F = { '160m': 1.85, '80m': 3.6, '60m': 5.36, '40m': 7.1, '30m': 10.13, '20m': 14.1, '17m': 18.1, '15m': 21.1, '12m': 24.93, '10m': 28.1, '6m': 50.2 };
+// 受信地点の外来雑音（ITU-R P.372 の郊外と田園の中間程度の目安）。雑音指数 Fa [dB]
+var LB_FA = { '160m': 55, '80m': 48, '60m': 44, '40m': 40, '30m': 36, '20m': 31, '17m': 28, '15m': 26, '12m': 24, '10m': 22, '6m': 14 };
+var LB = (() => { try { return Object.assign({ w: 100, g: 7, b: '20m' }, JSON.parse(localStorage.getItem('lb') || '{}')); } catch (e) { return { w: 100, g: 7, b: '20m' }; } })();
+var LB_ON = (() => { try { return localStorage.getItem('lbOn') === '1'; } catch (e) { return false; } })();
+var LB_CAT = [{ min: 6, name: '強く届く（SSB・CW でも）', a: 1 }, { min: -10, name: '届く（CW・FT8）', a: 0.72 }, { min: -21, name: '弱く届く（FT8 なら）', a: 0.42 }, { min: -999, name: '届かない見込み', a: 0.12 }];
+function lbCalc(az, km, t, band, aur) {
+  const f = LB_F[band], Re = EARTH, h = 300, n = Math.max(1, Math.ceil(km / 3500)), d = km / n;
+  const s = 2 * Math.sqrt((Re + h) ** 2 + Re ** 2 - 2 * Re * (Re + h) * Math.cos(d / 2 / Re)), S = n * s;   // 電波が実際に進む道のり
+  const fsl = 32.45 + 20 * Math.log10(f) + 20 * Math.log10(S), refl = 2 * (n - 1);
+  const sfi = SFI_NOW ?? 100, R12 = Math.max(0, (sfi - 67) / 0.97);
+  let abs = 0, muf = 1e9;
+  for (let i = 0; i < n; i++) {
+    // D層の吸収：各ホップで電離層に出入りする2か所（両端から200km内側）の太陽天頂角で計算（George の式を簡略化）。夜もわずかに残る吸収を加える
+    for (const x of [i * d + Math.min(200, d / 4), (i + 1) * d - Math.min(200, d / 4)]) {
+      const [la, lo] = dest(STATION.lat, STATION.lon, az, x), chi = 90 - sunElev(la, lo, t);
+      const I = (1 + 0.0037 * R12) * Math.pow(Math.max(0, Math.cos(0.881 * chi * Math.PI / 180)), 1.3);
+      abs += 0.8 * 677.2 * I / (Math.pow(f + 1.2, 1.98) + 10.2) + 0.15 * Math.pow(10 / f, 2);
+    }
+    // MUF の推定：反射点の昼夜と SFI から foF2 を大まかに見積もり、ホップの長さに応じて倍率を掛ける
+    // F層は日没後すぐには弱まらないので、1.5時間前・3時間前の昼の度合いも少し残す
+    const [la, lo] = dest(STATION.lat, STATION.lon, az, (i + 0.5) * d), dayAt = tt => Math.max(0, Math.min(1, (sunElev(la, lo, tt) + 6) / 36));
+    const day = Math.max(dayAt(t), 0.7 * dayAt(t - 5400e3), 0.4 * dayAt(t - 10800e3));
+    const foN = 0.02 * sfi + 2.5, foD = 0.065 * sfi + 2.5, fo = foN + (foD - foN) * Math.sqrt(day);
+    muf = Math.min(muf, fo * Math.min(3.2, 1 + 2.2 * d / 3000));
+  }
+  const aurDb = aur == null ? 0 : Math.min(30, (aur >= 30 ? 12 : aur >= 10 ? 5 : 0) * Math.pow(14 / f, 1.5));
+  const loss = fsl + refl + abs + aurDb;
+  let snr = 10 * Math.log10(LB.w) + LB.g - loss - (-170 + LB_FA[band]);   // 受信側のアンテナは 0 dBi、帯域 2.5kHz
+  const why = [];
+  if (f > muf) { snr = -99; why.push(`推定 MUF ${muf.toFixed(0)} MHz を超える`); }
+  else if (f > 0.9 * muf) { snr -= 6; why.push('推定 MUF に近い'); }
+  if (aurDb >= 3) why.push(`オーロラ帯の吸収 約${aurDb.toFixed(0)} dB`);
+  const cat = LB_CAT.find(c => snr >= c.min);
+  return { snr, cat, muf, n, fsl, refl, abs, aurDb, why };
+}
+function lbHTML(g, sp, lp, now) {
+  const opt = Object.keys(LB_F).map(b => `<option${b === LB.b ? ' selected' : ''}>${b}</option>`).join('');
+  const r1 = lbCalc(g.az, g.km, now, LB.b, sp.aur), r2 = lbCalc((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now, LB.b, lp.aur);
+  const line = (n, az, r) => `<div><b>${n} ${az.toFixed(0)}°</b>　推定 SNR ${r.snr <= -99 ? '―' : (r.snr >= 0 ? '+' : '') + r.snr.toFixed(0) + ' dB'} → <b>${r.cat.name}</b><br><span style="color:var(--sub);font-size:.9em">　損失 ${(r.fsl + r.refl + r.abs + r.aurDb).toFixed(0)} dB（距離 ${r.fsl.toFixed(0)}・地面反射 ${r.refl.toFixed(0)}・D層の吸収 ${r.abs.toFixed(0)}${r.aurDb >= 1 ? '・オーロラ帯 ' + r.aurDb.toFixed(0) : ''}）、推定 MUF ${r.muf.toFixed(0)} MHz、${r.n}ホップ${r.why.length ? '。' + r.why.join('、') : ''}</span></div>`;
+  return `<details class="gdet grec" id="lbBox"${LB_ON ? ' open' : ''}><summary>届く強さの見込み（送信電力・アンテナ・周波数）<span style="color:#d64545;font-size:.85em">（検証中）</span></summary>
+    <div class="gtxt" style="display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin:6px 0">
+      <label>送信電力 <input id="lbW" type="number" min="1" max="1500" step="1" value="${LB.w}" style="width:5em"> W</label>
+      <label>アンテナ利得 <input id="lbG" type="number" min="-10" max="25" step="0.5" value="${LB.g}" style="width:4em"> dBi</label>
+      <label>バンド <select id="lbB">${opt}</select></label></div>
+    <div class="gtxt">${line('短経路', g.az, r1)}${line('長経路', (g.az + 180) % 360, r2)}</div>
+    <p class="gfine">開いている間は、地図の短経路・長経路の線が、届く強さに応じて相手に近づくほど薄くなります（強く届く：濃いまま、届く・弱く届く：中くらい・薄く、届かない見込み：ほぼ消える）。アンテナ利得の目安：ダイポール 2 dBi、3エレ八木 7〜8 dBi、4エレ八木 8〜9 dBi、垂直系 0〜2 dBi。</p>
+    <details class="gdet" data-k="lbHow"${gOpen('lbHow')}><summary>この見込みの見方</summary><p class="gfine">送信電力とアンテナ利得から、経路の損失（距離による広がり、地面・海面での反射、D層の吸収、オーロラ帯の吸収）を差し引き、相手側の雑音と比べて SNR（2.5kHz 帯域）を見積もります。電離層の反射は高さ300km、1ホップ最大3,500kmとし、D層の吸収は経路上の太陽の高さと SFI から George の式を簡略化して求めます。電離層が反射できる周波数の上限（MUF）は、SFI と反射点の昼夜から大まかに推定しており、ここが最も不確かです。相手側は 0 dBi のアンテナと郊外程度の雑音を仮定しています。実際とは10〜20dB程度ずれることがあり、目安としてご覧ください。今後、PSK Reporter の SNR の記録と比べて、見積もりを確かめ、補正していきます。強く届く：+6dB 以上、届く：−10dB 以上、弱く届く：−21dB 以上（FT8 の解読の限界付近）。</p></details></details>`;
+}
+function lbWire() {
+  const save = () => { try { localStorage.setItem('lb', JSON.stringify(LB)); } catch (e) {} };
+  const w = document.getElementById('lbW'), gg = document.getElementById('lbG'), b = document.getElementById('lbB'), box = document.getElementById('lbBox');
+  if (w) w.onchange = () => { LB.w = Math.max(1, +w.value || 100); save(); targetRender(); };
+  if (gg) gg.onchange = () => { LB.g = +gg.value || 0; save(); targetRender(); };
+  if (b) b.onchange = () => { LB.b = b.value; save(); targetRender(); };
+  if (box) box.addEventListener('toggle', () => { LB_ON = box.open; try { localStorage.setItem('lbOn', LB_ON ? '1' : '0'); } catch (e) {} drawMap(LASTP); });
+}
+
+// ---- 嵐の影響を重ねる（D層の吸収 D-RAP、Bz と太陽風から見積もるオーロラ帯の広がり、経路の危ない区間。検証中）
+var STORM_ON=(()=>{try{return localStorage.getItem('stormOn')==='1'}catch(e){return false}})();
+var DRAP=null;
+function parseDrap(txt){const rows=[],lat=[];let valid='',xr='',pr='';
+  for(const ln of txt.split(/\r?\n/)){let m;
+    if((m=ln.match(/Product Valid At\s*:\s*(.+)/)))valid=m[1].trim();
+    else if((m=ln.match(/X-RAY Message\s*:\s*(.*)/)))xr=m[1].trim();
+    else if((m=ln.match(/Proton Message\s*:\s*(.*)/)))pr=m[1].trim();
+    else if((m=ln.match(/^\s*(-?\d+)\s*\|(.*)$/))){lat.push(+m[1]);rows.push(m[2].trim().split(/\s+/).map(Number))}}
+  return rows.length?{lat,rows,valid,xr,pr}:null}
+async function loadDrap(){try{const r=await fetch(NOAA+'/text/drap_global_frequencies.txt',{cache:'no-store'});if(r.ok)DRAP=parseDrap(await r.text())}catch(e){}stormNoteSet();if(STORM_ON)drawMap(LASTP)}
+function drapAt(la,lo){if(!DRAP)return null;const n=DRAP.lat.length,i=Math.max(0,Math.min(n-1,Math.round((DRAP.lat[0]-la)/(DRAP.lat[0]-DRAP.lat[1]||2)))),row=DRAP.rows[i];
+  const nc=row.length,j=((Math.round((lo+178)/(360/nc))%nc)+nc)%nc;return row[j]}
+// Bz の南向きと太陽風の速さから、オーロラ帯の赤道側の縁がどこまで広がりそうかを見積もる（地磁気緯度。夜側の目安）
+function stormEdge(){if(!SW_NOW)return null;const bs=Math.max(0,-(SW_NOW.bz30??0)),v=SW_NOW.sp??400,E=v*bs*1e-3;
+  const kpE=Math.min(9,1+0.6*E),kp=Math.max(kpE,SW_NOW.kp??0);return{edge:Math.max(45,Math.min(64,66-2*kp)),kp,show:gBzActive()||kp>=4}}
+function stormNoteSet(){const b=$('stormBtn'),n=$('stormNote');if(b)b.textContent=(STORM_ON?'▼ ':'▶ ')+'嵐の影響を重ねる';if(!n)return;n.style.display=STORM_ON?'':'none';
+  const se=stormEdge();
+  n.innerHTML=`<span style="color:#ffb070">■</span> D層の吸収（NOAA D-RAP）：1dB以上吸収される周波数の上限が 1MHz以上の範囲を橙、5MHz以上を濃い橙、10MHz以上を赤紫で塗っています。この上限より低い周波数ほど強く吸収されます。${DRAP?`算出時刻 ${DRAP.valid}。X線：${DRAP.xr||'―'}、プロトン：${DRAP.pr||'―'}。`:'データを読み込めていません。'}<br>`+
+    `<span style="color:#ff5a5a">- - -</span> オーロラ帯の広がりの見込み：${se&&se.show?`いまの Bz・太陽風（Kp ${se.kp.toFixed(1)} 相当）から、赤道側の縁が地磁気緯度 ${se.edge.toFixed(0)}° 付近まで広がる見込みです。経路のうち、その内側に入る区間を赤く示します。`:'いまは Bz の南向きが弱く、大きな広がりは見込まれないため表示していません。'}`+
+    `見積もりは経験的な目安で（検証中）、地球の磁場は棒磁石とみなした近似です。`}
+
   function targetRender() {
     if (!TARGET) { drawMap(null); return; }
     const now = Date.now(), [l, c] = dnState(sunElev(TARGET.lat, TARGET.lon, now)), [jl, jc] = dnState(sunElev(STATION.lat, STATION.lon, now));
@@ -732,7 +818,7 @@ function renderGuide(g, now) {
         `${sk.az.toFixed(0)}° 方向に送り出し、${llToGrid(sk.turn[0], sk.turn[1])} 付近で曲がって届く経路なら、オーロラ帯を避けられます（${detourTxt(sk.extra)}）。` +
         `電離層の傾きや散乱で曲がる経路なので、届くかどうかは条件しだいです。</div>`
       : `<div class="adv"><b>ずらした方位</b>：短経路は${where}。左右60°までずらしても、オーロラ帯を避けて届く経路は見つかりませんでした。</div>`;
-    drawMap({ sp, az: g.az, km: g.km, label: TARGET.short, sk });
+    drawMap({ sp, lp, az: g.az, km: g.km, label: TARGET.short, sk });
     $('dxOut').innerHTML = `<div class="tgt-who">${esc(TARGET.title)}<small>${esc(TARGET.loc)}</small></div>` +
       `<div class="dest" style="border-top:0"><div class="dest-h"><span>相手<span class="tag ${c}">${l}</span> 自局<span class="tag ${jc}">${jl}</span></span></div>` +
       `<div class="adv">${advise(sp, lp)}</div>${skTxt}<div class="legs">${leg('短経路', sp)}${leg('長経路', lp)}${sk ? leg('ずらした方位', sk) : ''}</div></div>`;
@@ -764,6 +850,7 @@ function renderGuide(g, now) {
       const az = Math.atan2(dx, -dy) / RAD, [la, lo] = dest(STATION.lat, STATION.lon, (az + 360) % 360, rr * HALF), e = sunElev(la, lo, now), k = (j * N + i) * 4;
       let r = 0, g = 0, b = 0, a = 0;
       if (e < -6) { r = 2; g = 5; b = 12; a = 175; } else if (e < 0) { r = 40; g = 34; b = 80; a = Math.round(70 + (-e / 6) * 70); }
+      if (STORM_ON && DRAP) { const v = drapAt(la, lo); if (v != null && v >= 1) { const s3 = v >= 10 ? [220, 70, 170, 170] : v >= 5 ? [255, 120, 40, 150] : [255, 176, 90, Math.round(70 + v * 12)]; r = s3[0]; g = s3[1]; b = s3[2]; a = Math.max(a, s3[3]); } }
       const au = aurAt(la, lo);
       if (au != null && au >= 10) { const st = au >= 30; r = st ? 240 : 80; g = st ? 90 : 220; b = st ? 80 : 140; a = Math.max(a, st ? 190 : Math.round(70 + au * 3)); }
       img.data[k] = r; img.data[k + 1] = g; img.data[k + 2] = b; img.data[k + 3] = a;
@@ -798,9 +885,26 @@ function renderGuide(g, now) {
         sk.pts.forEach(([la, lo], i) => { const q = pr(la, lo); if (i) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); }); c.stroke(); c.setLineDash([]);
         const q = pr(sk.turn[0], sk.turn[1]); c.fillStyle = '#c77dff'; c.beginPath(); c.arc(q[0], q[1], 3.5, 0, 2 * Math.PI); c.fill();
       }
-      c.strokeStyle = '#7fd3c6'; c.lineWidth = 1.8; c.setLineDash([6, 4]); c.beginPath(); c.moveTo(S.cx, S.cy); const e1 = pa((az + 180) % 360, HALF); c.lineTo(e1[0], e1[1]);
-      const e2 = pa(az, HALF); c.moveTo(e2[0], e2[1]); c.lineTo(t[0], t[1]); c.stroke(); c.setLineDash([]);
-      c.strokeStyle = '#d8b14a'; c.lineWidth = 3; c.beginPath(); c.moveTo(S.cx, S.cy); c.lineTo(t[0], t[1]); c.stroke();
+      // 「届く強さの見込み」を開いているときは、届く強さに応じて相手に近づくほど線を薄くする
+      let aS = 1, aL = 1; if (LB_ON && P.lp) { const nw = Date.now(); aS = lbCalc(az, km, nw, LB.b, sp.aur).cat.a; aL = lbCalc((az + 180) % 360, 2 * Math.PI * EARTH - km, nw, LB.b, P.lp.aur).cat.a; }
+      const grad = (x0, y0, x1, y1, rgb, a0, a1) => { const gr = c.createLinearGradient(x0, y0, x1, y1); gr.addColorStop(0, `rgba(${rgb},${a0})`); gr.addColorStop(1, `rgba(${rgb},${a1})`); return gr; };
+      const e1 = pa((az + 180) % 360, HALF), e2 = pa(az, HALF), Ltot = 2 * Math.PI * EARTH - km, aMid = 1 - (1 - aL) * Math.min(1, HALF / Ltot);
+      c.lineWidth = 1.8; c.setLineDash([6, 4]);
+      c.strokeStyle = grad(S.cx, S.cy, e1[0], e1[1], '127,211,198', 1, aMid); c.beginPath(); c.moveTo(S.cx, S.cy); c.lineTo(e1[0], e1[1]); c.stroke();
+      c.strokeStyle = grad(e2[0], e2[1], t[0], t[1], '127,211,198', aMid, aL); c.beginPath(); c.moveTo(e2[0], e2[1]); c.lineTo(t[0], t[1]); c.stroke(); c.setLineDash([]);
+      c.strokeStyle = grad(S.cx, S.cy, t[0], t[1], '216,177,74', 1, aS); c.lineWidth = 3; c.beginPath(); c.moveTo(S.cx, S.cy); c.lineTo(t[0], t[1]); c.stroke();
+      const se = STORM_ON ? stormEdge() : null;
+      if (se && se.show) {
+        for (const L of [se.edge, -se.edge]) { const pts = []; for (let a2 = 0; a2 <= 360; a2 += 2) { const [la, lo] = dest(GMPOLE.lat, GMPOLE.lon, a2, (90 - L) * RAD * EARTH); pts.push(pr(la, lo)); }
+          c.setLineDash([7, 4]); c.strokeStyle = 'rgba(255,90,90,.95)'; c.lineWidth = 1.8; c.beginPath(); let pen = false;
+          for (let i = 0; i < pts.length; i++) { const p = pts[i]; if (i && Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]) > S.R * 0.35) pen = false; if (!pen) { c.moveTo(p[0], p[1]); pen = true; } else c.lineTo(p[0], p[1]); } c.stroke(); }
+        c.setLineDash([]);
+        const seg = (az2, len) => { c.strokeStyle = 'rgba(255,70,70,.95)'; c.lineWidth = 4.5; c.beginPath(); let pen = false, prev = null;
+          for (let x = 0; x <= len; x += 100) { const [la, lo] = dest(STATION.lat, STATION.lon, az2, x), q = pr(la, lo), inZ = Math.abs(magLat(la, lo)) >= se.edge;
+            if (prev && Math.hypot(q[0] - prev[0], q[1] - prev[1]) > S.R * 0.35) pen = false;
+            if (inZ) { if (!pen) { c.moveTo(q[0], q[1]); pen = true; } else c.lineTo(q[0], q[1]); } else pen = false; prev = q; } c.stroke(); };
+        seg(az, km); seg((az + 180) % 360, 2 * Math.PI * EARTH - km);
+      }
       let best = 0, bx = 0; for (let x = 0; x <= km; x += 100) { const [la, lo] = dest(STATION.lat, STATION.lon, az, x), m = Math.abs(magLat(la, lo)); if (m > best) { best = m; bx = x; } }
       const mp = pa(az, bx); c.strokeStyle = '#f08a4b'; c.lineWidth = 2; c.beginPath(); c.arc(mp[0], mp[1], 5, 0, 2 * Math.PI); c.stroke();
       c.fillStyle = '#f08a4b'; c.font = 'bold ' + fs + 'px sans-serif'; c.fillText(`${sp.mag >= 0 ? 'N' : 'S'}${Math.abs(sp.mag).toFixed(0)}°`, mp[0] + 7, mp[1] - 5);
@@ -821,6 +925,7 @@ function renderGuide(g, now) {
     (sub ? `<div class="sub">${sub.map(esc).join('<br>')}</div>` : '') + '</div>';
 
   async function load() {
+    loadDrap();
     $('updated').textContent = '読み込み中…';
     const keys = Object.keys(SRC);
     const res = await Promise.allSettled(keys.map(k => get(SRC[k])));
@@ -844,7 +949,7 @@ function renderGuide(g, now) {
     const mag = rtsw(d.mag, ['bz_gsm', 'bt']);
     const wind = rtsw(d.wind, ['proton_speed', 'proton_density']);
     const tail30 = (a, i) => { if (!a.length) return []; const tEnd = a[a.length - 1][0]; return a.filter(r => r[0] > tEnd - 1800e3).map(r => r[i]).filter(x => !isNaN(x)); };
-    SW_NOW = { bz30: mag.length ? avg(tail30(mag, 1)) : null, sp: wind.length ? avg(tail30(wind, 1)) : null, south: gSouthMin(mag.map(r => [r[0], r[1]])) };
+    SW_NOW = { bz30: mag.length ? avg(tail30(mag, 1)) : null, sp: wind.length ? avg(tail30(wind, 1)) : null, kp: v.kp, south: gSouthMin(mag.map(r => [r[0], r[1]])) }; stormNoteSet();
     if (mag.length) { v.bz30 = avg(tail30(mag, 1)); v.bt = mag[mag.length - 1][2]; v.magAt = mag[mag.length - 1][0]; }
     if (wind.length) { v.sp30 = avg(tail30(wind, 1)); v.den = wind[wind.length - 1][2]; v.windAt = wind[wind.length - 1][0]; }
     v.rtswAt = Math.max(v.magAt || 0, v.windAt || 0) || null;
@@ -949,6 +1054,7 @@ function renderGuide(g, now) {
   for (const id of ['myGrid', 'dxIn']) $(id).addEventListener('keydown', e => { if (e.key === 'Enter') { e.target.blur(); findTarget(); } });
   $('myGrid').addEventListener('change', async () => { await setStation(); paths(Date.now()); });
   window.addEventListener('resize', () => drawMap(LASTP));
+  if ($('stormBtn')) { stormNoteSet(); $('stormBtn').addEventListener('click', () => { STORM_ON = !STORM_ON; try { localStorage.setItem('stormOn', STORM_ON ? '1' : '0'); } catch (e) {} stormNoteSet(); drawMap(LASTP); }); }
   if ($('magBtn')) { magBtnSet(); $('magBtn').addEventListener('click', () => { MAGLINES = !MAGLINES; try { localStorage.setItem('magLines', MAGLINES ? '1' : '0'); } catch (e) {} magBtnSet(); drawMap(LASTP); }); }
   (async () => { const g = LS('m.myGrid'); if (g) $('myGrid').value = g; await setStation(); const d = LS('m.dx'); if (d) $('dxIn').value = d; loadLand(); if (d) findTarget(); })();
   setInterval(() => { if (!document.hidden && AUR !== undefined) paths(Date.now()); }, 60e3);   // 昼夜と暗さは1分ごとに計算し直す
