@@ -134,7 +134,8 @@ footer a{color:var(--link)}
     <div class="fine" id="stInfo"></div>
     <canvas id="dxMap" role="img" aria-label="自局を中心にした正距方位図。短経路と長経路、昼夜、オーロラ帯を表示"></canvas>
     <div class="legend"><span><i style="background:#d8b14a"></i>短経路</span><span><i style="background:repeating-linear-gradient(90deg,#7fd3c6 0 4px,transparent 4px 7px)"></i>長経路</span><span><i style="background:repeating-linear-gradient(90deg,#c77dff 0 3px,transparent 3px 6px)"></i>ずらした方位</span><span><i style="background:#05080d"></i>夜</span><span><i style="background:#3a3550"></i>薄明</span><span><i style="background:rgba(80,220,140,.8)"></i>オーロラ10〜30%</span><span><i style="background:rgba(240,90,80,.8)"></i>30%以上</span></div>
-    <div style="margin-top:6px;text-align:center"><button id="magBtn" type="button" class="magbtn">▶ 地磁気緯度線を重ねる</button> <button id="stormBtn" type="button" class="magbtn">▶ 嵐の影響を重ねる</button><br><span style="color:#d64545;font-size:.75em">（嵐の影響は検証中）</span></div>
+    <div style="margin-top:6px;text-align:center"><button id="magBtn" type="button" class="magbtn">▶ 地磁気緯度線を重ねる</button> <br><button id="drapBtn" type="button" class="magbtn" style="margin-top:6px">▶ D層の吸収を重ねる</button> <button id="stormBtn" type="button" class="magbtn" style="margin-top:6px">▶ 嵐の広がりを重ねる</button><br><span style="color:var(--storm);font-size:.75em">（D層の吸収と嵐の広がりは検証中）</span></div>
+    <p id="drapNote" class="fine" style="display:none;text-align:left"></p>
     <p id="stormNote" class="fine" style="display:none;text-align:left"></p>
     <p id="magNote" class="fine" style="display:none;text-align:center">点線は地磁気緯度 0°・±30°・±70°、<span style="color:#f08a4b">橙は ±60°</span>（静穏時のオーロラ帯の赤道側の縁の目安。Kp が上がるとこれより低緯度まで広がります）。地球の磁場を一つの棒磁石とみなす近似（経路の判定と同じ計算）で、実際の地磁気とは場所によって数度ずれます。</p>
     <div id="dxOut"></div>
@@ -783,8 +784,10 @@ function lbWire() {
   if (box) box.addEventListener('toggle', () => { LB_ON = box.open; try { localStorage.setItem('lbOn', LB_ON ? '1' : '0'); } catch (e) {} drawMap(LASTP); });
 }
 
-// ---- 嵐の影響を重ねる（D層の吸収 D-RAP、Bz と太陽風から見積もるオーロラ帯の広がり、経路の危ない区間。検証中）
+// ---- D層の吸収を重ねる（NOAA D-RAP）と、嵐の広がりを重ねる（Bz と太陽風から見積もるオーロラ帯の広がり、経路の危ない区間）。どちらも検証中
+// 以前の「嵐の影響を重ねる」（stormOn）を開いていた場合は、D層の吸収も開いた状態で引き継ぐ
 var STORM_ON=(()=>{try{return localStorage.getItem('stormOn')==='1'}catch(e){return false}})();
+var DRAP_ON=(()=>{try{const v=localStorage.getItem('drapOn');return v===null?localStorage.getItem('stormOn')==='1':v==='1'}catch(e){return false}})();
 var DRAP=null;
 function parseDrap(txt){const rows=[],lat=[];let valid='',xr='',pr='';
   for(const ln of txt.split(/\r?\n/)){let m;
@@ -793,17 +796,26 @@ function parseDrap(txt){const rows=[],lat=[];let valid='',xr='',pr='';
     else if((m=ln.match(/Proton Message\s*:\s*(.*)/)))pr=m[1].trim();
     else if((m=ln.match(/^\s*(-?\d+)\s*\|(.*)$/))){lat.push(+m[1]);rows.push(m[2].trim().split(/\s+/).map(Number))}}
   return rows.length?{lat,rows,valid,xr,pr}:null}
-async function loadDrap(){try{const r=await fetch(NOAA+'/text/drap_global_frequencies.txt',{cache:'no-store'});if(r.ok)DRAP=parseDrap(await r.text())}catch(e){}stormNoteSet();if(STORM_ON)drawMap(LASTP)}
+async function loadDrap(){try{const r=await fetch(NOAA+'/text/drap_global_frequencies.txt',{cache:'no-store'});if(r.ok)DRAP=parseDrap(await r.text())}catch(e){}stormNoteSet();if(DRAP_ON)drawMap(LASTP)}
 function drapAt(la,lo){if(!DRAP)return null;const n=DRAP.lat.length,i=Math.max(0,Math.min(n-1,Math.round((DRAP.lat[0]-la)/(DRAP.lat[0]-DRAP.lat[1]||2)))),row=DRAP.rows[i];
   const nc=row.length,j=((Math.round((lo+178)/(360/nc))%nc)+nc)%nc;return row[j]}
 // Bz の南向きと太陽風の速さから、オーロラ帯の赤道側の縁がどこまで広がりそうかを見積もる（地磁気緯度。夜側の目安）
 function stormEdge(){if(!SW_NOW)return null;const bs=Math.max(0,-(SW_NOW.bz30??0)),v=SW_NOW.sp??400,E=v*bs*1e-3;
   const kpE=Math.min(9,1+0.6*E),kp=Math.max(kpE,SW_NOW.kp??0);return{edge:Math.max(45,Math.min(64,66-2*kp)),kp,show:gBzActive()||kp>=4}}
-function stormNoteSet(){const b=$('stormBtn'),n=$('stormNote');if(b)b.textContent=(STORM_ON?'▼ ':'▶ ')+'嵐の影響を重ねる';if(!n)return;n.style.display=STORM_ON?'':'none';
-  const se=stormEdge();
-  n.innerHTML=`<span style="color:#ffb070">■</span> D層の吸収（NOAA D-RAP）：1dB以上吸収される周波数の上限が 1MHz以上の範囲を橙、5MHz以上を濃い橙、10MHz以上を赤紫で塗っています。この上限より低い周波数ほど強く吸収されます。${DRAP?`算出時刻 ${DRAP.valid}。X線：${DRAP.xr||'―'}、プロトン：${DRAP.pr||'―'}。`:'データを読み込めていません。'}<br>`+
-    `<span style="color:#ff5a5a">- - -</span> オーロラ帯の広がりの見込み：${se&&se.show?`いまの Bz・太陽風（Kp ${se.kp.toFixed(1)} 相当）から、赤道側の縁が地磁気緯度 ${se.edge.toFixed(0)}° 付近まで広がる見込みです。経路のうち、その内側に入る区間を赤く示します。`:'いまは Bz の南向きが弱く、大きな広がりは見込まれないため表示していません。'}`+
-    `見積もりは経験的な目安で（検証中）、地球の磁場は棒磁石とみなした近似です。`}
+function drapMax(){if(!DRAP)return null;let m=0;for(const r of DRAP.rows)for(const v of r)if(v>m)m=v;return m}
+function stormNoteSet(){const bd=$('drapBtn'),bs=$('stormBtn'),nd=$('drapNote'),ns=$('stormNote');
+  if(bd)bd.textContent=(DRAP_ON?'▼ ':'▶ ')+'D層の吸収を重ねる';
+  if(bs)bs.textContent=(STORM_ON?'▼ ':'▶ ')+'嵐の広がりを重ねる';
+  if(nd){nd.style.display=DRAP_ON?'':'none';const mx=drapMax();
+    nd.innerHTML=`<span style="color:var(--dist)">■</span> D層の吸収（NOAA D-RAP）：電波が1dB以上吸収される周波数の上限を、1MHz以上は橙、5MHz以上は濃い橙、10MHz以上は赤紫で塗っています。上限より低い周波数ほど強く吸収されます。`+
+      (DRAP?`算出時刻 ${DRAP.valid}。いまの上限の最大値は ${mx.toFixed(1)}MHz。X線：${DRAP.xr||'―'}。プロトン：${DRAP.pr||'―'}。`:'データを読み込めていません。')+
+      `<br><b>昼側の普通の吸収</b>：昼側に丸く広がる範囲は、太陽のふだんのX線によるものです（D-RAP は GOES 衛星の X 線の値から計算しています）。毎日昼側にあり、太陽が高いほど強く、夜になると消えます。`+
+      `<br><b>フレアによる吸収</b>：フレアが起きると、昼側の範囲が急に広がって強まります（いわゆるデリンジャー現象）。数十分から数時間で元に戻ります。上の「X線」の欄が M・X クラスのときはこれにあたります。`+
+      `<br><b>プロトンによる吸収</b>：極域（地磁気緯度およそ60°以上）に昼夜を問わず現れる範囲は、太陽からの高エネルギーのプロトンによるもの（極冠吸収）で、数日続くことがあります。`+
+      `<br>この吸収は主にローバンドとミドルバンドに効きます。ハイバンドに効くのは、大きなフレアやプロトン現象で上限が10〜20MHz以上になったときだけです。`}
+  if(ns){ns.style.display=STORM_ON?'':'none';const se=stormEdge();
+    ns.innerHTML=`<span style="color:var(--storm)">- - -</span> 嵐の広がりの見込み：${se&&se.show?`いまの Bz・太陽風（Kp ${se.kp.toFixed(1)} 相当）から、オーロラ帯の赤道側の縁が地磁気緯度 ${se.edge.toFixed(0)}° 付近まで広がる見込みです。経路のうち、その内側に入る区間を赤く示します。`:se?'いまは Bz の南向きが弱く Kp も低いため、大きな広がりは見込まれず、表示していません。Bz の注意が出たときか Kp 4以上相当のときに描きます。':'太陽風のデータを読み込めていません。'}`+
+      `見積もりは経験的な目安で（検証中）、地球の磁場は棒磁石とみなした近似です。`}}
 
   function targetRender() {
     if (!TARGET) { drawMap(null); return; }
@@ -850,7 +862,7 @@ function stormNoteSet(){const b=$('stormBtn'),n=$('stormNote');if(b)b.textConten
       const az = Math.atan2(dx, -dy) / RAD, [la, lo] = dest(STATION.lat, STATION.lon, (az + 360) % 360, rr * HALF), e = sunElev(la, lo, now), k = (j * N + i) * 4;
       let r = 0, g = 0, b = 0, a = 0;
       if (e < -6) { r = 2; g = 5; b = 12; a = 175; } else if (e < 0) { r = 40; g = 34; b = 80; a = Math.round(70 + (-e / 6) * 70); }
-      if (STORM_ON && DRAP) { const v = drapAt(la, lo); if (v != null && v >= 1) { const s3 = v >= 10 ? [220, 70, 170, 170] : v >= 5 ? [255, 120, 40, 150] : [255, 176, 90, Math.round(70 + v * 12)]; r = s3[0]; g = s3[1]; b = s3[2]; a = Math.max(a, s3[3]); } }
+      if (DRAP_ON && DRAP) { const v = drapAt(la, lo); if (v != null && v >= 1) { const s3 = v >= 10 ? [220, 70, 170, 170] : v >= 5 ? [255, 120, 40, 150] : [255, 176, 90, Math.round(70 + v * 12)]; r = s3[0]; g = s3[1]; b = s3[2]; a = Math.max(a, s3[3]); } }
       const au = aurAt(la, lo);
       if (au != null && au >= 10) { const st = au >= 30; r = st ? 240 : 80; g = st ? 90 : 220; b = st ? 80 : 140; a = Math.max(a, st ? 190 : Math.round(70 + au * 3)); }
       img.data[k] = r; img.data[k + 1] = g; img.data[k + 2] = b; img.data[k + 3] = a;
@@ -1055,6 +1067,7 @@ function stormNoteSet(){const b=$('stormBtn'),n=$('stormNote');if(b)b.textConten
   $('myGrid').addEventListener('change', async () => { await setStation(); paths(Date.now()); });
   window.addEventListener('resize', () => drawMap(LASTP));
   if ($('stormBtn')) { stormNoteSet(); $('stormBtn').addEventListener('click', () => { STORM_ON = !STORM_ON; try { localStorage.setItem('stormOn', STORM_ON ? '1' : '0'); } catch (e) {} stormNoteSet(); drawMap(LASTP); }); }
+  if ($('drapBtn')) { $('drapBtn').addEventListener('click', () => { DRAP_ON = !DRAP_ON; try { localStorage.setItem('drapOn', DRAP_ON ? '1' : '0'); } catch (e) {} stormNoteSet(); drawMap(LASTP); }); }
   if ($('magBtn')) { magBtnSet(); $('magBtn').addEventListener('click', () => { MAGLINES = !MAGLINES; try { localStorage.setItem('magLines', MAGLINES ? '1' : '0'); } catch (e) {} magBtnSet(); drawMap(LASTP); }); }
   (async () => { const g = LS('m.myGrid'); if (g) $('myGrid').value = g; await setStation(); const d = LS('m.dx'); if (d) $('dxIn').value = d; loadLand(); if (d) findTarget(); })();
   setInterval(() => { if (!document.hidden && AUR !== undefined) paths(Date.now()); }, 60e3);   // 昼夜と暗さは1分ごとに計算し直す
