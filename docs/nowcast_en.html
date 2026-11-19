@@ -624,6 +624,9 @@ document.addEventListener('DOMContentLoaded',magBtnSet);
 var DUCT_ON=(()=>{try{return localStorage.getItem('en.ductOn')==='1'}catch(e){return false}})();
 const DUCT_REG=[];
 // 8000km以上の相手を、受信した日本の局の上位1割の SNR が −5dB 以上で受信した回数（時刻 UTC ごと。na 北米、eu 欧州、ot その他）
+// 毎日の集計（paths.json の d）があればそれを使い、なければ 11月6〜18日の固定のデータを使う
+function ductRec(){return SUMMARY&&SUMMARY.d&&SUMMARY.d['160m']?SUMMARY.d:DUCT_REC}
+function ductEnsure(){if(SUMMARY||SUMMARY_P)return;try{loadSummary().then(()=>{ductNoteSet();drawMap(LASTP)}).catch(()=>{})}catch(e){}}
 const ductArr=o=>{const a=new Array(24).fill(0);for(const k in o)a[+k]=o[k];return a};
 const DUCT_REC={'160m':{na:ductArr({6:1,11:3,12:5,13:6,14:2}),eu:ductArr({6:2,15:2,16:1,17:3,18:2,19:9,20:21,21:16,22:2}),ot:ductArr({21:1})},
   '80m':{na:ductArr({6:2,7:4,8:8,9:1,10:12,11:44,12:119,13:82,14:57,15:10,21:6}),eu:ductArr({8:6,11:10,13:1,15:1,16:2,17:7,18:8,19:29,20:71,21:86,22:46}),ot:ductArr({2:2,7:1,8:1,9:2,10:1,11:1,17:1,18:1,22:1})}};
@@ -637,10 +640,10 @@ function ductNext(t){for(let k=1;k<=96;k++){const tt=t+k*9e5,s=ductState(tt).fil
 // バンドの見分け：記録で、その方面（北米・欧州）・その時間帯（前後2時間）に強い受信が5回以上あったバンドだけ線を引く（160m＝白、80m＝水色）
 const DUCT_COL={'160m':'#ffffff','80m':'#5ad1ff'};
 function ductBands(d,t){const grp=d.grp||(['EM','DM','DN'].includes(d.f)?'na':'eu'),h=new Date(t).getUTCHours();
-  return['160m','80m'].filter(b=>{let n=0;for(let k=-2;k<=2;k++)n+=DUCT_REC[b][grp][(h+k+24)%24];return n>=5})}
+  return['160m','80m'].filter(b=>{let n=0;for(let k=-2;k<=2;k++)n+=ductRec()[b][grp][(h+k+24)%24];return n>=5})}
 const ductBandTxt=bs=>bs.map(b=>`<span style="color:${DUCT_COL[b]}">${b}</span>`).join(' and ');
 const ductHM=(t,off)=>{const d=new Date(t+off*36e5);return String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0')};
-function ductChart(band,hNow){const W=480,H=110,bw=W/24,rec=DUCT_REC[band],tot=rec.na.map((v,i)=>v+rec.eu[i]+rec.ot[i]),mx=Math.max(...tot)||1;
+function ductChart(band,hNow){const W=480,H=110,bw=W/24,rec=ductRec()[band],tot=rec.na.map((v,i)=>v+rec.eu[i]+rec.ot[i]),mx=Math.max(...tot)||1;
   let s=`<svg viewBox="0 0 ${W} ${H+34}" style="width:100%;max-width:480px;display:block">`;
   s+=`<rect x="${hNow*bw}" y="0" width="${bw}" height="${H}" fill="#ffffff" fill-opacity=".12"/>`;
   for(let h=0;h<24;h++){let y=H;for(const[k,col]of[['na','#7fd3c6'],['eu','#e9c46a'],['ot','#77777f']]){const v=rec[k][h];if(!v)continue;const hh=v/mx*(H-14);y-=hh;s+=`<rect x="${h*bw+1}" y="${y}" width="${bw-2}" height="${hh}" fill="${col}"/>`}
@@ -648,7 +651,7 @@ function ductChart(band,hNow){const W=480,H=110,bw=W/24,rec=DUCT_REC[band],tot=r
     if(h%3===0)s+=`<text x="${h*bw+bw/2}" y="${H+12}" fill="#9a9aa2" font-size="10" text-anchor="middle">${h}</text><text x="${h*bw+bw/2}" y="${H+25}" fill="#77777f" font-size="9" text-anchor="middle">${locH(h)}</text>`}
   s+=`<line x1="0" x2="${W}" y1="${H}" y2="${H}" stroke="#2c2c31"/></svg>`;
   return `<div style="margin-top:8px"><b>${band}</b> <span style="font-size:.9em">numbers = counts, scale = UTC (local time below), white band = now</span></div>`+s}
-function ductNoteSet(){const b=document.getElementById('ductBtn'),n=document.getElementById('ductNote');
+function ductNoteSet(){if(DUCT_ON)ductEnsure();const b=document.getElementById('ductBtn'),n=document.getElementById('ductNote');
   if(b)b.textContent=(DUCT_ON?'▼ ':'▶ ')+'Low-band long distance (possible ionospheric duct)';
   if(!n)return;n.style.display=DUCT_ON?'':'none';if(!DUCT_ON)return;
   const t=Date.now(),grp=ductGrp(),st=ductState(t),d=st[0],hNow=new Date(t).getUTCHours();let now;
@@ -659,7 +662,7 @@ function ductNoteSet(){const b=document.getElementById('ductBtn'),n=document.get
   else{const nx=ductNext(t);now='<b>Now</b>: the condition is not met.'+(nx?` Next window from about ${ductHM(nx.t,0)} UTC (${ductHM(nx.t,LOC_OFF)} local).`:'')}
   n.innerHTML=`<span style="color:#fff">━</span> 160m <span style="color:#5ad1ff">━</span> 80m Low-band long distance (possible ionospheric duct): on winter nights, distant stations on 160m and 80m are sometimes received with strong signals. In the records, this happened mostly when the path was largely dark and one end was in twilight around sunrise. This fits the idea of an "ionospheric duct" (signals trapped between the E and F layers), but it can also be explained by the minimum of D-layer absorption near the terminator; the records cannot tell which (under evaluation). The line is drawn only for bands with five or more strong receptions within ±2 hours in the records (white = 160m, cyan = 80m).`+
     `<br>${now}`+
-    `<br><b>Records</b>: 6–18 November 2026, about 720 samples of 8 minutes. Number of times stations in Japan received stations 8000 km or more away with strong signals (top 10% SNR of the receiving JA stations −5 dB or better). <span style="color:#7fd3c6">■</span>North America <span style="color:#e9c46a">■</span>Europe <span style="color:#9a9aa2">■</span>Other. North America peaks around 11–14 UTC (sunrise in North America), Europe around 19–22 UTC (sunrise in Japan). Counts also depend on how many stations are active in each region, and the peaks shift with the season.`+
+    `<br><b>Records</b>: ${SUMMARY&&SUMMARY.d?`last ${SUMMARY.days} days (updated daily)`:'6–18 November 2026'}, samples of 8 minutes every 20 minutes. Number of reports in which stations in Japan received stations 8000 km or more away with strong signals (top 10% SNR of the receiving JA stations −5 dB or better). <span style="color:#7fd3c6">■</span>North America <span style="color:#e9c46a">■</span>Europe <span style="color:#9a9aa2">■</span>Other. In mid-November, North America peaked around 11–14 UTC (sunrise in North America) and Europe around 19–22 UTC (sunrise in Japan). Counts also depend on how many stations are active in each region, and the peaks shift with the season.`+
     ductChart('160m',hNow)+ductChart('80m',hNow)}
 document.addEventListener('click',e=>{if(e.target&&e.target.id==='ductBtn'){DUCT_ON=!DUCT_ON;try{localStorage.setItem('en.ductOn',DUCT_ON?'1':'0')}catch(e2){}ductNoteSet();drawMap(LASTP)}});
 document.addEventListener('DOMContentLoaded',()=>{try{ductNoteSet()}catch(e){}});
