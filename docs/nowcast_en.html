@@ -6,37 +6,60 @@
 <title>Space Weather &amp; HF Propagation Nowcast | JA1BBE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
+.gbox{margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--ink)}
+.gttl{font-weight:700;color:var(--gold);margin-bottom:6px}
+.gsub{font-weight:700;margin:10px 0 4px;font-size:.92em;color:var(--ink)}
+.gtxt{font-size:.9em;line-height:1.7;color:var(--ink)}
+.gagree{margin:6px 0 4px;padding:6px 8px;border-left:3px solid var(--gold);background:rgba(216,177,74,.10);font-size:.9em;line-height:1.7;color:var(--ink)}
+.gtbl{overflow-x:auto;margin-top:6px}
+.gt{border-collapse:collapse;font-size:11px;min-width:100%}
+.gt th,.gt td{border:1px solid var(--line);padding:1px 0;text-align:center;min-width:14px;height:16px;font-weight:400;color:var(--ink)}
+.gt td{color:var(--ink);font-weight:700}
+.gt th.gb{padding:1px 6px;text-align:left;white-space:nowrap;color:var(--ink);font-weight:700}
+.gt .gj{color:var(--muted)}
+.gfine{font-size:12px;color:var(--muted);line-height:1.6;margin:6px 0 0}
+#dxLb input,#dxLb select{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:2px 4px;font:inherit}
+.grec{margin:4px 0 10px;padding:6px 10px;border:1px solid #c9971f;border-radius:8px;background:rgba(216,177,74,.08)}
+.grec>summary{font-size:.95em}
+.gwarn{margin:6px 0 8px;padding:6px 8px;border-left:3px solid #d64545;background:rgba(214,69,69,.10);font-size:.88em;line-height:1.7}
+.gdet{margin:6px 0 0}
+.gdet>summary{cursor:pointer;font-size:.85em;font-weight:700;padding:3px 0;list-style:none}
+.gdet>summary::-webkit-details-marker{display:none}
+.gdet>summary::before{content:'▶ ';font-size:.8em}
+/* Honor Roll */
+.hrchip{display:inline-block;margin:3px 4px 3px 0;padding:3px 9px;border:1px solid var(--line);border-radius:12px;font-size:.85rem}
+.hrchip.me{border-color:var(--gold);color:var(--gold);font-weight:700}
+.hrh{margin:10px 0 4px;font-weight:700;font-size:.9rem;color:var(--gold)}
+.hrme{margin:6px 0 10px;padding:9px 12px;border:1px solid var(--gold);border-radius:6px;line-height:1.6}
+#propDet>summary{cursor:pointer;list-style:none;color:var(--gold);font-size:1.1rem;font-weight:700;margin:26px 0 10px}
+#propDet>summary::-webkit-details-marker{display:none}
+#propDet>summary::before{content:'▶ ';font-size:.8em}
+#propDet[open]>summary::before{content:'▼ '}
+.gdet[open]>summary::before{content:'▼ '}
+
 :root{
   --bg:#0b0b0c; --panel:#161618; --panel2:#1e1e21; --line:#2c2c31;
   --ink:#ececec; --muted:#9a9aa3; --gold:#d8b14a;
   --c1:#2bb3a3; --c2:#7fd3c6; --c3:#e9c46a; --c4:#f08a4b; --c5:#e05555;
-  --sans:"Inter","Segoe UI","Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  --sans:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
   --mono:"JetBrains Mono","Consolas","Menlo",monospace;
-  color-scheme:dark;
 }
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:inherit}
-/* hide the scrollbar when embedded in a frame (scrolling still works) */
-html,body{scrollbar-width:none;-ms-overflow-style:none}
-html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}
 
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;font-size:15px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.7;font-size:15px}
 .wrap{max-width:1040px;margin:0 auto;padding:24px 18px 40px}
-header h1{color:var(--gold);font-size:clamp(1.4rem,3.4vw,2rem);margin:0;font-weight:700;letter-spacing:-.01em}
+header h1{color:var(--gold);font-size:clamp(1.4rem,3.4vw,2rem);margin:0;font-weight:700}
 header p{color:var(--muted);margin:4px 0 0;font-size:.9rem}
 .bar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:14px 0 20px;font-size:.85rem;color:var(--muted)}
-.bar button,.qth button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 12px;font:inherit;cursor:pointer}
-.bar button:hover,.qth button:hover{border-color:var(--gold)}
-.qth{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:18px;font-size:.88rem}
-.qth label{color:var(--muted)}
-.qth input{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 10px;font:inherit;font-family:var(--mono);width:8.5em;text-transform:uppercase}
-.qth input:focus{outline:none;border-color:var(--gold)}
-.qth .err{color:var(--c4)}
+.bar button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 12px;font:inherit;cursor:pointer}
+.bar button:hover{border-color:var(--gold)}
 .msg{background:#2a2216;border:1px solid #5a4620;color:#f1d79a;border-radius:8px;padding:10px 14px;margin-bottom:18px;display:none}
 
+/* verdict */
 .verdict{border-radius:10px;padding:20px 22px;margin-bottom:18px;border:1px solid var(--line);background:var(--panel)}
 .verdict .lab{font-size:.8rem;color:var(--muted)}
 .verdict .state{font-size:1.6rem;font-weight:700;margin:2px 0 6px}
@@ -63,7 +86,7 @@ h2{color:var(--gold);font-size:1.1rem;margin:26px 0 10px;font-weight:700}
 .card .v small{font-size:.8rem;color:var(--muted);margin-left:4px;font-family:var(--sans)}
 .card .s{font-size:.82rem}
 .stale .card{opacity:.55}
-.stale .card .v::after{content:'(old)';font-size:.75rem;color:var(--muted);margin-left:6px;font-family:var(--sans)}
+.stale .card .v::after{content:'(old value)';font-size:.75rem;color:var(--muted);margin-left:6px;font-family:var(--sans)}
 .l1{border-top-color:var(--c1)}.l2{border-top-color:var(--c2)}.l3{border-top-color:var(--c3)}.l4{border-top-color:var(--c4)}.l5{border-top-color:var(--c5)}
 .t1{color:var(--c1)}.t2{color:var(--c2)}.t3{color:var(--c3)}.t4{color:var(--c4)}.t5{color:var(--c5)}
 
@@ -74,85 +97,123 @@ h2{color:var(--gold);font-size:1.1rem;margin:26px 0 10px;font-weight:700}
 .chart svg{width:100%;height:auto;display:block}
 
 .tbl{overflow-x:auto}
-table{border-collapse:collapse;width:100%;min-width:560px;font-size:.9rem}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.9rem}
 th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
 th{color:var(--muted);font-weight:500}
 .tag{display:inline-block;border-radius:4px;padding:0 8px;font-size:.82rem}
 .day{background:#3a3420;color:#f1d79a}.gl{background:#3b2a3f;color:#e6b6f0}.night{background:#18283f;color:#9cc3f5}
+.both{color:var(--c1);font-weight:700}
 
+.tgt-form{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin:10px 0 4px;font-size:.9rem}
+.tgt-form label{color:var(--muted);font-size:.82rem;display:flex;align-items:center;gap:6px}
+.tgt-form input{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font:500 1rem var(--mono);text-transform:uppercase}
+.tgt-form input:focus{outline:none;border-color:var(--gold)}
+#myGrid{width:9em}#dxIn{width:12em}
+.tgt-form button{background:var(--gold);color:#111;border:0;border-radius:6px;padding:7px 16px;font:700 .9rem var(--sans);cursor:pointer}
+.tgt-form button.sub{background:var(--panel2);color:var(--ink);border:1px solid var(--line);font-weight:500}
+.tgt-who{font-size:1.05rem;font-weight:700;margin:12px 0 4px}
+.tgt-who .loc{font-size:.84rem;color:var(--muted);font-weight:400;margin-left:8px}
+.mapwrap{margin-top:14px}
+#dxMap{width:100%;max-width:620px;aspect-ratio:1/1;display:block;margin:0 auto}
+.magbtn{background:transparent;border:1px solid #c9971f;color:inherit;border-radius:6px;padding:3px 10px;font-size:.85em;cursor:pointer}
+.legend{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 16px;font-size:.8rem;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:18px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 .note{color:var(--muted);font-size:.84rem;margin-top:24px;border-top:1px solid var(--line);padding-top:14px}
-.note a,.fn a{color:var(--gold)}
+.note a{color:var(--gold)}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
   <h1>Space Weather &amp; HF Propagation Nowcast</h1>
-  <p>Live NOAA space-weather data, read directly by your browser, with band and path guidance for DXers. By JA1BBE.</p>
+  <p>Space weather and HF propagation between your station and any other station — with detailed records when the other station is in Japan (JA). Shared by JA1BBE as an idea and a working example; you are welcome to develop your own version for your region based on these ideas.</p>
 </header>
-
-<div class="qth">
-  <label for="grid">Your grid locator</label>
-  <input id="grid" type="text" maxlength="6" placeholder="PM95" autocomplete="off" spellcheck="false">
-  <button id="setGrid" type="button">Set</button>
-  <span id="qthInfo"></span>
-</div>
-
 <div class="bar">
   <span id="upd">Loading data…</span>
-  <button id="reload" type="button">Refresh now</button>
-  <button id="demo" type="button">Show sample data</button>
-  <span>Updates every 5 minutes. Times are shown in UTC and in your local time.</span>
+  <button id="reload" type="button">Update now</button>
+  <button id="demo" type="button">Sample data</button>
+  <span>Auto update every 5 min</span>
+  <a href="mailto:ja1bbe@jarl.com" style="margin-left:auto;color:#e9c46a;text-decoration:underline">✉ Feedback: ja1bbe@jarl.com</a><a href="https://ja1bbe.wixsite.com/mysite/%E5%AE%87%E5%AE%99%E5%A4%A9%E6%B0%97%E3%83%8A%E3%82%A6%E3%82%AD%E3%83%A3%E3%82%B9%E3%83%88" target="_blank" rel="noopener" style="color:#e9c46a;text-decoration:underline">日本語版</a>
 </div>
 <div class="msg" id="msg"></div>
 
+<section class="verdict" id="hrSec" style="display:none">
+<div class="lab">JA1BBE is working toward the DXCC Honor Roll</div>
+<div id="hrMine"></div>
+<p class="why" style="margin:4px 0">The entities below are not yet confirmed on LoTW. If your country is on the list, I would be very grateful for your help.</p>
+<div id="hrList"></div>
+<p class="fn" id="hrUpd" style="margin-top:6px"></p>
+</section>
 <section class="verdict" id="verdict">
-  <div class="lab">Low bands (160 / 80 / 40 m)</div>
-  <div class="state" id="state">–</div>
+  <div class="lab">Low bands (160 / 80 / 40m) — outlook at JA (Tokyo)</div>
+  <div class="state" id="state">―</div>
   <p class="why" id="why"></p>
   <div class="paths">
-    <div><b>Paths crossing high latitudes (polar / auroral routes)</b><span id="pHigh">–</span></div>
-    <div><b>Low-latitude paths</b><span id="pLow">–</span></div>
+    <div><b>High-latitude paths from JA (to Europe and North America)</b><span id="pHigh">―</span></div>
+    <div><b>Low-latitude paths from JA (to SE Asia and Oceania)</b><span id="pLow">―</span></div>
   </div>
 </section>
 
 <div class="bands">
-  <div class="verdict sm" id="vMid"><div class="lab">Mid bands (30 / 20 / 17 m)</div><div class="state" id="sMid">–</div><p class="why" id="wMid"></p></div>
-  <div class="verdict sm" id="vHigh"><div class="lab">High bands (15 / 12 / 10 m)</div><div class="state" id="sHigh">–</div><p class="why" id="wHigh"></p></div>
+  <div class="verdict sm" id="vMid"><div class="lab">Mid bands (30 / 20 / 17m) — outlook at JA</div><div class="state" id="sMid">―</div><p class="why" id="wMid"></p></div>
+  <div class="verdict sm" id="vHigh"><div class="lab">High bands (15 / 12 / 10m) — outlook at JA</div><div class="state" id="sHigh">―</div><p class="why" id="wHigh"></p></div>
 </div>
+
+<details id="propDet" open><summary>Propagation outlook (map and path)</summary>
+<section class="verdict" id="target">
+  <div class="lab">Path to the other station (enter a grid locator or callsign for each)</div>
+  <div class="tgt-form">
+    <label>Your station <input id="myGrid" value="PM95vq" maxlength="15" autocomplete="off" spellcheck="false" aria-label="Your grid locator or callsign" placeholder="FN31 / W1AW"></label>
+    <label>Other station <input id="dxIn" placeholder="JA1BBE / PM95" maxlength="15" autocomplete="off" spellcheck="false" aria-label="Callsign or grid locator of the other station"></label>
+    <button id="dxGo" type="button">Show path</button>
+    <button id="dxClr" class="sub" type="button">Clear</button>
+  </div>
+  <p class="fn" id="stInfo"></p>
+  <p class="fn" id="exNote" style="display:none;color:var(--gold)"></p>
+  <div class="mapwrap"><canvas id="dxMap" role="img" aria-label="Azimuthal equidistant map centred on your station, with short and long paths, day and night, and the auroral zone"></canvas>
+    <div class="legend"><span><i style="background:var(--gold)"></i>Short path</span><span><i style="background:repeating-linear-gradient(90deg,#7fd3c6 0 4px,transparent 4px 7px)"></i>Long path</span><span><i style="background:repeating-linear-gradient(90deg,#c77dff 0 3px,transparent 3px 6px)"></i>Skewed path</span><span><i style="background:#163250"></i>Sea (day)</span><span><i style="background:#05080d;border:1px solid #333"></i>Night (sun −6° or lower)</span><span><i style="background:#3a3550"></i>Twilight</span><span><i style="background:rgba(80,220,140,.7)"></i>Aurora 10–30%</span><span><i style="background:rgba(240,90,80,.75)"></i>30% or more</span><span><i style="background:transparent;border:2px solid #f08a4b;border-radius:50%;width:10px"></i>Highest geomagnetic latitude</span></div>
+    <div style="margin-top:6px;text-align:center"><button id="magBtn" type="button" class="magbtn">▶ Geomagnetic latitude</button> <button id="drapBtn" type="button" class="magbtn">▶ D-layer absorption</button> <button id="stormBtn" type="button" class="magbtn">▶ Storm extent</button> <button id="ductBtn" type="button" class="magbtn">▶ Low-band long distance (possible ionospheric duct)</button> <span style="color:#d64545;font-size:.8em">(D-layer absorption, storm extent and low-band long distance are under evaluation)</span></div>
+    <p id="drapNote" class="gfine" style="display:none;text-align:left;font-size:.8rem;max-width:760px;margin:6px auto 0"></p>
+    <div id="ductNote" class="gfine" style="display:none;text-align:left;font-size:.8rem;max-width:760px;margin:6px auto 0"></div>
+    <p id="stormNote" class="gfine" style="display:none;text-align:left;font-size:.8rem;max-width:760px;margin:6px auto 0"></p>
+    <p id="magNote" class="gfine" style="display:none;text-align:center;font-size:.8rem">Dotted lines: geomagnetic latitude 0°, ±30°, ±70°; <span style="color:#f08a4b">orange: ±60°</span> (a guide to the equatorward edge of the auroral zone when quiet; it moves to lower latitudes as Kp rises). The field is approximated by a single dipole (as in the path assessment), so it differs from the real field by a few degrees in places.</p>
+    <p class="fn" style="text-align:center">Azimuthal equidistant map centred on your station: the direction from the centre is the great-circle bearing (true north up) and the distance from the centre is the real distance. The rim is the antipode (about 20,000 km); the long path crosses the rim and reaches the other station from the opposite side.</p></div>
+  <div id="dxOut"><p class="fn">Enter a callsign (e.g. JA1BBE, ZF2AA) or a grid locator (e.g. PM95, FK89ab) and press "Show path" to see the bearing, distance, highest geomagnetic latitude, aurora probability, path darkness and an assessment for the short and long paths. For a callsign, the representative position of its DXCC entity is used. When the short path crosses the auroral zone, bearings up to 60° to either side are searched for a path that avoids it (approximated as a path that bends on the way) and shown as a purple dotted line. This is only a guide to paths bent by ionospheric tilts or scatter; it does not guarantee a contact.</p></div>
+</section>
+</details>
 
 <h2>Current values</h2>
 <div class="grid" id="cards"></div>
 
 <h2>Trends</h2>
 <div class="charts">
-  <div class="chart"><div class="n">Kp index (last 48 hours, 3-hour values)</div><div id="kpChart"></div></div>
-  <div class="chart"><div class="n">Bz (last 6 hours, nT): up = northward, down = southward</div><div id="bzChart"></div></div>
+  <div class="chart"><div class="n">Kp index (last 48 hours, 3-hourly)</div><div id="kpChart"></div></div>
+  <div class="chart"><div class="n">Bz (last 6 hours, nT) — up: north, down: south</div><div id="bzChart"></div></div>
 </div>
-<div class="chart" style="margin-top:10px"><div class="n">Kp forecast (NOAA, 3 days, 3-hour blocks): solid bars = observed or estimated, outlined bars = forecast</div><div id="kpfChart"></div>
+<div class="chart" style="margin-top:10px"><div class="n">Kp forecast (NOAA, 3 days, 3-hourly) — filled: observed/estimated, outlined: forecast</div><div id="kpfChart"></div>
 <p class="fn" id="kpfSum" style="color:#d6d6d6"></p>
-<p class="fn">The forecast is issued by the NOAA Space Weather Prediction Center and is based mainly on expected CME (coronal mass ejection) arrivals and on high-speed solar wind streams that tend to recur every 27 days. CME arrival times are typically uncertain by around half a day, so treat the forecast times with some latitude. A forecast of Kp 5 or more (G1 or above) means that paths crossing high latitudes may weaken. <a href="https://www.swpc.noaa.gov/products/3-day-forecast" target="_blank" rel="noopener">NOAA 3-day forecast</a></p></div>
+<p class="fn">The forecast is from the NOAA Space Weather Prediction Center and is based mainly on expected CME arrivals and recurring high-speed solar wind (about 27-day period). CME arrival times are generally uncertain by about half a day, so read the forecast times with a margin. A forecast of Kp 5 or more (G1 or more) means that paths over high latitudes may weaken. <a style="color:var(--gold)" href="https://www.swpc.noaa.gov/products/3-day-forecast" target="_blank" rel="noopener">NOAA 3-day forecast</a></p></div>
 
-<h2>Path guidance by region (with beam headings)</h2>
+<h2>Paths from your station to major regions (with rotator bearings)</h2>
 <div class="tbl"><table class="paths-tbl">
-  <thead><tr><th>Region</th><th>Day / night<br><span class="th2">DX end / your QTH</span></th><th>Short path<br><span class="th2">Heading, distance, max geomagnetic latitude<br>aurora probability, darkness along the path</span></th><th>Long path<br><span class="th2">Same items</span></th><th>Guidance (mainly low bands)</th></tr></thead>
+  <thead><tr><th>Region</th><th>Day/night<br><span class="th2">there / you</span></th><th>Short path<br><span class="th2">bearing, distance, highest geomag. lat.<br>aurora probability, darkness</span></th><th>Long path<br><span class="th2">same</span></th><th>Assessment (mainly low bands)</th></tr></thead>
   <tbody id="dn"></tbody>
 </table></div>
-<p class="fn" id="qthSun"></p>
+<p class="fn" id="jaSun"></p>
 <p class="fn" id="aurInfo"></p>
-<p class="fn">Headings are great-circle bearings from your grid square, measured from true north. If your rotator is calibrated to magnetic north, correct for your local magnetic declination. “Darkness” is the share of points along the path where the sun is at least 6° below the horizon. “Max geomagnetic latitude” uses a simple dipole approximation of the Earth’s field; over North America it is higher than the geographic latitude because the geomagnetic pole lies on that side. The aurora probability is the highest value along the path from NOAA’s OVATION model, which looks 30 to 90 minutes ahead (30% or more is shown as “crossing”, 10–30% as “edge”). Inside the auroral zone, precipitating electrons increase D- and E-layer absorption, and 160 m and 80 m signals can drop sharply. When the short path meets the auroral zone, the table also suggests a “skewed heading”: the smallest turn (up to 60° either side) for which a bent path, modelled as two great-circle legs, can reach the station without entering the zone. It is a guide to headings worth trying, not a guarantee.</p>
+<p class="fn">Bearings are great-circle bearings from true north, calculated from the centre of your grid locator. A 4-character grid covers about 180 km east–west and 110 km north–south, so a 6-character grid (e.g. FN31pr) is more accurate. If your rotator is referenced to magnetic north, correct for the local magnetic declination. "Darkness" is the fraction of points on the path where the sun is −6° or lower. "Highest geomagnetic latitude" uses a dipole approximation; over North America it is higher than the geographic latitude because the geomagnetic pole is nearby. Aurora probability is the NOAA OVATION estimate 30–90 minutes ahead at the highest point on the path (30% or more: "crossing", 10–30%: "edge"). In the auroral zone, precipitating electrons increase absorption in the D and E layers, and 160m and 80m signals in particular can weaken greatly.</p>
 
-<h2>Ionosphere over Kokubunji (Tokyo, Japan)</h2>
+<h2>Ionosphere over Japan (Kokubunji, NICT) — JA side, for reference</h2>
 <div class="grid" id="ionoCards"></div>
-<div class="charts" id="ionoCharts" style="margin-top:10px"><div class="chart"><div class="n">Virtual height (last 6 hours of data, km)</div><div id="hfChart"></div></div>
-<div class="chart"><div class="n">foF2 (last 6 hours of data, MHz)</div><div id="foChart"></div></div></div>
+<div class="charts" id="ionoCharts" style="margin-top:10px"><div class="chart"><div class="n">Virtual height (last 6 hours, km)</div><div id="hfChart"></div></div>
+<div class="chart"><div class="n">foF2 (last 6 hours, MHz)</div><div id="foChart"></div></div></div>
 <p class="fn" id="ionoMsg"></p>
-<p class="fn">These are ionosonde readings taken directly above Kokubunji, Tokyo, so they are most relevant to East Asia; they do not describe conditions along your own path. Virtual height is the reflection height derived from the echo delay; h’F is used when h’F2 cannot be scaled, for example at night. A sudden rise can precede a disturbance. The MUF estimate is roughly three times foF2 (an approximate value for a single hop of about 3,000 km). The values are automatically scaled and may contain errors. The public data file is updated with a delay, so the readings can be many hours old.</p>
-<p class="fn">Source: National Institute of Information and Communications Technology (NICT), ionospheric observation data. 出典：情報通信研究機構（NICT） 電離圏観測データ <a href="https://wdc.nict.go.jp/Ionosphere/index.html" target="_blank" rel="noopener">https://wdc.nict.go.jp/Ionosphere/index.html</a></p>
+<p class="fn">Virtual height is the reflection height derived from the echo delay; h'F is used when h'F2 is not available (e.g. at night). A sudden rise can precede a disturbance. The MUF guide is foF2 × 3 (roughly for a 3,000 km hop). These values are for the ionosphere directly above Kokubunji, Tokyo — the Japanese end of a path to JA — not the state along your whole path. NICT publishes the data once a day (around 11:30 UTC), so during the day they may be several hours old. Values include automatic processing.</p>
+<p class="fn">Source: National Institute of Information and Communications Technology (NICT), ionospheric observation data <a style="color:var(--gold)" href="https://wdc.nict.go.jp/Ionosphere/index.html" target="_blank" rel="noopener">https://wdc.nict.go.jp/Ionosphere/index.html</a></p>
 
 <div class="note">
-  <p>The guidance on this page summarizes general tendencies from day and night at your location, the solar flux and the geomagnetic conditions. It is not a guarantee of actual conditions. Low-band propagation also depends strongly on darkness, D-layer absorption and the noise at both ends of the path. In the end, what you actually hear and work is what counts.</p>
-  <p>Space-weather data: NOAA Space Weather Prediction Center. Ionospheric data: NICT (Japan). Page by JA1BBE, Yoshinori Ideno. Free for personal, non-commercial use.</p>
+  <p>The band outlooks at the top are general tendencies for Japan (Tokyo) based on day and night, SFI and geomagnetic conditions; the path tools work for any pair of stations. None of this guarantees actual conditions. Low-band propagation also depends strongly on day and night, D-layer absorption and the noise at both stations. The final word is always actual reception and QSOs.</p>
+  <p>Data: NOAA Space Weather Prediction Center; NICT (ionosphere over Japan); PSK Reporter (records from Japan, collected by JA1BBE). Questions and comments: <a style="color:var(--gold)" href="mailto:ja1bbe@jarl.com">ja1bbe@jarl.com</a></p><p>© 2026 JA1BBE. All rights reserved.</p>
 </div>
 </div>
 
@@ -160,32 +221,18 @@ th{color:var(--muted);font-weight:500}
 (function(){
 const SWPC='https://services.swpc.noaa.gov';
 const URLS={kp:SWPC+'/products/noaa-planetary-k-index.json',mag:SWPC+'/json/rtsw/rtsw_mag_1m.json',
-  wind:SWPC+'/json/rtsw/rtsw_wind_1m.json',scales:SWPC+'/products/noaa-scales.json',sfi:SWPC+'/products/10cm-flux-30-day.json',
-  aur:SWPC+'/json/ovation_aurora_latest.json',kpf:SWPC+'/products/noaa-planetary-k-index-forecast.json'};
-const IONO_URL='https://ja1bbe.github.io/ja1bbe-iono/iono.json';
+  wind:SWPC+'/json/rtsw/rtsw_wind_1m.json',scales:SWPC+'/products/noaa-scales.json',sfi:SWPC+'/products/10cm-flux-30-day.json',aur:SWPC+'/json/ovation_aurora_latest.json',kpf:SWPC+'/products/noaa-planetary-k-index-forecast.json'};
 const $=id=>document.getElementById(id);
 const ts=s=>{s=String(s).replace(' ','T');if(!/Z$|[+-]\d\d:?\d\d$/.test(s))s+='Z';return Date.parse(s)};
-const p2=n=>String(n).padStart(2,'0');
-const fmtUTC=t=>{const d=new Date(t);return p2(d.getUTCHours())+':'+p2(d.getUTCMinutes())+' UTC'};
-const fmtUTCd=t=>{const d=new Date(t);return d.getUTCDate()+' '+MON[d.getUTCMonth()]+' '+p2(d.getUTCHours())+':'+p2(d.getUTCMinutes())+' UTC'};
-const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const fmtLoc=t=>{const d=new Date(t);return p2(d.getHours())+':'+p2(d.getMinutes())};
-const fmtLocD=t=>{const d=new Date(t);return d.getDate()+' '+MON[d.getMonth()]+' '+p2(d.getHours())+':'+p2(d.getMinutes())};
+const fmtUTC=t=>{const d=new Date(t);return String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0')+' UTC'};
+const LOC_OFF=-new Date().getTimezoneOffset()/60;
+const locH=h=>{const x=((h+LOC_OFF)%24+24)%24;return Number.isInteger(x)?String(x):Math.floor(x)+':'+String(Math.round((x%1)*60)).padStart(2,'0')};
+const fmtJSTd=t=>{const d=new Date(t+LOC_OFF*3600e3);return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+' '+String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0')};
+const fmtJST=t=>{const d=new Date(t+LOC_OFF*3600e3);return String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0')};
+
 async function getJSON(u){const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error(r.status);return r.json()}
 
-/* ---- your location (Maidenhead grid) */
-const DEFAULT_GRID='PM95';
-function gridToLL(g){g=String(g||'').trim().toUpperCase();if(!/^[A-R]{2}[0-9]{2}([A-X]{2})?$/.test(g))return null;
-  let lon=(g.charCodeAt(0)-65)*20-180+(+g[2])*2,lat=(g.charCodeAt(1)-65)*10-90+(+g[3]);
-  if(g.length===6){lon+=(g.charCodeAt(4)-65)/12+1/24;lat+=(g.charCodeAt(5)-65)/24+1/48}else{lon+=1;lat+=0.5}
-  return{grid:g,lat,lon}}
-let STATION=gridToLL(DEFAULT_GRID);
-try{const s=localStorage.getItem('nowcast_grid');const q=new URLSearchParams(location.search).get('grid');const ll=gridToLL(q)||gridToLL(s);if(ll)STATION=ll}catch(e){}
-function showQth(){$('grid').value=STATION.grid;$('qthInfo').textContent=`Using ${STATION.grid} (${Math.abs(STATION.lat).toFixed(1)}°${STATION.lat>=0?'N':'S'}, ${Math.abs(STATION.lon).toFixed(1)}°${STATION.lon>=0?'E':'W'}). Saved in this browser only.`;$('qthInfo').className=''}
-function setGrid(){const ll=gridToLL($('grid').value);if(!ll){$('qthInfo').textContent='Please enter a 4- or 6-character grid locator, for example PM95 or IO91wm.';$('qthInfo').className='err';return}
-  STATION=ll;try{localStorage.setItem('nowcast_grid',ll.grid)}catch(e){}showQth();dayNight();bandGuide(lastV)}
-
-/* ---- parsing */
+/* ---- parsing (same logic as dxcc_notify.py) */
 function parseKp(d){
   if(d&&d.length&&Array.isArray(d[0])){const h=d[0];d=d.slice(1).map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]])))}
   return d.map(r=>[ts(r.time_tag),parseFloat(r.Kp??r.kp)]).filter(x=>!isNaN(x[1])).sort((a,b)=>a[0]-b[0]).slice(-16);
@@ -205,77 +252,82 @@ function parseScales(d){const c=d['0']||{},o={};for(const k of['S','G','R']){con
   const p=((d['1']||{}).S||{}).Prob;if(p!==undefined&&p!==null&&p!=='')o.Sprob=parseInt(p);return o}
 function parseSfi(d){const r=d.filter(x=>x&&x.flux!=null);return r.length?parseFloat(r[r.length-1].flux):null}
 
-/* ---- levels */
+/* ---- levels (guide thresholds) */
 const lvKp=k=>k<2?1:k<4?2:k<5?3:k<7?4:5;
 const lvBz=b=>b>=2?1:b>-2?2:b>-5?3:b>-10?4:5;
 const lvV=v=>v<400?1:v<500?2:v<600?3:v<800?4:5;
 const lvN=n=>n<5?1:n<10?2:n<20?3:n<30?4:5;
 const lvS=s=>s===0?1:s===1?2:s===2?3:s===3?4:5;
 const lvSfi=s=>s<100?2:s<150?3:s<200?4:5;
+
 function card(name,val,unit,lv,sub){return `<div class="card l${lv}"><div class="n">${name}</div><div class="v">${val}<small>${unit}</small></div><div class="s t${lv}">${sub}</div></div>`}
 
 function render(v){
   const c=[];
   if(v.kp!=null)c.push(card('Kp index',v.kp.toFixed(1),'',lvKp(v.kp),['Quiet','Unsettled','Active','Storm','Severe storm'][lvKp(v.kp)-1]));
-  if(v.bz!=null){const b=v.bz30??v.bz;c.push(card('Bz (30-min avg)',(b>=0?'+':'')+b.toFixed(1),'nT',lvBz(b),b<0?'Southward':'Northward'))}
+  if(v.bz!=null){const b=v.bz30??v.bz;c.push(card('Bz (30-min avg)',(b>=0?'+':'')+b.toFixed(1),'nT',lvBz(b),b<0?'South':'North'))}
   if(v.bt!=null)c.push(card('Bt',v.bt.toFixed(1),'nT',v.bt<10?2:v.bt<20?3:4,'Field strength'));
-  if(v.speed!=null){const s=v.speed30??v.speed;c.push(card('Solar wind speed',s.toFixed(0),'km/s',lvV(s),'30-min average'))}
-  if(v.density!=null){const n=v.density30??v.density;c.push(card('Solar wind density',n.toFixed(1),'p/cm³',lvN(n),'30-min average'))}
-  if(v.S!=null)c.push(card('S-scale','S'+v.S,'',lvS(v.S),v.Sprob!=null?`Proton event chance today ${v.Sprob}%`:'Solar radiation storm'));
-  if(v.G!=null)c.push(card('G-scale','G'+v.G,'',v.G===0?1:v.G+1>5?5:v.G+1,'Geomagnetic storm'));
-  if(v.aurMax!=null)c.push(card('Aurora (N. hemisphere)',v.aurMax.toFixed(0),'%',v.aurMax<10?1:v.aurMax<30?2:v.aurMax<50?3:v.aurMax<70?4:5,'OVATION maximum'));
-  if(v.sfi!=null)c.push(card('SFI',v.sfi.toFixed(0),'sfu',lvSfi(v.sfi),'Higher favors high bands'));
+  if(v.speed!=null){const s=v.speed30??v.speed;c.push(card('Solar wind speed',s.toFixed(0),'km/s',lvV(s),'30-min avg'))}
+  if(v.density!=null){const n=v.density30??v.density;c.push(card('Solar wind density',n.toFixed(1),'/cm³',lvN(n),'30-min avg'))}
+  if(v.S!=null)c.push(card('S scale','S'+v.S,'',lvS(v.S),v.Sprob!=null?`Proton event probability today ${v.Sprob}%`:'Radiation storm'));
+  if(v.G!=null)c.push(card('G scale','G'+v.G,'',v.G===0?1:v.G+1>5?5:v.G+1,'Geomagnetic storm (NOAA, may lag Kp)'));
+  if(v.aurMax!=null)c.push(card('Aurora (north)',v.aurMax.toFixed(0),'%',v.aurMax<10?1:v.aurMax<30?2:v.aurMax<50?3:v.aurMax<70?4:5,'OVATION maximum'));
+  if(v.sfi!=null)c.push(card('SFI',v.sfi.toFixed(0),'sfu',lvSfi(v.sfi),'Higher is better for high bands'));
   $('cards').innerHTML=c.join('')||'<p style="color:var(--muted)">No values available.</p>';
+  SW_NOW={bz30:v.bz30??v.bz,sp:v.speed30??v.speed,kp:v.kp,south:gSouthMin((v.series&&v.series.bz)||[])};stormNoteSet();
   verdict(v);bandGuide(v);kpChart(v.kpHist||[]);kpfChart(v.kpf||[]);bzChart((v.series&&v.series.bz)||[]);
   const at=v.rtswAt||(v.kpHist&&v.kpHist.length&&v.kpHist[v.kpHist.length-1][0]);
-  $('upd').textContent=v.demo?'Showing sample data':(at?`Latest data ${fmtUTC(at)} (your time ${fmtLoc(at)})`:'');
+  $('upd').textContent=(v.demo?'Showing sample data':'Latest data ')+(at&&!v.demo?fmtUTC(at)+' ('+fmtJST(at)+' local)':'');
 }
 
-/* ---- low-band verdict */
+/* ---- verdict: same rules as the notification script, phrased as a tendency */
 function verdict(v){
   const kp=v.kp,bz=v.bz30??v.bz,sp=v.speed30??v.speed,S=v.S??0,hist=v.kpHist||[];
   let st,col,why=[];
   const recentStorm=hist.some(([t,k])=>t>Date.now()-86400e3&&k>=4);
-  if(kp==null){st='No assessment';col='var(--muted)';why.push('The Kp index is not available.')}
-  else if(bz!=null&&sp!=null&&bz<-10&&sp>=500){st='Signs of deterioration';col='var(--c5)';why.push('A strongly southward Bz and fast solar wind are persisting. The geomagnetic field may become disturbed within about an hour.')}
+  if(kp==null){st='Unknown';col='var(--muted)';why.push('Kp index not available.')}
+  else if(bz!=null&&sp!=null&&bz<-10&&sp>=500){st='Signs of worsening';col='var(--c5)';why.push('Strong southward Bz and fast solar wind continue. The geomagnetic field may become disturbed within about an hour.')}
   else if(kp>=5){st='Geomagnetic storm';col='var(--c5)';why.push(`Kp ${kp.toFixed(1)}. The geomagnetic field is strongly disturbed.`)}
-  else if(kp>=4){st='Somewhat disturbed';col='var(--c4)';why.push(`Kp ${kp.toFixed(1)}. Geomagnetic activity is elevated.`)}
-  else if(recentStorm&&kp<=2&&bz!=null&&bz>0&&sp!=null&&sp<450){st='Recovering';col='var(--c1)';why.push('The disturbance of the past 24 hours has subsided, Bz is northward and the solar wind has calmed.')}
-  else if(kp<=2&&(bz==null||bz>-2)){st='Quiet';col='var(--c1)';why.push('The geomagnetic field is quiet, which favors the low bands.')}
-  else{st='Mostly stable';col='var(--c3)';why.push(`Kp ${kp.toFixed(1)}. No major disturbance, but ${bz!=null&&bz<-2?'Bz is southward.':'conditions are slightly unsettled.'}`)}
-  if(S>=1)why.push(`A solar proton event (S${S}) is in progress.`);
+  else if(kp>=4){st='Disturbed';col='var(--c4)';why.push(`Kp ${kp.toFixed(1)}. The geomagnetic field is active.`)}
+  else if(recentStorm&&kp<=2&&bz!=null&&bz>0&&sp!=null&&sp<450){st='Improving';col='var(--c1)';why.push('The disturbance of the last 24 hours has settled; Bz is north and the solar wind is calm.')}
+  else if(kp<=2&&(bz==null||bz>-2)){st='Quiet';col='var(--c1)';why.push('The geomagnetic field is quiet — good for the low bands.')}
+  else{st='Mostly stable';col='var(--c3)';why.push(`Kp ${kp.toFixed(1)}. No major disturbance, but ${bz!=null&&bz<-2?'Bz is south.':'slightly unsettled.'}`)}
+  if(S>=1)why.push(`A proton event (S${S}) is in progress.`);
   $('state').textContent=st;$('state').style.color=col;$('verdict').style.borderColor=col;$('why').textContent=why.join(' ');
   let hi,lo;
-  if(S>=2)hi='Polar cap absorption is strong; signals can be badly weakened, sometimes for days.';
-  else if(S===1)hi='Polar absorption may weaken signals.';
-  else if(kp!=null&&kp>=4)hi='Fading and attenuation are likely to increase.';
-  else if(bz!=null&&sp!=null&&bz<-10&&sp>=500)hi='Conditions may deteriorate soon.';
-  else if(kp!=null&&kp<=2)hi='Geomagnetically favorable.';
-  else hi='No major problems expected.';
-  lo=(S>=1||(kp!=null&&kp>=5))?'Usually less affected than high-latitude paths.':'Relatively little geomagnetic influence.';
+  if(S>=2){hi='Polar absorption is strong; signals may weaken greatly (sometimes for days).';}
+  else if(S===1){hi='Signals may weaken because of polar absorption.';}
+  else if(kp!=null&&kp>=4){hi='Fading and attenuation are likely.';}
+  else if(bz!=null&&sp!=null&&bz<-10&&sp>=500){hi='Conditions may worsen.';}
+  else if(kp!=null&&kp<=2){hi='Good geomagnetic conditions.';}
+  else hi='No major problems seen.';
+  lo=(S>=1||(kp!=null&&kp>=5))?'Less affected than high-latitude paths.':'Relatively little geomagnetic influence on these paths.';
   $('pHigh').dataset.base=hi;$('pHigh').textContent=hi;$('pLow').textContent=lo;
 }
 
-/* ---- mid / high bands (from daylight at your location, SFI, Kp, S) */
-let lastV=null,IONO=null,AUR=null;
+/* ---- mid / high band guidance (general tendencies from Japan's daylight, SFI, Kp, S) */
+let lastV=null;
 function bandGuide(v){
   if(!v)return;lastV=v;
-  const ej=sunElev(STATION.lat,STATION.lon,Date.now()),sfi=v.sfi,kp=v.kp,S=v.S??0;
+  const ej=sunElev(35.68,139.69,Date.now()),sfi=v.sfi,kp=v.kp,S=v.S??0;
   const tod=ej>6?'day':ej>-6?'twi':'night';
-  const disturb=[];if(kp!=null&&kp>=4)disturb.push('With the geomagnetic field disturbed, high-latitude paths are likely to be weaker.');
-  if(S>=1)disturb.push(`The proton event (S${S}) may weaken paths across the polar regions.`);
+  const disturb=[];if(kp!=null&&kp>=4)disturb.push('With the geomagnetic field disturbed, high-latitude paths (to Europe and North America) tend to weaken.');
+  if(S>=1)disturb.push(`Because of the proton event (S${S}), paths over the polar regions may weaken.`);
   let ms,mc,mw;
-  if(tod==='day'){ms='Daytime at your QTH';mc='var(--c1)';mw='20 m and 17 m are the main bands in daytime. The higher the solar flux, the farther 17 m tends to reach. 30 m mostly favors shorter and regional paths.'}
-  else if(tod==='twi'){ms='Sunrise or sunset at your QTH';mc='var(--c1)';mw='Around sunrise and sunset, 30 m and 20 m often open over long distances. Watch for paths along the grey line.'}
-  else{ms='Night at your QTH';mc='var(--c3)';mw='At night 30 m is the main band. On days of high solar activity 20 m can stay open late into the night. 17 m tends to close.'}
+  if(tod==='day'){ms='Daytime in Japan';mc='var(--c1)';mw='In the daytime 20m and 17m are the main bands. The higher the SFI, the farther 17m reaches. 30m mainly covers Asia and Oceania.'}
+  else if(tod==='twi'){ms='Morning/evening in Japan';mc='var(--c1)';mw='Around sunrise and sunset in Japan, 30m and 20m tend to open to Europe and North America. Watch gray-line paths.'}
+  else{ms='Night in Japan';mc='var(--c3)';mw='At night 30m is the main band. With high solar activity, 20m may stay open late. 17m tends to close.'}
   let hs,hc,hw;
-  if(tod==='night'){hs='Usually closed';hc='var(--c4)';hw='It is night at your QTH. With the F2-layer electron density falling, the high bands are usually closed.'}
-  else if(sfi==null){hs='No assessment';hc='var(--muted)';hw='The solar flux is not available.'}
+  if(tod==='night'){hs='Likely closed';hc='var(--c4)';hw='It is night in Japan. The F2-layer electron density drops, so the high bands are generally closed.'}
+  else if(sfi==null){hs='Unknown';hc='var(--muted)';hw='SFI not available.'}
   else{
-    if(sfi>=150){hs='Likely open';hc='var(--c1)';hw=`SFI ${sfi.toFixed(0)}. Solar activity is high, and 15 m to 10 m are all likely to open in daytime.`}
-    else if(sfi>=100){hs='Mainly 15 m';hc='var(--c3)';hw=`SFI ${sfi.toFixed(0)}. 15 m opens readily in daytime; 12 m and 10 m open on some days.`}
-    else{hs='Difficult';hc='var(--c4)';hw=`SFI ${sfi.toFixed(0)}. 15 m may open in daytime, but 12 m and 10 m are difficult (sporadic E can open them in summer).`}
-    if(tod==='twi')hw='Sunrise or sunset at your QTH. '+hw;
+    if(sfi>=150){hs='Likely open';hc='var(--c1)';hw=`SFI ${sfi.toFixed(0)}. Solar activity is high; 15m to 10m are likely to open in the daytime.`}
+    else if(sfi>=100){hs='Mainly 15m';hc='var(--c3)';hw=`SFI ${sfi.toFixed(0)}. 15m opens easily in the daytime; 12m and 10m open on some days.`}
+    else{hs='Hard to open';hc='var(--c4)';hw=`SFI ${sfi.toFixed(0)}. 15m may open in the daytime, but 12m and 10m are difficult (sporadic E can open them in summer).`}
+    if(IONO&&IONO.latest.foF2!=null&&Date.now()-IONO.latest.t<90*60e3){const muf=IONO.latest.foF2*3;
+      hw+=` foF2 at Kokubunji is ${IONO.latest.foF2.toFixed(1)} MHz; the MUF guide is about ${muf.toFixed(0)} MHz`+(muf>=28?' (up to 10m).':muf>=24.9?' (up to 12m).':muf>=21?' (up to 15m).':' (15m is unlikely).');
+      if(muf<21){hs='Hard to open';hc='var(--c4)'}}
+    if(tod==='twi')hw='It is morning/evening in Japan. '+hw;
   }
   $('sMid').textContent=ms;$('sMid').style.color=mc;$('vMid').style.borderColor=mc;$('wMid').textContent=mw+(disturb.length?' '+disturb.join(' '):'');
   $('sHigh').textContent=hs;$('sHigh').style.color=hc;$('vHigh').style.borderColor=hc;$('wHigh').textContent=hw+(disturb.length&&tod!=='night'?' '+disturb.join(' '):'');
@@ -284,33 +336,32 @@ function bandGuide(v){
 /* ---- Kp 3-day forecast */
 function parseKpf(d){
   if(d&&d.length&&Array.isArray(d[0])){const h=d[0];d=d.slice(1).map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]])))}
-  return d.map(r=>({t:ts(r.time_tag),kp:parseFloat(r.kp??r.Kp),kind:String(r.observed??r.kind??'').toLowerCase()}))
+  return d.map(r=>({t:ts(r.time_tag),kp:parseFloat(r.kp??r.Kp),kind:String(r.observed??r.kind??'').toLowerCase(),g:r.noaa_scale||null}))
     .filter(r=>!isNaN(r.kp)&&!isNaN(r.t)).sort((a,b)=>a.t-b.t);
 }
 const gOf=k=>k>=9?'G5':k>=8?'G4':k>=7?'G3':k>=6?'G2':k>=5?'G1':'G0';
-const COLS=['#2bb3a3','#7fd3c6','#e9c46a','#f08a4b','#e05555'];
 function kpfChart(rows){
   const now=Date.now();rows=rows.filter(r=>r.t>=now-24*3600e3);
-  if(!rows.length){$('kpfChart').innerHTML='<p style="color:var(--muted);margin:0">Forecast data not available.</p>';$('kpfSum').textContent='';return}
-  const W=960,H=140,n=rows.length,bw=W/n;
+  if(!rows.length){$('kpfChart').innerHTML='<p style="color:var(--muted);margin:0">Forecast not available.</p>';$('kpfSum').textContent='';return}
+  const W=960,H=140,n=rows.length,bw=W/n,cols=['#2bb3a3','#7fd3c6','#e9c46a','#f08a4b','#e05555'];
   let s=`<svg viewBox="0 0 ${W} ${H+34}">`;
   for(const y of[4,5,7]){const yy=H-H*y/9;s+=`<line x1="0" x2="${W}" y1="${yy}" y2="${yy}" stroke="#2c2c31"/><text x="${W-2}" y="${yy-2}" fill="#77777f" font-size="10" text-anchor="end">${y}${y===5?' (G1)':''}</text>`}
-  rows.forEach((r,i)=>{const bh=Math.max(2,H*r.kp/9),c=COLS[lvKp(r.kp)-1],pred=r.kind.startsWith('pred');
-    s+=pred?`<rect x="${i*bw+2}" y="${H-bh}" width="${bw-4}" height="${bh}" rx="2" fill="${c}" fill-opacity=".18" stroke="${c}" stroke-dasharray="3 2"><title>${fmtUTCd(r.t)} forecast Kp ${r.kp.toFixed(2)}</title></rect>`
-           :`<rect x="${i*bw+2}" y="${H-bh}" width="${bw-4}" height="${bh}" rx="2" fill="${c}"><title>${fmtUTCd(r.t)} Kp ${r.kp.toFixed(2)}</title></rect>`;
-    const d=new Date(r.t);if(d.getUTCHours()===0)s+=`<line x1="${i*bw}" x2="${i*bw}" y1="0" y2="${H}" stroke="#3a3a40"/><text x="${i*bw+3}" y="${H+14}" fill="#9a9aa3" font-size="11">${d.getUTCDate()} ${MON[d.getUTCMonth()]}</text>`;
+  rows.forEach((r,i)=>{const bh=Math.max(2,H*r.kp/9),c=cols[lvKp(r.kp)-1],pred=r.kind.startsWith('pred');
+    s+=pred?`<rect x="${i*bw+2}" y="${H-bh}" width="${bw-4}" height="${bh}" rx="2" fill="${c}" fill-opacity=".18" stroke="${c}" stroke-dasharray="3 2"><title>${fmtJSTd(r.t)} local – forecast Kp ${r.kp.toFixed(2)}</title></rect>`
+           :`<rect x="${i*bw+2}" y="${H-bh}" width="${bw-4}" height="${bh}" rx="2" fill="${c}"><title>${fmtJSTd(r.t)} local – Kp ${r.kp.toFixed(2)}</title></rect>`;
+    const j=new Date(r.t+LOC_OFF*3600e3);if(j.getUTCHours()<3)s+=`<line x1="${i*bw}" x2="${i*bw}" y1="0" y2="${H}" stroke="#3a3a40"/><text x="${i*bw+3}" y="${H+14}" fill="#9a9aa3" font-size="11">${j.getUTCMonth()+1}/${j.getUTCDate()}</text>`;
   });
-  const ni=rows.findIndex(r=>r.t+3*3600e3>now);if(ni>=0){const x=ni*bw+bw*((now-rows[ni].t)/(3*3600e3));s+=`<line x1="${x}" x2="${x}" y1="0" y2="${H}" stroke="#d8b14a" stroke-width="1.5"/><text x="${x+3}" y="${H+28}" fill="#d8b14a" font-size="11">Now</text>`}
-  $('kpfChart').innerHTML=s+'</svg><div style="font-size:.75rem;color:var(--muted)">Day boundaries at 00 UTC</div>';
+  const ni=rows.findIndex(r=>r.t+3*3600e3>now);if(ni>=0){const x=ni*bw+bw*((now-rows[ni].t)/(3*3600e3));s+=`<line x1="${x}" x2="${x}" y1="0" y2="${H}" stroke="#d8b14a" stroke-width="1.5"/><text x="${x+3}" y="${H+28}" fill="#d8b14a" font-size="11">now</text>`}
+  $('kpfChart').innerHTML=s+'</svg><div style="font-size:.75rem;color:var(--muted)">Date lines at local midnight</div>';
   const next=rows.filter(r=>r.t+3*3600e3>now&&r.t<now+24*3600e3);
   if(!next.length){$('kpfSum').textContent='';return}
   const mx=next.reduce((a,b)=>b.kp>a.kp?b:a),g=gOf(mx.kp);
-  let txt=`Highest forecast in the next 24 hours: Kp ${mx.kp.toFixed(2)} (${g}) in the block starting ${fmtUTCd(mx.t)} (your time ${fmtLocD(mx.t)}).`;
-  if(mx.kp>=5)txt+=' A geomagnetic storm is forecast. Paths crossing high latitudes may weaken around this time.';
-  else if(mx.kp>=4)txt+=' Activity is forecast to rise somewhat. Keep an eye on high-latitude paths.';
+  let txt=`Maximum forecast in the next 24 hours: Kp ${mx.kp.toFixed(2)} (${g}), ${fmtJSTd(mx.t)}–${fmtJST(mx.t+3*3600e3)} local.`;
+  if(mx.kp>=5)txt+=' A geomagnetic storm is forecast. Paths over high latitudes may weaken around this time.';
+  else if(mx.kp>=4)txt+=' Somewhat active conditions are forecast. Watch high-latitude paths.';
   else txt+=' No major disturbance is forecast.';
   const all=rows.filter(r=>r.t>now&&r.kind.startsWith('pred')),gmx=all.length?all.reduce((a,b)=>b.kp>a.kp?b:a):null;
-  if(gmx&&gmx.kp>=5&&gmx!==mx)txt+=` Later in the 3-day period, Kp ${gmx.kp.toFixed(2)} (${gOf(gmx.kp)}) is forecast from ${fmtUTCd(gmx.t)}.`;
+  if(gmx&&gmx.kp>=5&&gmx!==mx)txt+=` Within the 3-day forecast, Kp ${gmx.kp.toFixed(2)} (${gOf(gmx.kp)}) is forecast from ${fmtJSTd(gmx.t)} local.`;
   $('kpfSum').textContent=txt;
 }
 
@@ -319,9 +370,10 @@ function kpChart(h){
   if(!h.length){$('kpChart').innerHTML='<p style="color:var(--muted);margin:0">No data</p>';return}
   const W=480,H=150,bw=W/16;let s=`<svg viewBox="0 0 ${W} ${H+18}">`;
   for(const y of[4,5,7]){const yy=H-H*y/9;s+=`<line x1="0" x2="${W}" y1="${yy}" y2="${yy}" stroke="#2c2c31"/><text x="${W-2}" y="${yy-2}" fill="#77777f" font-size="10" text-anchor="end">${y}</text>`}
-  h.forEach(([t,k],i)=>{const bh=Math.max(2,H*k/9);s+=`<rect x="${i*bw+2}" y="${H-bh}" width="${bw-4}" height="${bh}" rx="2" fill="${COLS[lvKp(k)-1]}"><title>${fmtUTCd(t)} Kp ${k}</title></rect>`;
-    if(i%4===0)s+=`<text x="${i*bw+2}" y="${H+14}" fill="#77777f" font-size="10">${fmtUTC(t).replace(' UTC','')}</text>`});
-  $('kpChart').innerHTML=s+'</svg><div style="font-size:.75rem;color:var(--muted)">Horizontal axis in UTC</div>';
+  const cols=['#2bb3a3','#7fd3c6','#e9c46a','#f08a4b','#e05555'];
+  h.forEach(([t,k],i)=>{const bh=Math.max(2,H*k/9);s+=`<rect x="${i*bw+2}" y="${H-bh}" width="${bw-4}" height="${bh}" rx="2" fill="${cols[lvKp(k)-1]}"><title>${fmtUTC(t)} Kp ${k}</title></rect>`;
+    if(i%4===0)s+=`<text x="${i*bw+2}" y="${H+14}" fill="#77777f" font-size="10">${fmtJST(t)}</text>`});
+  $('kpChart').innerHTML=s+'</svg><div style="font-size:.75rem;color:var(--muted)">Horizontal axis: local time</div>';
 }
 function bzChart(sr){
   if(sr.length<2){$('bzChart').innerHTML='<p style="color:var(--muted);margin:0">No data</p>';return}
@@ -330,11 +382,11 @@ function bzChart(sr){
   let s=`<svg viewBox="0 0 ${W} ${H+18}"><rect x="0" y="${H/2}" width="${W}" height="${H/2}" fill="rgba(224,85,85,.07)"/><line x1="0" x2="${W}" y1="${H/2}" y2="${H/2}" stroke="#55555c"/>`;
   s+=`<text x="4" y="12" fill="#77777f" font-size="10">+${m.toFixed(0)}</text><text x="4" y="${H-2}" fill="#77777f" font-size="10">-${m.toFixed(0)}</text>`;
   s+=`<polyline fill="none" stroke="#d8b14a" stroke-width="1.6" points="${sr.map(x=>X(x[0]).toFixed(1)+','+Y(x[1]).toFixed(1)).join(' ')}"/>`;
-  s+=`<text x="0" y="${H+14}" fill="#77777f" font-size="10">${fmtUTC(t0)}</text><text x="${W}" y="${H+14}" fill="#77777f" font-size="10" text-anchor="end">${fmtUTC(t1)}</text>`;
-  $('bzChart').innerHTML=s+'</svg><div style="font-size:.75rem;color:var(--muted)">Red band = southward</div>';
+  s+=`<text x="0" y="${H+14}" fill="#77777f" font-size="10">${fmtJST(t0)}</text><text x="${W}" y="${H+14}" fill="#77777f" font-size="10" text-anchor="end">${fmtJST(t1)}</text>`;
+  $('bzChart').innerHTML=s+'</svg><div style="font-size:.75rem;color:var(--muted)">Horizontal axis: local time; red band: southward</div>';
 }
 
-/* ---- sun */
+/* ---- sun / day-night */
 function sunElev(lat,lon,t){
   const d=new Date(t),doy=(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())-Date.UTC(d.getUTCFullYear(),0,0))/864e5;
   const hr=d.getUTCHours()+d.getUTCMinutes()/60,g=2*Math.PI/365*(doy-1+(hr-12)/24);
@@ -343,56 +395,62 @@ function sunElev(lat,lon,t){
   const ha=((hr*60+eq+4*lon)/4-180)*Math.PI/180,la=lat*Math.PI/180;
   return Math.asin(Math.sin(la)*Math.sin(dec)+Math.cos(la)*Math.cos(dec)*Math.cos(ha))*180/Math.PI;
 }
-
-/* ---- ionosphere (Kokubunji) */
+// 国分寺の電離層データ（JSON）の置き場所。取得の仕組みができたらURLを設定する
+const IONO_URL='https://ja1bbe.github.io/ja1bbe-iono/iono.json';
+let IONO=null;
 function ionoRender(){
   const m=$('ionoMsg');
   $('ionoCharts').style.display=IONO?'':'none';
-  if(!IONO){$('ionoCards').innerHTML='';m.textContent='Ionospheric data could not be loaded.';return}
-  const L=IONO.latest,age=(Date.now()-L.t)/60e3,h=L.hF2??L.hF,hn=L.hF2!=null?"h’F2":"h’F";
+  if(!IONO){$('ionoCards').innerHTML='';
+    m.textContent=IONO_URL?'Ionosphere data not available.':'Ionosphere data from Kokubunji is being prepared.';return}
+  const L=IONO.latest,age=(Date.now()-L.t)/60e3,h=L.hF2??L.hF,hn=L.hF2!=null?"h'F2":"h'F";
   const kind=L.hF2!=null?'hF2':'hF',prev=IONO.recent.filter(r=>r.t<=L.t-3600e3&&r[kind]!=null).pop(),dh=prev&&h!=null?h-prev[kind]:null;
   const c=[];
-  if(L.foF2!=null){c.push(card('foF2',L.foF2.toFixed(1),'MHz',2,'F2 critical frequency'));const muf=L.foF2*3;c.push(card('MUF estimate',muf.toFixed(0),'MHz',muf>=28?1:muf>=21?2:muf>=14?3:4,'foF2 × 3 (about 3,000 km)'))}
-  if(h!=null)c.push(card('Virtual height ('+hn+')',h.toFixed(0),'km',dh!=null&&dh>=50?4:2,dh==null?'No 1-hour comparison':(dh>=0?'+':'')+dh.toFixed(0)+' km in 1 hour'+(dh>=50?' (sharp rise)':'')));
-  c.push(card('Spread-F',L.spreadF?'Yes':'No','',L.spreadF?4:1,L.spreadF?'Irregular reflection; more fading':'No sign'));
-  $('ionoCards').innerHTML=c.join('');$('ionoCards').classList.toggle('stale',age>90);
-  line('hfChart',IONO.recent.filter(r=>(r.hF2??r.hF)!=null).map(r=>[r.t,r.hF2??r.hF]),'#d8b14a');
-  line('foChart',IONO.recent.filter(r=>r.foF2!=null).map(r=>[r.t,r.foF2]),'#7fd3c6');
-  m.textContent=`Observed ${fmtUTCd(L.t)} (your time ${fmtLocD(L.t)})`+(age>90?`. This reading is about ${age<180?Math.round(age)+' minutes':Math.round(age/60)+' hours'} old because the public file is updated with a delay. It may not reflect current conditions.`:'.');
+  if(L.foF2!=null){c.push(card('foF2',L.foF2.toFixed(1),'MHz',2,'F2 critical frequency'));const muf=L.foF2*3;c.push(card('MUF guide',muf.toFixed(0),'MHz',muf>=28?1:muf>=21?2:muf>=14?3:4,'foF2 × 3 (about 3,000 km)'))}
+  if(h!=null)c.push(card('Virtual height ('+hn+')',h.toFixed(0),'km',dh!=null&&dh>=50?4:2,dh==null?'no comparison with 1 h ago':(dh>=0?'+':'')+dh.toFixed(0)+' km in 1 h'+(dh>=50?' (rapid rise)':'')));
+  c.push(card('Spread-F',L.spreadF?'Yes':'No','',L.spreadF?4:1,L.spreadF?'Disturbed reflection, more fading':'No sign'));
+  $('ionoCards').innerHTML=c.join('');$('ionoCards').classList.toggle('stale',age>90);const dl=age>90||new Date(L.t+LOC_OFF*3600e3).getUTCDate()!==new Date(Date.now()+LOC_OFF*3600e3).getUTCDate();
+  line('hfChart',IONO.recent.filter(r=>(r.hF2??r.hF)!=null).map(r=>[r.t,r.hF2??r.hF]),'#d8b14a',dl);
+  line('foChart',IONO.recent.filter(r=>r.foF2!=null).map(r=>[r.t,r.foF2]),'#7fd3c6',dl);
+  m.textContent=`Observed ${fmtUTC(L.t)} (${fmtJSTd(L.t)} local)`+(age>90?`. About ${age<180?Math.round(age)+' minutes':Math.round(age/60)+' hours'} since the latest observation (NICT publishes once a day). The value may differ from the present state and is not used for the high-band outlook.`:'');
 }
-function line(id,sr,col){
+function line(id,sr,col,dl){const F=dl?fmtJSTd:fmtJST;
   if(sr.length<2){$(id).innerHTML='<p style="color:var(--muted);margin:0">No data</p>';return}
   const W=480,H=130,t0=sr[0][0],t1=sr[sr.length-1][0],vs=sr.map(x=>x[1]),lo=Math.min(...vs),hi=Math.max(...vs),pad=(hi-lo)*0.15||1;
   const X=t=>(t-t0)/(t1-t0||1)*W,Y=v=>H-(v-lo+pad)/(hi-lo+2*pad)*H;
   $(id).innerHTML=`<svg viewBox="0 0 ${W} ${H+18}"><polyline fill="none" stroke="${col}" stroke-width="1.8" points="${sr.map(x=>X(x[0]).toFixed(1)+','+Y(x[1]).toFixed(1)).join(' ')}"/>`+
    `<text x="2" y="12" fill="#77777f" font-size="10">${hi.toFixed(hi<30?1:0)}</text><text x="2" y="${H-2}" fill="#77777f" font-size="10">${lo.toFixed(lo<30?1:0)}</text>`+
-   `<text x="0" y="${H+14}" fill="#77777f" font-size="10">${fmtUTCd(t0)}</text><text x="${W}" y="${H+14}" fill="#77777f" font-size="10" text-anchor="end">${fmtUTCd(t1)}</text></svg>`;
+   `<text x="0" y="${H+14}" fill="#77777f" font-size="10">${F(t0)}</text><text x="${W}" y="${H+14}" fill="#77777f" font-size="10" text-anchor="end">${F(t1)}</text></svg><div style="font-size:.75rem;color:var(--muted)">Horizontal axis: local time</div>`;
 }
 function parseIono(d){const rec=(d.recent||[]).map(r=>({t:ts(r.time),foF2:r.foF2??null,hF:r.hF??null,hF2:r.hF2??null,spreadF:!!r.spreadF})).sort((a,b)=>a.t-b.t);
   return{recent:rec,latest:rec[rec.length-1]}}
-async function loadIono(){try{const d=await getJSON(IONO_URL);IONO=parseIono(d);if(!IONO.latest)IONO=null}catch(e){IONO=null}ionoRender()}
+async function loadIono(){if(!IONO_URL){IONO=null;ionoRender();return}
+  try{const d=await getJSON(IONO_URL);IONO=parseIono(d);if(!IONO.latest)IONO=null}catch(e){IONO=null}ionoRender();bandGuide(lastV)}
 
-/* ---- paths */
-const GMPOLE={lat:80.8,lon:-72.6};
+let STATION={name:'PM95',lat:35.5,lon:139.0};        // 基準地点（自局のグリッドロケータから設定。既定はPM95）
+const GMPOLE={lat:80.8,lon:-72.6};                    // 地磁気北極（双極子近似）
 const R=Math.PI/180,EARTH=6371;
+let AUR=null;   // {grid:Float32Array(360*181), obs, fc, nmax}
 function aurAt(lat,lon){if(!AUR)return null;let L=Math.round(lon);L=((L%360)+360)%360;const la=Math.max(-90,Math.min(90,Math.round(lat)));return AUR.grid[L*181+la+90]}
 function magLat(lat,lon){return Math.asin(Math.sin(lat*R)*Math.sin(GMPOLE.lat*R)+Math.cos(lat*R)*Math.cos(GMPOLE.lat*R)*Math.cos((lon-GMPOLE.lon)*R))/R}
-function bearingDist(la1,lo1,la2,lo2){const q1=la1*R,q2=la2*R,dl=(lo2-lo1)*R;
-  const d=Math.acos(Math.min(1,Math.sin(q1)*Math.sin(q2)+Math.cos(q1)*Math.cos(q2)*Math.cos(dl)));
-  const az=(Math.atan2(Math.sin(dl)*Math.cos(q2),Math.cos(q1)*Math.sin(q2)-Math.sin(q1)*Math.cos(q2)*Math.cos(dl))/R+360)%360;
+function bearingDist(la1,lo1,la2,lo2){const p1=la1*R,p2=la2*R,dl=(lo2-lo1)*R;
+  const d=Math.acos(Math.min(1,Math.sin(p1)*Math.sin(p2)+Math.cos(p1)*Math.cos(p2)*Math.cos(dl)));
+  const az=(Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))/R+360)%360;
   return{az,km:d*EARTH}}
-function dest(la,lo,az,km){const d=km/EARTH,q1=la*R,t=az*R;const q2=Math.asin(Math.sin(q1)*Math.cos(d)+Math.cos(q1)*Math.sin(d)*Math.cos(t));
-  const l2=lo*R+Math.atan2(Math.sin(t)*Math.sin(d)*Math.cos(q1),Math.cos(d)-Math.sin(q1)*Math.sin(q2));return[q2/R,((l2/R+540)%360)-180]}
+function dest(la,lo,az,km){const d=km/EARTH,p1=la*R,t=az*R;const p2=Math.asin(Math.sin(p1)*Math.cos(d)+Math.cos(p1)*Math.sin(d)*Math.cos(t));
+  const l2=lo*R+Math.atan2(Math.sin(t)*Math.sin(d)*Math.cos(p1),Math.cos(d)-Math.sin(p1)*Math.sin(p2));return[p2/R,((l2/R+540)%360)-180]}
 function pathStats(az,km,t){let dark=0,n=0,mm=-90,au=null;
   for(let x=0;x<=km;x+=200){const[la,lo]=dest(STATION.lat,STATION.lon,az,x);n++;
     if(sunElev(la,lo,t)<-6)dark++;const m=magLat(la,lo);if(Math.abs(m)>Math.abs(mm)||mm===-90)mm=m;
     const a=aurAt(la,lo);if(a!=null)au=Math.max(au??0,a)}
   return{az,km,dark:dark/n,mag:mm,aur:au}}
-/* skewed headings: when the short path meets the auroral zone, look for a heading up to 60° off the great circle whose
-   bent path (two great-circle legs) avoids the zone (OVATION 10%+, or geomagnetic latitude 60°+ without aurora data). */
+// ---- オーロラ帯を避ける「ずらした方位」（試す価値の目安）
+// 電離層の傾きや散乱で曲がって届く経路を、途中で折れ曲がる2本の大圏で近似する。大圏から左右60°まで5°刻みで、
+// オーロラ帯（OVATION 10%以上。取得できないときは地磁気緯度60°以上）を通らず、遠回りが大圏の1.3倍以内の経路を探す。
 function seg(la1,lo1,la2,lo2,step){const g=bearingDist(la1,lo1,la2,lo2),out=[];for(let x=0;x<g.km;x+=step)out.push(dest(la1,lo1,g.az,x));out.push([la2,lo2]);return{pts:out,km:g.km}}
 function polyRisk(pts){let mm=0,au=null;for(const[la,lo]of pts){const m=Math.abs(magLat(la,lo));if(m>mm)mm=m;const a=aurAt(la,lo);if(a!=null)au=Math.max(au??0,a)}return{mm,au}}
-function skewSearch(g,tla,tlo,t){const cand=[];
+const detourTxt = x => x < 100 ? 'hardly any detour' : `detour about ${(Math.round(x / 100) * 100).toLocaleString()} km`;
+function skewSearch(g,tla,tlo){const cand=[];
   for(let d=5;d<=60;d+=5)for(const s of[1,-1]){const az=(g.az+s*d+360)%360;let best=null;
     for(let D=1500;D<=g.km+1000;D+=500){const[pla,plo]=dest(STATION.lat,STATION.lon,az,D);
       const a=seg(STATION.lat,STATION.lon,pla,plo,250),b=seg(pla,plo,tla,tlo,250),tot=a.km+b.km;if(tot>g.km*1.3)continue;
@@ -401,44 +459,646 @@ function skewSearch(g,tla,tlo,t){const cand=[];
     if(best)cand.push(best)}
   if(!cand.length)return null;cand.sort((x,y)=>Math.abs(x.off)-Math.abs(y.off)||x.km-y.km);
   const c=cand[0];c.extra=c.km-g.km;return c}
-function skewNote(g,sp,tla,tlo,t){const need=AUR?(sp.aur??0)>=10:Math.abs(sp.mag)>=62;if(!need)return'';
-  const sk=skewSearch(g,tla,tlo,t);
-  return sk?`<br><span class="adv t3">Try a skewed heading of ${sk.az.toFixed(0)}°</span>: it bends around the auroral zone (${sk.extra<100?'only slightly longer':'about '+(Math.round(sk.extra/100)*100).toLocaleString('en')+' km longer'}). Signals can follow such bent paths through ionospheric tilts or scattering, but it is not guaranteed.`
-    :`<br><span class="adv">No skewed heading within 60° avoids the auroral zone.</span>`}
-const aurTxt=a=>a==null?'–':a>=30?`<span class="t5">${a.toFixed(0)}% (crossing)</span>`:a>=10?`<span class="t4">${a.toFixed(0)}% (edge)</span>`:`<span class="t1">${a.toFixed(0)}% (minor)</span>`;
-const pathCell=p=>`<span class="az">${p.az.toFixed(0)}°</span>&nbsp; ${(Math.round(p.km/100)*100).toLocaleString('en')} km<br>Geomag. lat. ${Math.abs(p.mag).toFixed(0)}°${p.mag>=0?'N':'S'}<br>Aurora ${aurTxt(p.aur)}<br>Darkness ${(p.dark*100).toFixed(0)}%`;
+const needSkew=sp=>AUR?(sp.aur??0)>=10:Math.abs(sp.mag)>=62;
+function skewNote(g,sp,sk,detail){if(!needSkew(sp))return'';
+  const where=AUR?`${(sp.aur??0)>=30?'crosses the auroral zone':'passes the edge of the auroral zone'}`:`passes high geomagnetic latitude ${Math.abs(sp.mag).toFixed(0)}°`;
+  if(!sk)return`<br><span class="adv">Skewed path</span>: the short path ${where}. No path avoiding the auroral zone was found within 60° to either side.`;
+  return`<br><span class="adv t3">Worth trying a skewed bearing of ${sk.az.toFixed(0)}°</span><span style="color:var(--c5);font-size:.85em"> (under evaluation)</span>: the short path ${g.az.toFixed(0)}° ${where}. `+
+    (detail?`A path leaving at ${sk.az.toFixed(0)}° and bending near ${llToGrid(sk.turn[0],sk.turn[1]).slice(0,4)} would avoid the auroral zone (${detourTxt(sk.extra)}). Such bent paths depend on ionospheric tilts or scatter, so success depends on conditions.`
+      :`A bent path can avoid the auroral zone (${detourTxt(sk.extra)}).`)}
+const aurTxt=a=>a==null?'―':a>=30?`<span class="t5">${a.toFixed(0)}% (crossing)</span>`:a>=10?`<span class="t4">${a.toFixed(0)}% (edge)</span>`:`<span class="t1">${a.toFixed(0)}% (small)</span>`;
+const pathCell=p=>`<span class="az">${p.az.toFixed(0)}°</span> ${(Math.round(p.km/100)*100).toLocaleString()} km<br>geomag. lat. ${p.mag>=0?'N':'S'}${Math.abs(p.mag).toFixed(0)}°<br>aurora ${aurTxt(p.aur)}<br>darkness ${(p.dark*100).toFixed(0)}%`;
 function advise(sp,lp){
   const bad=a=>a!=null&&a>=30,edge=a=>a!=null&&a>=10&&a<30;
-  if(sp.dark>=0.8&&!bad(sp.aur))return`<span class="adv t1">Short path ${sp.az.toFixed(0)}°: good conditions for the low bands</span>${edge(sp.aur)?' (passes the edge of the auroral zone; may be somewhat weaker)':''}`;
-  if(lp.dark>=0.8&&!bad(lp.aur)&&(bad(sp.aur)||sp.dark<0.5))return`<span class="adv t3">Try the long path ${lp.az.toFixed(0)}°</span> (the short path ${bad(sp.aur)?'crosses the auroral zone':'is largely in daylight'})`;
-  if(bad(sp.aur)&&sp.dark>=0.5)return`<span class="adv t5">Short path crosses the auroral zone</span>: polar routes may be badly weakened. Consider regions that avoid high latitudes.`;
-  if(sp.dark>=0.5)return`<span class="adv t3">Short path ${sp.az.toFixed(0)}°</span>: part of the path is in daylight. Watch the grey line.`;
-  if(sp.dark>=0.2)return`<span class="adv">Short path ${sp.az.toFixed(0)}°</span>: mainly mid-band time.`;
-  return`<span class="adv">Short path ${sp.az.toFixed(0)}°</span>: path mostly in daylight. High- and mid-band time.`;
+  if(sp.dark>=0.8&&!bad(sp.aur))return`<span class="adv t1">Low bands possible on the short path ${sp.az.toFixed(0)}°</span>${edge(sp.aur)?' (passes the edge of the auroral zone; may be somewhat weaker)':''}`;
+  if(lp.dark>=0.8&&!bad(lp.aur)&&(bad(sp.aur)||sp.dark<0.5))return`<span class="adv t3">Consider the long path ${lp.az.toFixed(0)}°</span> (the short path ${bad(sp.aur)?'crosses the auroral zone':'is largely in daylight'})`;
+  if(bad(sp.aur)&&sp.dark>=0.5)return`<span class="adv t5">The short path crosses the auroral zone</span>: the polar route may weaken greatly; try directions that avoid high latitudes`;
+  if(sp.dark>=0.5)return`<span class="adv t3">Short path ${sp.az.toFixed(0)}°</span>: part of the path is in daylight — watch the gray line`;
+  if(sp.dark>=0.2)return`<span class="adv">Short path ${sp.az.toFixed(0)}°</span>: mainly a time for the mid bands`;
+  return`<span class="adv">Short path ${sp.az.toFixed(0)}°</span>: mostly daylight — time for the high and mid bands`;
 }
 const dnState=e=>e>6?['Day','day']:e>-6?['Twilight','gl']:['Night','night'];
-const TARGETS=[['Japan (Tokyo)',35.68,139.69],['Southeast Asia (Singapore)',1.35,103.82],['Oceania (Sydney)',-33.87,151.21],['Europe (London)',51.5,-0.13],['North America, east (New York)',40.7,-74.0],['North America, west (Los Angeles)',34.05,-118.24],['Caribbean (Puerto Rico)',18.47,-66.11],['South America (São Paulo)',-23.55,-46.63],['West Africa (Dakar, Senegal)',14.69,-17.45],['Southern Africa (Johannesburg)',-26.2,28.05],['Middle East (Dubai)',25.2,55.27]];
 function dayNight(){
-  const now=Date.now(),ej=sunElev(STATION.lat,STATION.lon,now),[jl,jc]=dnState(ej);let northBad=[];
-  $('dn').innerHTML=TARGETS.map(([n,la,lo])=>{
-    const g=bearingDist(STATION.lat,STATION.lon,la,lo);if(g.km<500)return'';
-    const e=sunElev(la,lo,now),[l,c]=dnState(e);
-    const sp=pathStats(g.az,g.km,now),lp=pathStats((g.az+180)%360,2*Math.PI*EARTH-g.km,now);
+  const now=Date.now(),JA=[STATION.lat,STATION.lon];
+  const P=[['Japan (Tokyo)',35.68,139.76],['Europe (London)',51.5,-0.13],['North America east (New York)',40.7,-74.0],['North America west (Los Angeles)',34.05,-118.24],['Caribbean (Puerto Rico)',18.47,-66.11],['West Africa (Dakar)',14.69,-17.45],['South America (São Paulo)',-23.55,-46.63],['Southern Africa (Johannesburg)',-26.2,28.05],['Oceania (Sydney)',-33.87,151.21],['SE Asia (Singapore)',1.35,103.82]].filter(([n,la,lo])=>bearingDist(JA[0],JA[1],la,lo).km>300);
+  const ej=sunElev(JA[0],JA[1],now),[jl,jc]=dnState(ej);let northBad=[];
+  $('dn').innerHTML=P.map(([n,la,lo])=>{const e=sunElev(la,lo,now),[l,c]=dnState(e);
+    const g=bearingDist(JA[0],JA[1],la,lo),sp=pathStats(g.az,g.km,now),lp=pathStats((g.az+180)%360,2*Math.PI*EARTH-g.km,now);
     if(sp.aur!=null&&sp.aur>=30)northBad.push(n.replace(/ \(.*/,''));
-    return `<tr><td><b>${n}</b></td><td><span class="tag ${c}">${l}</span><br><span class="tag ${jc}">${jl}</span></td><td>${pathCell(sp)}</td><td>${pathCell(lp)}</td><td>${advise(sp,lp)}${skewNote(g,sp,la,lo,now)}</td></tr>`}).join('');
-  const base=$('pHigh').dataset.base;if(base!==undefined)$('pHigh').textContent=base+(northBad.length?` The auroral zone currently lies across the short path to: ${northBad.join(', ')}.`:'');
-  if(AUR)$('aurInfo').textContent=`Aurora (OVATION): observed ${fmtUTC(AUR.obs)}, forecast for ${fmtUTC(AUR.fc)}. Northern-hemisphere maximum ${AUR.nmax.toFixed(0)}%.`;
-  else $('aurInfo').textContent='Aurora data are not available, so aurora probabilities are not shown.';
-  const d0=new Date(now);d0.setHours(0,0,0,0);let rise,set,prev=sunElev(STATION.lat,STATION.lon,d0.getTime());
-  for(let m=1;m<=1440;m++){const t=d0.getTime()+m*60e3,e=sunElev(STATION.lat,STATION.lon,t);if(prev<-0.833&&e>=-0.833)rise=t;if(prev>=-0.833&&e<-0.833)set=t;prev=e}
-  $('qthSun').textContent=`Today at ${STATION.grid}: sunrise ${rise?fmtUTC(rise)+' ('+fmtLoc(rise)+' your time)':'–'}, sunset ${set?fmtUTC(set)+' ('+fmtLoc(set)+' your time)':'–'} (calculated).`;
+    return `<tr><td><b>${n}</b></td><td><span class="tag ${c}">${l}</span><br><span class="tag ${jc}">${jl}</span></td><td>${pathCell(sp)}</td><td>${pathCell(lp)}</td><td>${advise(sp,lp)}${needSkew(sp)?skewNote(g,sp,skewSearch(g,la,lo),false):''}</td></tr>`}).join('');
+  const base=$('pHigh').dataset.base;if(base!==undefined)$('pHigh').textContent=base+(northBad.length?` From your station, the short paths to ${northBad.join(', ')} now cross the auroral zone.`:'');
+  if(AUR)$('aurInfo').textContent=`Aurora (OVATION): observed ${fmtUTC(AUR.obs)}, forecast for ${fmtUTC(AUR.fc)}. Northern maximum ${AUR.nmax.toFixed(0)}%.`;
+  else $('aurInfo').textContent='Aurora data not available, so aurora probability is not shown.';
+  const j=new Date(now+LOC_OFF*3600e3),base0=Date.UTC(j.getUTCFullYear(),j.getUTCMonth(),j.getUTCDate())-LOC_OFF*3600e3;let rise,set,prev=sunElev(JA[0],JA[1],base0);
+  for(let m=1;m<=1440;m++){const t=base0+m*60e3,e=sunElev(JA[0],JA[1],t);if(prev<-0.833&&e>=-0.833)rise=t;if(prev>=-0.833&&e<-0.833)set=t;prev=e}
+  $('jaSun').textContent=`Your station (${STATION.name}): sunrise ${rise?fmtJST(rise):'―'}, sunset ${set?fmtJST(set):'―'} today (local time of this browser, calculated).`;
 }
 function parseAur(d){const g=new Float32Array(360*181);let nmax=0;
   for(const [lo,la,a] of d.coordinates){const L=((Math.round(lo)%360)+360)%360,A=Math.round(la);if(A<-90||A>90)continue;g[L*181+A+90]=a;if(A>0&&a>nmax)nmax=a}
   return{grid:g,obs:ts(d['Observation Time']),fc:ts(d['Forecast Time']),nmax}}
 
+/* ---- 交信したい相手（自局・相手のグリッドロケータ、またはコールサイン） */
+const CTY_URL='https://ja1bbe.github.io/ja1bbe-iono/cty.json';   // cty.dat を変換した表（コールサイン → エンティティと代表位置）
+let CTY=null,TARGET=null;
+// 位置がわかっている局は、コールサインで入れてもそのグリッドで計算する（必要に応じて書き足す）
+const KNOWN={'JA1BBE':'PM95RN'};
+const LS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function gridToLL(g){
+  g=String(g||'').trim().toUpperCase();
+  if(!/^[A-R]{2}[0-9]{2}([A-X]{2})?$/.test(g))return null;
+  let lon=(g.charCodeAt(0)-65)*20-180+(+g[2])*2,lat=(g.charCodeAt(1)-65)*10-90+(+g[3]);
+  if(g.length===6){lon+=(g.charCodeAt(4)-65)*(2/24)+1/24;lat+=(g.charCodeAt(5)-65)*(1/24)+1/48}else{lon+=1;lat+=0.5}
+  return{grid:g,lat,lon};
+}
+function llToGrid(lat,lon){lon+=180;lat+=90;const A=String.fromCharCode(65+Math.floor(lon/20)),B=String.fromCharCode(65+Math.floor(lat/10));
+  return A+B+Math.floor((lon%20)/2)+Math.floor(lat%10)}
+async function loadCty(){if(CTY)return CTY;CTY=await getJSON(CTY_URL);return CTY}
+// コールサイン → [エンティティ名, 緯度, 経度, プレフィックス]。cty.dat と同じ最長一致
+function lookupCall(call){
+  call=call.toUpperCase().replace(/\s+/g,'');
+  if(CTY.exact[call]!=null)return ent(CTY.exact[call],call);
+  const parts=call.split('/'),IGN=/^(P|M|MM|AM|QRP|A|B|LH|\d)$/;
+  let key=parts[0];
+  if(parts.length>1){const others=parts.filter((p,i)=>p&&!IGN.test(p)&&p!==parts.reduce((a,b)=>b.length>a.length?b:a,''));
+    if(others.length)key=others[0].length<=parts[0].length?others[0]:parts[0];
+    if(/\/MM$/.test(call))return null;}
+  for(let n=key.length;n>0;n--){const p=key.slice(0,n);if(CTY.prefix[p]!=null)return ent(CTY.prefix[p],p)}
+  return null;
+}
+function ent(v,matched){const i=Array.isArray(v)?v[0]:v,e=CTY.ent[i];const lat=Array.isArray(v)?v[1]:e[1],lon=Array.isArray(v)?v[2]:e[2];return{name:e[0],lat,lon,matched}}
+async function setStation(){
+  const raw=$('myGrid').value.trim().toUpperCase(),g=gridToLL(raw);
+  const save=!(EX_ST&&raw===EX_ST);
+  if(KNOWN[raw]){const k=gridToLL(KNOWN[raw]);STATION={name:raw,lat:k.lat,lon:k.lon};$('myGrid').value=raw;if(save)LS('nowcast_en.myGrid',raw);try{await loadCty();const r=lookupCall(raw);if(r)STATION.ent=r.name}catch(e){}
+    $('stInfo').textContent=`Your station: ${raw} (registered grid ${k.grid}, lat ${k.lat.toFixed(2)}°, lon ${k.lon.toFixed(2)}°).`;return true}
+  if(g){STATION={name:g.grid,lat:g.lat,lon:g.lon};$('myGrid').value=g.grid;if(save)LS('nowcast_en.myGrid',g.grid);
+    $('stInfo').textContent=`Your station: centre of grid ${g.grid} (lat ${g.lat.toFixed(2)}°, lon ${g.lon.toFixed(2)}°). Enter your callsign instead to see the records from Japan for your country.`;return true}
+  if(/^[A-Z0-9\/]{3,15}$/.test(raw)){
+    try{await loadCty();const r=lookupCall(raw);
+      if(r){STATION={name:raw,lat:r.lat,lon:r.lon,ent:r.name};$('myGrid').value=raw;if(save)LS('nowcast_en.myGrid',raw);
+        $('stInfo').textContent=`Your station: ${raw} (${r.name}), representative position ${llToGrid(r.lat,r.lon)} (lat ${r.lat.toFixed(1)}°, lon ${r.lon.toFixed(1)}°). A callsign gives the representative position of the entity; for exact bearings, enter your grid locator.`;return true}}catch(e){}}
+  const ex=exampleSt(),d=gridToLL(ex);STATION={name:d.grid,lat:d.lat,lon:d.lon};
+  $('stInfo').innerHTML=`<span class="t4">"${esc(raw)}" was not recognised, so the example ${ex} is used. Please check the callsign or enter your grid locator.</span>`;return false;
+}
+// Examples: the other station defaults to JA1BBE; your station defaults to an example chosen from the browser time zone (not saved)
+let EX_DX=null,EX_ST=null;
+function exampleSt(){let z='';try{z=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}
+  return /^America\//.test(z)?'FN31':/^Europe\//.test(z)?'JO01':/^Australia\//.test(z)?'QF56':/^Asia\/(Seoul)/.test(z)?'PM37':/^Asia\/(Taipei)/.test(z)?'PL05':/^Asia\//.test(z)?'OJ11':/^Africa\//.test(z)?'KG43':'JO01'}
+function exNoteSet(){const n=$('exNote');if(!n)return;const isSt=EX_ST&&$('myGrid').value.trim().toUpperCase()===EX_ST,isDx=EX_DX&&$('dxIn').value.trim().toUpperCase()===EX_DX;
+  if(!isSt&&!isDx){n.style.display='none';return}
+  n.textContent=(isSt?`Your station is an example (${EX_ST}) chosen from your time zone — please enter your own grid locator or callsign. `:'')+(isDx?'The other station is set to JA1BBE (Tokyo, Japan). You can enter any callsign or grid; detailed records from Japan appear when the other station is in Japan.':'');n.style.display=''}
+// Japan or not (for showing the records from Japan). Approximate boxes; Korea is excluded
+function isJapanLL(la,lo){if(la>=24&&la<30.5&&lo>=122.5&&lo<=131.5)return true;if(la<30.5||la>45.8||lo<128.5||lo>146)return false;
+  if(lo<130.6&&la>=34.8)return false;return true}
+function isJapanT(T){return !!T&&(T.ent==='Japan'||isJapanLL(T.lat,T.lon))}
+function recSubj(){return isJapanT(TARGET)?{ent:STATION.ent||null,short:STATION.name,lat:STATION.lat,lon:STATION.lon}:null}
+async function findTarget(){
+  await setStation();
+  const raw=$('dxIn').value.trim().toUpperCase();$('dxIn').value=raw;
+  if(!raw){TARGET=null;targetRender();return}
+  const g=gridToLL(raw);
+  if(KNOWN[raw]){const k=gridToLL(KNOWN[raw]);TARGET={short:raw,ent:raw==='JA1BBE'?'Japan':undefined,label:`${esc(raw)}`,loc:`registered grid ${k.grid} (lat ${k.lat.toFixed(2)}°, lon ${k.lon.toFixed(2)}°)`,lat:k.lat,lon:k.lon}}
+  else if(g){TARGET={short:g.grid,label:`Grid ${g.grid}`,loc:`lat ${g.lat.toFixed(1)}°, lon ${g.lon.toFixed(1)}°`,lat:g.lat,lon:g.lon}}
+  else{
+    if(!/^[A-Z0-9\/]{2,15}$/.test(raw)){$('dxOut').innerHTML='<p class="fn t4">Enter a callsign or a 4- or 6-character grid locator.</p>';return}
+    try{await loadCty()}catch(e){$('dxOut').innerHTML='<p class="fn t4">Could not load the callsign table (cty.json). Please enter a grid locator.</p>';return}
+    const r=lookupCall(raw);
+    if(!r){$('dxOut').innerHTML=`<p class="fn t4">Could not identify the entity of ${esc(raw)}. Please enter a grid locator.</p>`;return}
+    TARGET={short:raw,label:`${esc(raw)} ${esc(r.name)}`,loc:`representative position ${llToGrid(r.lat,r.lon)} (lat ${r.lat.toFixed(1)}°, lon ${r.lon.toFixed(1)}°)`,lat:r.lat,lon:r.lon,ent:r.name};
+  }
+  if(!(EX_DX&&raw===EX_DX))LS('nowcast_en.dx',raw);exNoteSet();targetRender();dayNight();
+}
+/* ---- 正距方位図（自局が中心） */
+const LAND_URL='https://ja1bbe.github.io/ja1bbe-iono/land.json';   // Natural Earth 1:110m の陸地の輪郭
+let LAND=null;
+async function loadLand(){try{LAND=(await getJSON(LAND_URL)).rings}catch(e){LAND=null}drawMap(LASTP)}
+const DIRS=[['Japan',35.68,139.76],['Europe',51.5,-0.13],['NA east',40.7,-74.0],['NA west',34.05,-118.24],['Caribbean',18.47,-66.11],['W Africa',14.69,-17.45],['S America',-23.55,-46.63],['S Africa',-26.2,28.05],['Oceania',-33.87,151.21],['SE Asia',1.35,103.82]];
+let LASTP=null;
+// ---- D層の吸収を重ねる（NOAA D-RAP）と、嵐の広がりを重ねる（Bz と太陽風から見積もるオーロラ帯の広がり、経路の危ない区間）。どちらも検証中
+// 以前の「嵐の影響を重ねる」（stormOn）を開いていた場合は、D層の吸収も開いた状態で引き継ぐ
+var STORM_ON=(()=>{try{return localStorage.getItem('en.stormOn')==='1'}catch(e){return false}})();
+var DRAP_ON=(()=>{try{const v=localStorage.getItem('en.drapOn');return v===null?localStorage.getItem('en.stormOn')==='1':v==='1'}catch(e){return false}})();
+var DRAP=null;
+function parseDrap(txt){const rows=[],lat=[];let valid='',xr='',pr='';
+  for(const ln of txt.split(/\r?\n/)){let m;
+    if((m=ln.match(/Product Valid At\s*:\s*(.+)/)))valid=m[1].trim();
+    else if((m=ln.match(/X-RAY Message\s*:\s*(.*)/)))xr=m[1].trim();
+    else if((m=ln.match(/Proton Message\s*:\s*(.*)/)))pr=m[1].trim();
+    else if((m=ln.match(/^\s*(-?\d+)\s*\|(.*)$/))){lat.push(+m[1]);rows.push(m[2].trim().split(/\s+/).map(Number))}}
+  return rows.length?{lat,rows,valid,xr,pr}:null}
+async function loadDrap(){try{const r=await fetch(SWPC+'/text/drap_global_frequencies.txt',{cache:'no-store'});if(r.ok)DRAP=parseDrap(await r.text())}catch(e){}stormNoteSet();if(DRAP_ON)drawMap(LASTP)}
+function drapAt(la,lo){if(!DRAP)return null;const n=DRAP.lat.length,i=Math.max(0,Math.min(n-1,Math.round((DRAP.lat[0]-la)/(DRAP.lat[0]-DRAP.lat[1]||2)))),row=DRAP.rows[i];
+  const nc=row.length,j=((Math.round((lo+178)/(360/nc))%nc)+nc)%nc;return row[j]}
+// Bz の南向きと太陽風の速さから、オーロラ帯の赤道側の縁がどこまで広がりそうかを見積もる（地磁気緯度。夜側の目安）
+function stormEdge(){if(!SW_NOW)return null;const bs=Math.max(0,-(SW_NOW.bz30??0)),v=SW_NOW.sp??400,E=v*bs*1e-3;
+  const kpE=Math.min(9,1+0.6*E),kp=Math.max(kpE,SW_NOW.kp??0);return{edge:Math.max(45,Math.min(64,66-2*kp)),kp,show:gBzActive()||kp>=4}}
+// NOAA のファイルの文字はそのまま HTML に入れず、無害化してから表示する
+function drapEsc(x){return String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function drapMax(){if(!DRAP)return null;let m=0;for(const r of DRAP.rows)for(const v of r)if(v>m)m=v;return m}
+function stormNoteSet(){const id=x=>document.getElementById(x),bd=id('drapBtn'),bs=id('stormBtn'),nd=id('drapNote'),ns=id('stormNote');
+  if(bd)bd.textContent=(DRAP_ON?'▼ ':'▶ ')+'D-layer absorption';
+  if(bs)bs.textContent=(STORM_ON?'▼ ':'▶ ')+'Storm extent';
+  if(nd){nd.style.display=DRAP_ON?'':'none';const mx=drapMax();
+    nd.innerHTML=`<span style="color:#ffb070">■</span> D-layer absorption (NOAA D-RAP): the highest frequency affected by 1 dB absorption — orange 1 MHz or more, dark orange 5 MHz or more, magenta 10 MHz or more. Lower frequencies are absorbed more strongly. `+
+      (DRAP?`Valid ${drapEsc(DRAP.valid)}. Current maximum ${mx.toFixed(1)} MHz. X-ray: ${drapEsc(DRAP.xr||'―')}. Proton: ${drapEsc(DRAP.pr||'―')}.`:'Data not loaded.')+
+      `<br><b>Normal dayside absorption</b>: the round area on the day side is caused by the Sun's normal X-rays (D-RAP is calculated from GOES X-ray data). It is there every day, stronger with a higher Sun, and disappears at night.`+
+      `<br><b>Flare absorption</b>: a flare suddenly enlarges and strengthens the dayside area (shortwave fade-out). It recovers in tens of minutes to hours. This applies when the X-ray value above is M or X class.`+
+      `<br><b>Proton absorption</b>: areas over the polar regions (geomagnetic latitude above about 60°), day or night, are caused by energetic protons from the Sun (polar cap absorption) and can last for days.`+
+      `<br>This absorption mainly affects the low and mid bands. The high bands are affected only when a large flare or proton event pushes the limit to 10–20 MHz or more.`}
+  if(ns){ns.style.display=STORM_ON?'':'none';const se=stormEdge();
+    ns.innerHTML=`<span style="color:#ff5a5a">- - -</span> Storm extent: ${se&&se.show?`from the present Bz and solar wind (equivalent to Kp ${se.kp.toFixed(1)}), the equatorward edge of the auroral zone is expected to reach about geomagnetic latitude ${se.edge.toFixed(0)}°. Parts of the path inside it are shown in red. `:se?'Bz is not strongly south and Kp is low, so no major expansion is expected and nothing is drawn. It is drawn when a Bz warning is active or Kp is 4 or more. ':'Solar wind data not loaded. '}`+
+      `This is an empirical guide (under evaluation), with the Earth's field approximated as a dipole.`}}
+document.addEventListener('click',e=>{const t=e.target&&e.target.id;
+  if(t==='stormBtn'){STORM_ON=!STORM_ON;try{localStorage.setItem('en.stormOn',STORM_ON?'1':'0')}catch(e2){}stormNoteSet();drawMap(LASTP)}
+  else if(t==='drapBtn'){DRAP_ON=!DRAP_ON;try{localStorage.setItem('en.drapOn',DRAP_ON?'1':'0')}catch(e2){}stormNoteSet();drawMap(LASTP)}});
+document.addEventListener('DOMContentLoaded',stormNoteSet);
+// 地磁気緯度線の表示の切り替え（状態は覚えておく）
+var MAGLINES=(()=>{try{return localStorage.getItem('en.magLines')==='1'}catch(e){return false}})();
+function magBtnSet(){const b=document.getElementById('magBtn'),n=document.getElementById('magNote');if(b)b.textContent=(MAGLINES?'▼ ':'▶ ')+'Geomagnetic latitude';if(n)n.style.display=MAGLINES?'':'none'}
+document.addEventListener('click',e=>{if(e.target&&e.target.id==='magBtn'){MAGLINES=!MAGLINES;try{localStorage.setItem('en.magLines',MAGLINES?'1':'0')}catch(e2){}magBtnSet();drawMap(LASTP)}});
+document.addEventListener('DOMContentLoaded',magBtnSet);
+// ---- ローバンドの遠距離（電離圏ダクトの可能性）を重ねる。検証中
+// 記録（11月6〜18日の抜き取り）で 160m・80m の遠距離の強い受信が多かった方面と、その時刻の条件（経路の大部分が夜で、どちらかの端が薄明）を使う。
+// 仕組みが電離圏ダクトか、境目で D層の吸収が小さくなるためかは、この記録からは見分けられない。
+var DUCT_ON=(()=>{try{return localStorage.getItem('en.ductOn')==='1'}catch(e){return false}})();
+const DUCT_REG=[];
+// 8000km以上の相手を、受信した日本の局の上位1割の SNR が −5dB 以上で受信した回数（時刻 UTC ごと。na 北米、eu 欧州、ot その他）
+const ductArr=o=>{const a=new Array(24).fill(0);for(const k in o)a[+k]=o[k];return a};
+const DUCT_REC={'160m':{na:ductArr({6:1,11:3,12:5,13:6,14:2}),eu:ductArr({6:2,15:2,16:1,17:3,18:2,19:9,20:21,21:16,22:2}),ot:ductArr({21:1})},
+  '80m':{na:ductArr({6:2,7:4,8:8,9:1,10:12,11:44,12:119,13:82,14:57,15:10,21:6}),eu:ductArr({8:6,11:10,13:1,15:1,16:2,17:7,18:8,19:29,20:71,21:86,22:46}),ot:ductArr({2:2,7:1,8:1,9:2,10:1,11:1,17:1,18:1,22:1})}};
+function ductGrp(){const la=STATION.lat,lo=STATION.lon;return lo<-30&&la>10?'na':lo>=-30&&lo<60&&la>30?'eu':null}
+function ductState(t){if(!isJapanT(TARGET))return[];const grp=ductGrp();if(!grp)return[];
+  const tw=e=>e>=-18&&e<=3,g=bearingDist(STATION.lat,STATION.lon,TARGET.lat,TARGET.lon),sp=pathStats(g.az,g.km,t),
+    eS=sunElev(STATION.lat,STATION.lon,t),eS2=sunElev(STATION.lat,STATION.lon,t+18e5),eT=sunElev(TARGET.lat,TARGET.lon,t),eT2=sunElev(TARGET.lat,TARGET.lon,t+18e5);let end=null;
+  if(sp.dark>=0.7){if(tw(eT))end={who:'Japan',rise:eT2>eT};else if(tw(eS))end={who:'your',rise:eS2>eS}}
+  return[{n:'Japan',f:'JA',la:TARGET.lat,lo:TARGET.lon,g,sp,end,grp}]}
+function ductNext(t){for(let k=1;k<=96;k++){const tt=t+k*9e5,s=ductState(tt).filter(d=>d.end&&d.end.rise);if(s.length)return{t:tt,s}}return null}
+// バンドの見分け：記録で、その方面（北米・欧州）・その時間帯（前後2時間）に強い受信が5回以上あったバンドだけ線を引く（160m＝白、80m＝水色）
+const DUCT_COL={'160m':'#ffffff','80m':'#5ad1ff'};
+function ductBands(d,t){const grp=d.grp||(['EM','DM','DN'].includes(d.f)?'na':'eu'),h=new Date(t).getUTCHours();
+  return['160m','80m'].filter(b=>{let n=0;for(let k=-2;k<=2;k++)n+=DUCT_REC[b][grp][(h+k+24)%24];return n>=5})}
+const ductBandTxt=bs=>bs.map(b=>`<span style="color:${DUCT_COL[b]}">${b}</span>`).join(' and ');
+const ductHM=(t,off)=>{const d=new Date(t+off*36e5);return String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0')};
+function ductChart(band,hNow){const W=480,H=110,bw=W/24,rec=DUCT_REC[band],tot=rec.na.map((v,i)=>v+rec.eu[i]+rec.ot[i]),mx=Math.max(...tot)||1;
+  let s=`<svg viewBox="0 0 ${W} ${H+34}" style="width:100%;max-width:480px;display:block">`;
+  s+=`<rect x="${hNow*bw}" y="0" width="${bw}" height="${H}" fill="#ffffff" fill-opacity=".12"/>`;
+  for(let h=0;h<24;h++){let y=H;for(const[k,col]of[['na','#7fd3c6'],['eu','#e9c46a'],['ot','#77777f']]){const v=rec[k][h];if(!v)continue;const hh=v/mx*(H-14);y-=hh;s+=`<rect x="${h*bw+1}" y="${y}" width="${bw-2}" height="${hh}" fill="${col}"/>`}
+    if(tot[h])s+=`<text x="${h*bw+bw/2}" y="${y-2}" fill="#b8b8c0" font-size="9" text-anchor="middle">${tot[h]}</text>`;
+    if(h%3===0)s+=`<text x="${h*bw+bw/2}" y="${H+12}" fill="#9a9aa2" font-size="10" text-anchor="middle">${h}</text><text x="${h*bw+bw/2}" y="${H+25}" fill="#77777f" font-size="9" text-anchor="middle">${locH(h)}</text>`}
+  s+=`<line x1="0" x2="${W}" y1="${H}" y2="${H}" stroke="#2c2c31"/></svg>`;
+  return `<div style="margin-top:8px"><b>${band}</b> <span style="font-size:.9em">numbers = counts, scale = UTC (local time below), white band = now</span></div>`+s}
+function ductNoteSet(){const b=document.getElementById('ductBtn'),n=document.getElementById('ductNote');
+  if(b)b.textContent=(DUCT_ON?'▼ ':'▶ ')+'Low-band long distance (possible ionospheric duct)';
+  if(!n)return;n.style.display=DUCT_ON?'':'none';if(!DUCT_ON)return;
+  const t=Date.now(),grp=ductGrp(),st=ductState(t),d=st[0],hNow=new Date(t).getUTCHours();let now;
+  if(!isJapanT(TARGET))now='<b>Now</b>: this overlay is for paths to Japan. Set the other station to a station in Japan (e.g. JA1BBE).';
+  else if(!grp)now='<b>Now</b>: the records below cover North America and Europe only, so no line is drawn for your location.';
+  else if(d&&d.end){const bs=ductBands(d,t),side=d.end.who==='Japan'?'Japan':'your end';
+    now=`<b>Now</b>: the path to Japan is mostly dark and ${side} is in ${d.end.rise?'morning':'evening'} twilight`+(bs.length?` — ${ductBandTxt(bs)} drawn on the map (${d.end.rise?'solid':'dotted'}).`:', but strong signals were rare at this time in the records.')}
+  else{const nx=ductNext(t);now='<b>Now</b>: the condition is not met.'+(nx?` Next window from about ${ductHM(nx.t,0)} UTC (${ductHM(nx.t,LOC_OFF)} local).`:'')}
+  n.innerHTML=`<span style="color:#fff">━</span> 160m <span style="color:#5ad1ff">━</span> 80m Low-band long distance (possible ionospheric duct): on winter nights, distant stations on 160m and 80m are sometimes received with strong signals. In the records, this happened mostly when the path was largely dark and one end was in twilight around sunrise. This fits the idea of an "ionospheric duct" (signals trapped between the E and F layers), but it can also be explained by the minimum of D-layer absorption near the terminator; the records cannot tell which (under evaluation). The line is drawn only for bands with five or more strong receptions within ±2 hours in the records (white = 160m, cyan = 80m).`+
+    `<br>${now}`+
+    `<br><b>Records</b>: 6–18 November 2026, about 720 samples of 8 minutes. Number of times stations in Japan received stations 8000 km or more away with strong signals (top 10% SNR of the receiving JA stations −5 dB or better). <span style="color:#7fd3c6">■</span>North America <span style="color:#e9c46a">■</span>Europe <span style="color:#9a9aa2">■</span>Other. North America peaks around 11–14 UTC (sunrise in North America), Europe around 19–22 UTC (sunrise in Japan). Counts also depend on how many stations are active in each region, and the peaks shift with the season.`+
+    ductChart('160m',hNow)+ductChart('80m',hNow)}
+document.addEventListener('click',e=>{if(e.target&&e.target.id==='ductBtn'){DUCT_ON=!DUCT_ON;try{localStorage.setItem('en.ductOn',DUCT_ON?'1':'0')}catch(e2){}ductNoteSet();drawMap(LASTP)}});
+document.addEventListener('DOMContentLoaded',()=>{try{ductNoteSet()}catch(e){}});
+function drawMap(P){
+  LASTP=P;const cv=$('dxMap');if(!cv)return;
+  const W=Math.min(620,cv.clientWidth||560),dpr=window.devicePixelRatio||1;
+  cv.width=Math.round(W*dpr);cv.height=Math.round(W*dpr);const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);
+  const S={cx:W/2,cy:W/2,R:W/2-30},HALF=Math.PI*EARTH;
+  const pr=(lat,lon)=>{const g=bearingDist(STATION.lat,STATION.lon,lat,lon),r=g.km/HALF*S.R;return[S.cx+r*Math.sin(g.az*R),S.cy-r*Math.cos(g.az*R),r]};
+  const pa=(az,km)=>{const r=Math.min(km,HALF)/HALF*S.R;return[S.cx+r*Math.sin(az*R),S.cy-r*Math.cos(az*R)]};
+  c.clearRect(0,0,W,W);
+  c.save();c.beginPath();c.arc(S.cx,S.cy,S.R,0,2*Math.PI);c.fillStyle='#163250';c.fill();c.clip();
+  // 陸地
+  if(LAND){for(const ring of LAND){const pts=ring.map(([lo,la])=>pr(la,lo));let jump=false;
+      for(let i=1;i<pts.length;i++){if(Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1])>S.R*0.35){jump=true;break}}
+      c.beginPath();let pen=false;
+      for(let i=0;i<pts.length;i++){const p=pts[i];if(i&&Math.hypot(p[0]-pts[i-1][0],p[1]-pts[i-1][1])>S.R*0.35)pen=false;
+        if(!pen){c.moveTo(p[0],p[1]);pen=true}else c.lineTo(p[0],p[1])}
+      if(!jump){c.closePath();c.fillStyle='#355a3e';c.fill()}
+      c.strokeStyle='#7a9a80';c.lineWidth=.8;c.stroke()}}
+  // 昼夜とオーロラ（逆投影で1点ずつ色を決める）
+  const N=240,off=document.createElement('canvas');off.width=N;off.height=N;const oc=off.getContext('2d'),img=oc.createImageData(N,N),now=Date.now();
+  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const dx=(i+.5)/N*2-1,dy=(j+.5)/N*2-1,rr=Math.hypot(dx,dy);if(rr>1)continue;
+    const az=Math.atan2(dx,-dy)/R,[la,lo]=dest(STATION.lat,STATION.lon,(az+360)%360,rr*HALF),e=sunElev(la,lo,now),k=(j*N+i)*4;
+    let r=0,g=0,b=0,a=0;
+    if(e<-6){r=2;g=5;b=12;a=175}else if(e<0){r=40;g=34;b=80;a=Math.round(70+(-e/6)*70)}
+    if(DRAP_ON&&DRAP){const v=drapAt(la,lo);if(v!=null&&v>=1){const s3=v>=10?[220,70,170,170]:v>=5?[255,120,40,150]:[255,176,90,Math.round(70+v*12)];r=s3[0];g=s3[1];b=s3[2];a=Math.max(a,s3[3])}}
+    const au=aurAt(la,lo);
+    if(au!=null&&au>=10){const strong=au>=30;r=strong?240:80;g=strong?90:220;b=strong?80:140;a=Math.max(a,strong?190:Math.round(70+au*3))}
+    img.data[k]=r;img.data[k+1]=g;img.data[k+2]=b;img.data[k+3]=a}
+  oc.putImageData(img,0,0);c.imageSmoothingEnabled=true;c.drawImage(off,S.cx-S.R,S.cy-S.R,2*S.R,2*S.R);
+
+    // 地磁気緯度線（双極子近似。開閉ボタンで重ねる）
+    if (MAGLINES) {
+      for (const L of [-70, -60, -30, 0, 30, 60, 70]) {
+        const pts = []; for (let a = 0; a <= 360; a += 2) { const [la, lo] = dest(GMPOLE.lat, GMPOLE.lon, a, (90 - L) * R * EARTH); pts.push(pr(la, lo)); }
+        const key = Math.abs(L) === 60;
+        c.setLineDash(key ? [6, 3] : [2, 4]); c.strokeStyle = key ? 'rgba(240,138,75,.95)' : 'rgba(225,225,235,.6)'; c.lineWidth = key ? 1.7 : 1;
+        c.beginPath(); let pen = false;
+        for (let i = 0; i < pts.length; i++) { const p = pts[i]; if (i && Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]) > S.R * 0.35) pen = false; if (!pen) { c.moveTo(p[0], p[1]); pen = true; } else c.lineTo(p[0], p[1]); }
+        c.stroke();
+        // 数字は、自局の近くと短経路の線上を避けた位置に置く（重なりを減らすため）
+        const tg = P && P.az != null ? pa(P.az, P.km) : null;
+        const segD = p => { if (!tg) return 1e9; const vx = tg[0] - S.cx, vy = tg[1] - S.cy, t = Math.max(0, Math.min(1, ((p[0] - S.cx) * vx + (p[1] - S.cy) * vy) / (vx * vx + vy * vy))); return Math.hypot(p[0] - S.cx - t * vx, p[1] - S.cy - t * vy); };
+        let best = null; for (const p of pts) { const d = Math.hypot(p[0] - S.cx, p[1] - S.cy); if (d < S.R * 0.92 && d > S.R * 0.12 && segD(p) > S.R * 0.12 && (!best || d < best.d)) best = { p, d }; }
+        if (best) { c.setLineDash([]); c.font = 'bold ' + (S.R < 200 ? 9 : 10) + 'px sans-serif'; c.fillStyle = key ? '#f08a4b' : '#e1e1eb'; c.fillText(L === 0 ? '0°' : (L > 0 ? 'N' : 'S') + Math.abs(L) + '°', best.p[0] + 4, best.p[1] - 3); }
+      }
+      c.setLineDash([]);
+    }
+  // 距離の同心円
+  c.setLineDash([3,4]);c.strokeStyle='#33404e';c.lineWidth=1;c.fillStyle='#7d8896';c.font='10px sans-serif';c.textAlign='left';
+  for(const km of[5000,10000,15000]){const r=km/HALF*S.R;c.beginPath();c.arc(S.cx,S.cy,r,0,2*Math.PI);c.stroke();c.fillText((km/1000)+',000km',S.cx+3,S.cy-r-3)}
+  c.setLineDash([]);
+  // 9方面の目印
+  c.font='11px sans-serif';
+  for(const[n,la,lo]of DIRS){const[x,y]=pr(la,lo);c.fillStyle='#9aa6b4';c.beginPath();c.arc(x,y,2.5,0,2*Math.PI);c.fill();c.fillText(n,x+5,y+4)}
+  // ローバンドの遠距離（電離圏ダクトの可能性）：条件に当たる方面への短経路を白い線で
+  if(DUCT_ON){try{ductNoteSet();const placed=[],tn=Date.now();for(const d of ductState(tn)){if(!d.end)continue;const bs=ductBands(d,tn);if(!bs.length)continue;const pts=[];
+      for(let x=0;x<d.g.km;x+=150){const[la,lo]=dest(STATION.lat,STATION.lon,d.g.az,x);pts.push(pr(la,lo))}pts.push(pr(d.la,d.lo));
+      // 2本のときは、左右に少しずらして並べる
+      const off=(o)=>pts.map((q,i)=>{const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)],dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1;return[q[0]-dy/L*o,q[1]+dx/L*o]});
+      bs.forEach((b,k)=>{const P2=bs.length>1?off(k?2.2:-2.2):pts,line=()=>{c.beginPath();P2.forEach((q,i)=>i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1]));c.stroke()};
+        c.setLineDash(d.end.rise?[]:[4,4]);c.strokeStyle='rgba(0,0,0,.55)';c.lineWidth=(d.end.rise?2.4:1.6)+2;line();
+        c.strokeStyle=DUCT_COL[b];c.globalAlpha=d.end.rise?1:.75;c.lineWidth=d.end.rise?2.4:1.6;line();c.globalAlpha=1;c.setLineDash([])});
+      const q=pts[pts.length-1];c.fillStyle=DUCT_COL[bs[0]];c.beginPath();c.arc(q[0],q[1],3.5,0,2*Math.PI);c.fill();c.fillStyle='#ffffff';c.font='bold 11px sans-serif';if(d.f==='JA'){}else if(!placed.some(([x,y])=>Math.hypot(x-q[0],y-q[1])<22)){c.fillText(d.f,q[0]+6,q[1]-6);placed.push([q[0],q[1]])}else{c.fillText(d.f,q[0]+6,q[1]+12)}}}catch(e){}}
+  // 経路
+  if(P&&P.sk){const sk=P.sk;c.strokeStyle='#c77dff';c.lineWidth=2.4;c.setLineDash([3,3]);c.beginPath();
+    sk.pts.forEach(([la,lo],i)=>{const q=pr(la,lo);if(i)c.lineTo(q[0],q[1]);else c.moveTo(q[0],q[1])});c.stroke();c.setLineDash([]);
+    const q=pr(sk.turn[0],sk.turn[1]);c.fillStyle='#c77dff';c.beginPath();c.arc(q[0],q[1],4,0,2*Math.PI);c.fill()}
+  if(P){const{sp,az,km,label}=P;
+    // 「届く強さの見込み」を開いているときは、届く強さに応じて相手に近づくほど線を薄くする
+    let aS=1,aL=1;if(LB_ON&&P.lp){const nw=Date.now();aS=lbCalc(az,km,nw,LB.b,sp.aur).cat.a;aL=lbCalc((az+180)%360,2*Math.PI*EARTH-km,nw,LB.b,P.lp.aur).cat.a}
+    const grad=(x0,y0,x1,y1,rgb,a0,a1)=>{const gr=c.createLinearGradient(x0,y0,x1,y1);gr.addColorStop(0,`rgba(${rgb},${a0})`);gr.addColorStop(1,`rgba(${rgb},${a1})`);return gr};
+    const e1=pa((az+180)%360,HALF),e2=pa(az,HALF),t=pa(az,km),Ltot=2*Math.PI*EARTH-km,aMid=1-(1-aL)*Math.min(1,HALF/Ltot);
+    c.lineWidth=2;c.setLineDash([7,5]);
+    c.strokeStyle=grad(S.cx,S.cy,e1[0],e1[1],'127,211,198',1,aMid);c.beginPath();c.moveTo(S.cx,S.cy);c.lineTo(e1[0],e1[1]);c.stroke();
+    c.strokeStyle=grad(e2[0],e2[1],t[0],t[1],'127,211,198',aMid,aL);c.beginPath();c.moveTo(e2[0],e2[1]);c.lineTo(t[0],t[1]);c.stroke();c.setLineDash([]);
+    c.strokeStyle=grad(S.cx,S.cy,t[0],t[1],'216,177,74',1,aS);c.lineWidth=3.2;c.beginPath();c.moveTo(S.cx,S.cy);c.lineTo(t[0],t[1]);c.stroke();
+    const se=STORM_ON?stormEdge():null;
+    if(se&&se.show){
+      // 広がりの見込みの縁（北と南の地磁気緯度 ±edge）
+      for(const L of[se.edge,-se.edge]){const pts=[];for(let a2=0;a2<=360;a2+=2){const[la,lo]=dest(GMPOLE.lat,GMPOLE.lon,a2,(90-L)*R*EARTH);pts.push(pr(la,lo))}
+        c.setLineDash([8,4]);c.strokeStyle='rgba(255,90,90,.95)';c.lineWidth=2;c.beginPath();let pen=false;
+        for(let i=0;i<pts.length;i++){const p=pts[i];if(i&&Math.hypot(p[0]-pts[i-1][0],p[1]-pts[i-1][1])>S.R*0.35)pen=false;if(!pen){c.moveTo(p[0],p[1]);pen=true}else c.lineTo(p[0],p[1])}c.stroke()}
+      c.setLineDash([]);
+      // 経路の危ない区間（地磁気緯度が縁より高い部分）を赤く
+      const seg=(az2,len)=>{c.strokeStyle='rgba(255,70,70,.95)';c.lineWidth=5;c.beginPath();let pen=false,prev=null;
+        for(let x=0;x<=len;x+=100){const[la,lo]=dest(STATION.lat,STATION.lon,az2,x),q=pr(la,lo),inZ=Math.abs(magLat(la,lo))>=se.edge;
+          if(prev&&Math.hypot(q[0]-prev[0],q[1]-prev[1])>S.R*0.35)pen=false;
+          if(inZ){if(!pen){c.moveTo(q[0],q[1]);pen=true}else c.lineTo(q[0],q[1])}else pen=false;prev=q}c.stroke()};
+      seg(az,km);seg((az+180)%360,2*Math.PI*EARTH-km)}
+    // 経路上で地磁気緯度が最も高い地点
+    let best=0,bx=0;for(let x=0;x<=km;x+=100){const[la,lo]=dest(STATION.lat,STATION.lon,az,x),m=Math.abs(magLat(la,lo));if(m>best){best=m;bx=x}}
+    const mp=pa(az,bx);c.strokeStyle='#f08a4b';c.lineWidth=2;c.beginPath();c.arc(mp[0],mp[1],6,0,2*Math.PI);c.stroke();
+    c.fillStyle='#f08a4b';c.font='bold 11px sans-serif';c.fillText(`${sp.mag>=0?'N':'S'}${Math.abs(sp.mag).toFixed(0)}°`,mp[0]+8,mp[1]-6);
+    c.fillStyle='#e05555';c.beginPath();c.arc(t[0],t[1],6,0,2*Math.PI);c.fill();c.strokeStyle='#fff';c.lineWidth=1.5;c.stroke();
+    c.fillStyle='#fff';c.font='bold 12px sans-serif';c.fillText(label,t[0]+9,t[1]+4)}
+  c.restore();
+  // 外周と方位の目盛り
+  c.strokeStyle='#5a6573';c.lineWidth=1.2;c.beginPath();c.arc(S.cx,S.cy,S.R,0,2*Math.PI);c.stroke();
+  c.textAlign='center';c.font='11px sans-serif';
+  for(let a=0;a<360;a+=10){const o=pa(a,HALF),x2=S.cx+(S.R+(a%30?4:7))*Math.sin(a*R),y2=S.cy-(S.R+(a%30?4:7))*Math.cos(a*R);
+    c.strokeStyle='#5a6573';c.beginPath();c.moveTo(o[0],o[1]);c.lineTo(x2,y2);c.stroke();
+    if(a%30===0){c.fillStyle=a===0?'#d8b14a':'#9aa6b4';c.fillText(a===0?'N 0°':a+'°',S.cx+(S.R+18)*Math.sin(a*R),S.cy-(S.R+18)*Math.cos(a*R)+4)}}
+  if(P){c.fillStyle='#d8b14a';c.font='bold 12px sans-serif';c.fillText(P.az.toFixed(0)+'°',S.cx+(S.R+18)*Math.sin(P.az*R),S.cy-(S.R+18)*Math.cos(P.az*R)+4);
+    if(P.sk){c.fillStyle='#c77dff';c.fillText(P.sk.az.toFixed(0)+'°',S.cx+(S.R+18)*Math.sin(P.sk.az*R),S.cy-(S.R+18)*Math.cos(P.sk.az*R)+4)}}
+  // 中心（自局）
+  c.fillStyle='#d8b14a';c.beginPath();c.arc(S.cx,S.cy,5,0,2*Math.PI);c.fill();c.fillStyle='#d8b14a';c.font='bold 12px sans-serif';c.textAlign='left';c.fillText(STATION.name,S.cx+8,S.cy+14);
+}
+// ---- 交信しやすいバンドと時間帯の目安（実績と物理の目安を並べる）
+var SUMMARY_URL = 'https://raw.githubusercontent.com/ja1bbe/propagation/main/data/summary/paths.json';
+var SUMMARY = null, SUMMARY_P = null, SFI_NOW = null;
+function loadSummary() {
+  if (!SUMMARY_P) SUMMARY_P = fetch(SUMMARY_URL, { cache: 'no-store' })
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(d => (SUMMARY = d)).catch(e => { SUMMARY_P = null; throw e; });
+  return SUMMARY_P;
+}
+// 開閉式の欄の状態（1分ごとの描き直しと、次に開いたときにも引き継ぐ）
+// ---- Bz の南向きが強く続くときの、この経路への注意（物理の仕組みにもとづく見込み。検証中）
+var SW_NOW = null;
+// 直近から遡って、10分平均の Bz が −3nT 以下（南向き）で続いている時間（分）
+function gSouthMin(sr) {
+  if (!sr || sr.length < 2) return 0;
+  const end = sr[sr.length - 1][0]; let t0 = end;
+  for (let i = sr.length - 1; i >= 0; i--) {
+    const t = sr[i][0], w = sr.filter(r => r[0] <= t && r[0] > t - 600e3).map(r => r[1]).filter(x => !isNaN(x));
+    if (!w.length) break;
+    if (w.reduce((a, b) => a + b, 0) / w.length > -3) break;
+    t0 = t;
+  }
+  return Math.round((end - t0) / 60e3);
+}
+function gBzWarn(sp) {
+  if (!SW_NOW || SW_NOW.bz30 == null) return '';
+  const bz = SW_NOW.bz30, dur = SW_NOW.south || 0, v = SW_NOW.sp;
+  const strong = bz <= -10, moderate = !strong && bz <= -5 && dur >= 60;
+  if (!strong && !moderate) return '';
+  const head = `Bz is ${strong ? 'strongly ' : ''}south (30-min avg ${bz.toFixed(1)} nT${dur >= 10 ? `, for about ${dur} min` : ''})${v != null && v >= 500 ? `; the solar wind is also fast (${Math.round(v)} km/s), so effects can be stronger` : ''}`;
+  const near = Math.abs(sp.mag) >= 55 || (sp.aur != null && sp.aur >= 10);
+  const body = near
+    ? `The short path reaches geomagnetic latitude ${Math.abs(sp.mag).toFixed(0)}° and passes near the auroral zone.<br>
+       <b>Low bands (160/80/40m)</b>: signals may weaken within tens of minutes because of auroral absorption<br>
+       <b>Mid bands (30/20/17m)</b>: flutter may reduce FT8 decodes<br>
+       <b>High bands (15/12/10m)</b>: an ionospheric storm may lower the MUF a few hours later (conditions can briefly improve at the start)`
+    : `The short path stays below geomagnetic latitude ${Math.abs(sp.mag).toFixed(0)}°, away from the polar regions, so immediate effects should be small. If the disturbance lasts, the high bands may become harder to open a few hours later.`;
+  return `<div class="gwarn"><b>Caution: ${head}</b><span style="color:#d64545;font-size:.85em"> (under evaluation)</span><br>${body}
+    <p class="gfine" style="margin-top:4px">When Bz stays strongly south, solar-wind energy flows in, the auroral zone expands and high-latitude paths are affected. Shown when the 30-min average is −10 nT or lower, or −5 nT or lower for an hour or more. Based on physical mechanisms; not yet verified with data.</p></div>`;
+}
+var G_OPEN = (() => { try { return JSON.parse(localStorage.getItem('en.guide.open') || '{}'); } catch (e) { return {}; } })();
+var gOpen = k => G_OPEN[k] ? ' open' : '';
+function gWatch(el) {
+  if (!el || el.dataset.w) return; el.dataset.w = '1';
+  el.addEventListener('toggle', e => {
+    const d = e.target; if (!d.dataset || !d.dataset.k) return;
+    G_OPEN[d.dataset.k] = d.open; try { localStorage.setItem('en.guide.open', JSON.stringify(G_OPEN)); } catch (e2) {}
+  }, true);
+}
+var G_BANDS = ['160m', '80m', '60m', '40m', '30m', '20m', '17m', '15m', '12m', '10m', '6m'];
+var G_GROUP = { '160m': 'low', '80m': 'low', '60m': 'low', '40m': 'low', '30m': 'mid', '20m': 'mid', '17m': 'mid', '15m': 'high', '12m': 'high', '10m': 'high', '6m': 'high' };
+var gLv = c => c === 'A' ? 10 : (parseInt(c, 10) || 0);
+var gEsc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// 時刻の集合 → 「21〜24 UTC（日本時間 6〜9時）」。日付をまたぐ続きもまとめる
+function gWindows(hs) {
+  if (!hs.length) return '';
+  const on = Array(24).fill(false); hs.forEach(h => on[h] = true);
+  if (on.every(Boolean)) return 'all day';
+  if (hs.length >= 18) return `almost all day (except ${gWindows([...Array(24).keys()].filter(h => !on[h]))})`;
+  let s = 0; while (on[s]) s = (s + 1) % 24;       // 「開いていない」時刻から数え始める
+  const out = []; let i = 0;
+  while (i < 24) {
+    const h = (s + i) % 24;
+    if (!on[h]) { i++; continue; }
+    let n = 0; while (n < 24 && on[(h + n) % 24]) n++;
+    const e = (h + n) % 24;
+    out.push(`${h}–${e} UTC (${locH(h)}–${locH(e)} local)`); i += n;
+  }
+  return out.join(', ');
+}
+// 物理の目安：これから24時間の各時刻（毎時30分）の経路の昼夜・いまのオーロラ帯・SFI から
+function gPhysics(g, now) {
+  const sfi = SFI_NOW ?? 100, res = { low: [], mid: [], high: [] };
+  for (let h = 0; h < 24; h++) {
+    const d = new Date(now); d.setUTCHours(h, 30, 0, 0);
+    let t = d.getTime(); if (t < now - 30 * 60e3) t += 864e5;
+    const sp = pathStats(g.az, g.km, t), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, t);
+    const spBad = sp.aur != null && sp.aur >= 30;
+    let lo = 0, lpUse = false;
+    if (sp.dark >= 0.8 && !spBad) lo = 2;
+    else if (lp.dark >= 0.8 && (spBad || sp.dark < 0.5)) { lo = 2; lpUse = true; }
+    else if (sp.dark >= 0.6) lo = 1;
+    res.low.push({ v: lo, lp: lpUse });
+    res.mid.push({ v: sp.dark > 0.2 && sp.dark < 0.8 ? 2 : 1 });
+    res.high.push({ v: sp.dark <= 0.2 && sfi >= 120 ? 2 : sp.dark <= 0.4 && sfi >= 90 ? 1 : 0 });
+  }
+  return res;
+}
+
+// ---- JA1BBE's Honor Roll list (needed.json in ja1bbe-iono/docs; hidden if the file is missing)
+const NEEDED_URL='https://ja1bbe.github.io/ja1bbe-iono/needed.json';let NEEDED=null;
+async function loadNeeded(){try{NEEDED=await getJSON(NEEDED_URL)}catch(e){NEEDED=null}try{await loadCty()}catch(e){}try{if(!SUMMARY)await loadSummary()}catch(e){}hrRender()}
+function hrRarity(){if(!SUMMARY||!CTY||!STATION.ent)return'';const i=CTY.ent.findIndex(e=>e[0]===STATION.ent),d=i>=0?SUMMARY.e[String(i)]:null;
+  const lo=['160m','80m'].map(b=>{const x=d&&d[b]&&(d[b].wr||d[b].r);const n=x?[...x].filter(c=>c!=='0').length:0;return `${b} in ${n} of 24 hours`});
+  return `In the last ${SUMMARY.days} days, stations in Japan heard your country on ${lo.join(' and ')}.`}
+function hrRender(){const sec=$('hrSec');if(!sec)return;const L=NEEDED&&Array.isArray(NEEDED.entities)?NEEDED.entities:[];if(!L.length){sec.style.display='none';return}sec.style.display='';
+  const nd=L.filter(e=>e.status!=='worked'),wk=L.filter(e=>e.status==='worked');
+  const chip=e=>`<span class="hrchip${STATION.ent===e.name?' me':''}">${esc(e.name)}${e.bands?` <small>${esc(e.bands)}</small>`:''}</span>`;
+  $('hrList').innerHTML=(nd.length?`<div class="hrh">Needed — please call me (${nd.length})</div><div>${nd.map(chip).join('')}</div>`:'')+(wk.length?`<div class="hrh">Worked, awaiting confirmation — please upload our QSO to LoTW (${wk.length})</div><div>${wk.map(chip).join('')}</div>`:'');
+  const me=STATION.ent&&L.find(e=>e.name===STATION.ent);
+  $('hrMine').innerHTML=me?(me.status==='worked'?`<div class="hrme"><b>${esc(STATION.ent)} is on JA1BBE's list!</b> If we have had a QSO, please upload it to LoTW. A new QSO confirmed on LoTW would also help.</div>`
+    :`<div class="hrme"><b>Your country (${esc(STATION.ent)}) is on JA1BBE's needed list!</b> ${hrRarity()} Call CQ toward Japan — you may find yourself in a pile-up from JA stations! See "Why can the path to JA be difficult?" below for the best times.</div>`)
+    :(STATION.ent?'':'<p class="fn" style="margin:0 0 4px">Enter your callsign as "Your station" to see whether your country is on the list.</p>');
+  $('hrUpd').textContent=NEEDED.updated?`List updated ${NEEDED.updated}.`:''}
+// ---- Why the path to JA can be difficult (shown when the other station is in Japan)
+function diffHTML(g,now,phys){const sp=pathStats(g.az,g.km,now),hops=Math.ceil(g.km/3500),lowH=[...Array(24).keys()].filter(h=>phys.low[h].v===2),items=[];
+  items.push(`<b>Distance</b>: ${(Math.round(g.km/100)*100).toLocaleString()} km on the short path (about ${hops} hop${hops>1?'s':''}). Every hop adds ground-reflection and absorption loss.`);
+  items.push(`<b>High latitudes</b>: the short path reaches geomagnetic latitude ${Math.abs(sp.mag).toFixed(0)}°`+(Math.abs(sp.mag)>=60?` — near or inside the auroral zone, where 160m and 80m signals are strongly absorbed, especially when Kp is high. Look at the skewed-path suggestion above and at the long path (${((g.az+180)%360).toFixed(0)}°).`:' — away from the auroral zone, so geomagnetic storms affect it less.'));
+  items.push(`<b>Darkness window</b>: `+(lowH.length?`in the next 24 hours, most of the path (80% or more) is dark — the time for 160m/80m — at ${gWindows(lowH)}.`+(lowH.length<=3?' This window is short — be ready on time.':''):'in the next 24 hours there is no time when most of the path is dark, so 160m and 80m are very difficult now.'));
+  items.push(`<b>JA frequencies</b>: Japanese low-band allocations are narrow and split. On FT8, many JA stations use 1.908 MHz (160m) and 3.531 MHz (80m) rather than 1.840 / 3.573 MHz — listen there too, or work split.`);
+  return `<details class="gdet" data-k="diff"${gOpen('diff')}><summary>Why can the path to JA be difficult? — hints</summary><div class="gtxt">${items.join('<br>')}</div><p class="gfine">Propagation loss is almost the same in both directions, but noise, power and antennas differ between stations. "Heard in Japan" is a guide to, not the same as, "you can hear Japan".</p></details>`}
+function guideHTML(g, now) {
+  const head = Array.from({ length: 24 }, (_, h) => `<th>${h}</th>`).join(''), headJ = Array.from({ length: 24 }, (_, h) => `<th class="gj">${locH(h)}</th>`).join('');
+  const cellE = c => { const v = gLv(c), bg = v >= 6 ? 'rgba(216,177,74,.85)' : v >= 3 ? 'rgba(127,211,198,.55)' : v >= 1 ? 'rgba(127,211,198,.22)' : 'transparent'; return `<td style="background:${bg}"></td>`; };
+  const cellP = (x, mark) => { const bg = x.v === 2 ? 'rgba(199,125,255,.55)' : x.v === 1 ? 'rgba(199,125,255,.2)' : 'transparent'; return `<td style="background:${bg}">${x.v === 2 && x.lp ? 'L' : ''}</td>`; };
+  // 実績
+  let ePart = '', eKey = null, eLabel = '', eData = null, agree = [];
+  const RS = recSubj();
+  if (SUMMARY && RS) {
+    if (RS.ent && CTY) { const i = CTY.ent.findIndex(e => e[0] === RS.ent); if (i >= 0 && SUMMARY.e[String(i)]) { eData = SUMMARY.e[String(i)]; eLabel = RS.short && RS.short.toUpperCase() !== RS.ent.toUpperCase() ? `${RS.short} (${RS.ent})` : RS.ent; } }
+    if (!eData) { const f = llToGrid(RS.lat, RS.lon).slice(0, 2); if (SUMMARY.f[f]) { eData = SUMMARY.f[f]; eLabel = `the area around ${RS.short} (grid field ${f})`; } }
+  }
+  const phys = gPhysics(g, now);
+  if (!RS) ePart = `<p class="gfine">Records from Japan (when stations in Japan heard your country) are shown when the other station is in Japan, e.g. JA1BBE.</p>`;
+  else if (!SUMMARY) ePart = SUMMARY_P ? `<p class="gfine">Loading the records from Japan…</p>` : `<p class="gfine">Could not load the records from Japan; only the physics guide is shown.</p>`;
+  else if (!eData) ePart = `<p class="gfine">No records in the last ${SUMMARY.days} days of stations in Japan receiving ${RS.ent ? gEsc(RS.ent) : 'your area'}. Please use the physics guide.${RS.ent ? '' : ' (Enter your callsign as "Your station" to look up your country.)'}</p>`;
+  else {
+    const has = (b, k) => eData[b] && /[1-9A]/.test(eData[b][k]);
+    const bands = G_BANDS.filter(b => has(b, 'r'));   // 受信（日本の局が相手を受信）を中心に示す
+    const rows = bands.map(b => `<tr><th class="gb">${b}</th>${[...eData[b].r].map(cellE).join('')}</tr>`).join('');
+    const best = bands.map(b => ({ b, s: [...eData[b].r].reduce((a, c) => a + gLv(c), 0), hs: [...eData[b].r].map((c, h) => gLv(c) >= 3 ? h : -1).filter(h => h >= 0) }))
+      .filter(x => x.hs.length);   // 低いバンドから順に
+    const txt = best.length ? best.map(x => `<b>${x.b}</b> ${gWindows(x.hs)}`).join('<br>') : 'No hours yet with frequent reception (30% or more of samples). Occasional receptions are the light cells in the table.';
+    // 実績と物理の目安がそろう時間帯
+    for (const x of best) { const p = phys[G_GROUP[x.b]]; const hs = x.hs.filter(h => p[h].v === 2); if (hs.length) agree.push(`<b>${x.b}</b> ${gWindows(hs)}`); }
+    const tx = G_BANDS.filter(b => has(b, 't')).map(b => ({ b, hs: [...eData[b].t].map((c, h) => gLv(c) >= 3 ? h : -1).filter(h => h >= 0) })).filter(x => x.hs.length);
+    const txTxt = tx.length ? `<div class="gtxt" style="margin-top:6px;opacity:.85">For reference: hours when signals from JA stations were received in your country<br>${tx.map(x => `<b>${x.b}</b> ${gWindows(x.hs)}`).join('<br>')}</div>` : '';
+    const noRx = !bands.length ? '<p class="gfine">No records yet of stations in Japan receiving your country.</p>' : '';
+    // 受信できた回の宇宙天気と、同じ時刻の抜き取り全体の宇宙天気（中央値）
+    const f1 = (v, d) => v == null ? '―' : v.toFixed(d);
+    const swRows = bands.filter(b => eData[b].w).map(b => {
+      const [on, ok, ov, of] = eData[b].w.o, [bn, bk, bv, bf] = eData[b].w.b;
+      const hint = on >= 10 && ok != null && bk != null && ov != null && bv != null
+        ? (bk - ok >= 0.7 || bv - ov >= 60 ? ' <span style="color:var(--c2)">tends to be heard when quiet / slow solar wind (reference)</span>'
+          : ok - bk >= 0.7 || ov - bv >= 60 ? ' <span style="color:var(--c4)">heard even when disturbed / fast solar wind (reference)</span>' : '') : '';
+      return `<b>${b}</b> heard: Kp ${f1(ok, 1)}, solar wind ${f1(ov, 0)} km/s, SFI ${f1(of, 0)} (${on}) / all samples at the same hours: Kp ${f1(bk, 1)}, ${f1(bv, 0)} km/s, SFI ${f1(bf, 0)} (${bn})${hint}`;
+    });
+    const swPart = swRows.length ? `<details class="gdet" data-k="sw"${gOpen('sw')}><summary>Space weather when heard (median)</summary><div class="gtxt" style="font-size:.85em">${swRows.join('<br>')}</div>
+      <p class="gfine">Median space weather of the samples with reception, compared with all samples at the same UTC hours. Lower Kp and slower solar wind for receptions suggest reception is easier when quiet; small differences mean no space-weather effect is visible in this period. Shown for bands with 5 or more receptions; trends only with 10 or more. Kp: GFZ 3-hour values; SFI: observed F10.7 of the day; solar wind speed: NOAA hourly average. Bz is omitted because hourly averages are close to zero.</p></details>` : '';
+    const nn = SUMMARY.n.filter(Boolean);
+    ePart = `<div class="gsub">Records from Japan: hours when stations in Japan heard ${gEsc(eLabel)} (last ${SUMMARY.days} days, all of Japan)</div>${noRx}<details class="gdet" data-k="eTxt"${gOpen('eTxt')}><summary>Show hours as text</summary><div class="gtxt">${txt}</div>${txTxt}</details>
+      <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">Local</th>${headJ}</tr>${rows}</table></div>
+      ${swPart}
+      <details class="gdet" data-k="howE"${gOpen('howE')}><summary>How to read this</summary><p class="gfine">Records collected by receiving the PSK Reporter live feed for 8 minutes every 20 minutes (24 minutes per hour). Of ${SUMMARY.samples} samples since ${SUMMARY.since} (${Math.min(...nn)}–${Math.max(...nn)} per hour of the day), the colour shows the share of samples in which stations in Japan reported receiving your country (dark yellow: 60% or more, teal: 30% or more, light teal: occasional). Reception by JA stations is used because it depends less on the transmitting power and antennas. Counting samples, not reports, keeps one active station from dominating, but the records are from digital modes such as FT8 and also depend on how many stations are active in your area. Updated daily around 02:50 UTC.</p></details>`;
+  }
+  // 物理の目安
+  const pw = k => gWindows(phys[k].map((x, h) => x.v === 2 ? h : -1).filter(h => h >= 0));
+  const lpH = phys.low.some(x => x.v === 2 && x.lp);
+  const pTxt = [`<b>Low bands (160/80/40m)</b> ${pw('low') || 'no time when the whole path is dark'}${lpH ? ' (L: long path on the night side)' : ''}`,
+    `<b>Mid bands (30/20/17m)</b> ${pw('mid') || '―'} (path includes the day/night boundary)`,
+    `<b>High bands (15/12/10m)</b> ${pw('high') || (SFI_NOW != null && SFI_NOW < 120 ? 'the path is mostly in daylight at times, but the SFI is somewhat low' : 'no time when the path is mostly in daylight')}`].join('<br>');
+  const pRows = [['Low', 'low'], ['Mid', 'mid'], ['High', 'high']].map(([n, k]) => `<tr><th class="gb">${n}</th>${phys[k].map(x => cellP(x)).join('')}</tr>`).join('');
+  const pPart = `<div class="gsub">Physics guide: next 24 hours (day/night on the path, present auroral zone, SFI ${SFI_NOW != null ? SFI_NOW.toFixed(0) : '―'})</div><details class="gdet" data-k="pTxt"${gOpen('pTxt')}><summary>Show hours as text</summary><div class="gtxt">${pTxt}</div></details>
+    <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">Local</th>${headJ}</tr>${pRows}</table></div>
+    <details class="gdet" data-k="howP"${gOpen('howP')}><summary>How to read this</summary><p class="gfine">Dark purple marks: for the low bands, hours when most of the short path (or else the long path) is dark (sun −6° or lower); for the mid bands, hours when the path mixes day and night; for the high bands, hours when most of the path is in daylight with enough SFI. This is a day/night guide, not a detailed ionospheric (MUF) prediction. The auroral zone is the present one, so hours ahead may change.</p></details>`;
+  const aPart = agree.length ? `<details class="gdet gagree" data-k="agree"${gOpen('agree')}><summary>Hours where the records and the physics guide agree (${agree.length} band${agree.length > 1 ? 's' : ''})</summary>${agree.join('<br>')}</details>` : '';
+  return `<div class="gbox"><div class="gttl" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">Best bands and times<span style="color:var(--c5);font-size:.85em;white-space:nowrap">under evaluation</span></div><p class="gfine" style="margin:0 0 6px">We are still checking these guides against actual QSOs.</p>${gBzWarn(pathStats(g.az, g.km, now))}${RS ? diffHTML(g, now, phys) : ''}${aPart}${ePart}${plHTML(g, now)}${pPart}</div>`;
+}
+// ---- いまお勧めのバンド（PSK の実績＋いまの物理の条件・宇宙天気。検証中）
+var B36 = '0123456789abcdefghijklmnopqrstuvwxyz';
+function gBzActive() {
+  if (!SW_NOW || SW_NOW.bz30 == null) return false;
+  return SW_NOW.bz30 <= -10 || (SW_NOW.bz30 <= -5 && (SW_NOW.south || 0) >= 60);
+}
+// ---- 短経路・長経路の手がかり（ローバンド。PSK の受信の時刻の昼夜による判別と、DXクラスターのコメント。検証中）
+function plHTML(g, now) {
+  const RS = recSubj();
+  if (!SUMMARY || !RS) return '';
+  let ei = -1; if (RS.ent && CTY) ei = CTY.ent.findIndex(e => e[0] === RS.ent);
+  const ed = ei >= 0 ? SUMMARY.e[String(ei)] : null, cd = ei >= 0 && SUMMARY.c ? SUMMARY.c[String(ei)] : null;
+  const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
+  const pc = x => Math.round(x * 100);
+  const nowTxt = `Now: ${pc(sp.dark)}% of the short path and ${pc(lp.dark)}% of the long path are dark. On the low bands, ` +
+    (sp.dark >= 0.7 && lp.dark >= 0.7 ? 'both paths may work.' : sp.dark >= 0.7 ? 'the short path may work.' : lp.dark >= 0.7 ? 'the <b>long path</b> may work.' : 'both paths are mostly in daylight — a difficult time.');
+  const rows = [];
+  if (ed) for (const b of ['160m', '80m', '40m']) {
+    const x = ed[b]; if (!x || !x.pl) continue;
+    const [n, so, lo, bo, no] = x.pl, hs = [...(x.plh || '')].map((c, h) => B36.indexOf(c) > 0 ? h : -1).filter(h => h >= 0);
+    const verdict = so + lo === 0 ? '' : lo >= so * 2 && lo >= 3 ? ' → <b>probably via the long path</b>' : so >= lo * 2 ? ' → mainly short path' : ' → both short and long paths';
+    rows.push(`<b>${b}</b> ${n} receptions: only short path dark ${so} / only long path dark ${lo}${lo && hs.length ? ` (${gWindows(hs)})` : ''} / both ${bo} / neither ${no}${verdict}`);
+  }
+  const cl = [];
+  if (cd) for (const b of G_BANDS) {
+    const x = cd[b]; if (!x) continue;
+    const hs = [...x.lph].map((c, h) => B36.indexOf(c) > 0 ? h : -1).filter(h => h >= 0);
+    cl.push(`<b>${b}</b> ${x.n} spots: LP ${x.lp}${x.lp && hs.length ? ` (${gWindows(hs)})` : ''}, SP ${x.sp}, skew ${x.sk}`);
+  }
+  const body = `<p class="gtxt">${nowTxt}</p>
+    <div class="gsub" style="font-size:.88em">Path suggested by the times of PSK receptions (last ${SUMMARY.days} days)</div>
+    <div class="gtxt" style="font-size:.85em">${rows.length ? rows.join('<br>') : 'Too few low-band receptions to judge yet.'}</div>
+    <div class="gsub" style="font-size:.88em">DX cluster spots by JA stations (LP / SP / skew in comments)</div>
+    <div class="gtxt" style="font-size:.85em">${cl.length ? cl.join('<br>') : 'No spots collected yet (collection started in November 2026).'}</div>
+    <details class="gdet" data-k="plHow"${gOpen('plHow')}><summary>How to read this</summary><p class="gfine">FT8 reception reports do not tell which path the signal took. So, for each reception, we checked whether 70% or more of the short path and of the long path (excluding 1,000 km at each end) was dark. On the low bands absorption is strong on the day side, so if only one path was dark, the signal probably came that way. The Japanese end is near Tokyo and the other end is the entity's representative position; the auroral zone is not included. DX cluster: spots by JA stations whose comments mention LP, SP or skew are counted. These come from operators who checked with their antennas, so they help verify the estimate, but there are still few of them.</p></details>`;
+  return `<details class="gdet" data-k="pl"${gOpen('pl')}><summary>Short path or long path? (low bands)<span style="color:#d64545;font-size:.85em"> (under evaluation)</span></summary>${body}</details>`;
+}
+function recHTML(g, now) {
+  if (!recSubj()) return '';
+  const h = new Date(now).getUTCHours(), title = `Recommended bands now (UTC ${h}h, ${locH(h)}h local)`;
+  const wrap = body => `<details class="gdet grec" data-k="rec"${gOpen('rec')}><summary>${title}<span style="color:#d64545;font-size:.85em"> (under evaluation)</span></summary>${body}</details>`;
+  if (!SUMMARY) return wrap(`<p class="gfine">${SUMMARY_P ? 'Loading the records from Japan…' : 'Could not load the records from Japan.'}</p>`);
+  const RS = recSubj(); if (!RS) return '';
+  let data = null, isEnt = false, label = '';
+  if (RS.ent && CTY) { const i = CTY.ent.findIndex(e => e[0] === RS.ent); if (i >= 0 && SUMMARY.e[String(i)]) { data = SUMMARY.e[String(i)]; isEnt = true; } }
+  if (!data) { const f = llToGrid(RS.lat, RS.lon).slice(0, 2); if (SUMMARY.f[f]) { data = SUMMARY.f[f]; label = `(records for the surrounding grid field ${f}, so ○ at most)`; } }
+  const win = [(h + 23) % 24, h, (h + 1) % 24], nWin = win.reduce((a, w) => a + (SUMMARY.n[w] || 0), 0);
+  const how = `<details class="gdet" data-k="recHow"${gOpen('recHow')}><summary>How to read this</summary><p class="gfine">For one hour either side of now (UTC ${win[0]}–${(h + 2) % 24}), the share of samples in the last ${SUMMARY.days} days in which stations in Japan received your country. ◎: 50% or more, ○: 20% or more. Not shown when there are fewer than 10 samples. To avoid short-term operations (e.g. DXpeditions), ◎ needs receptions on 3 or more days, ○ on 2 days; 1 day is not shown. If only nearby grid-field records exist, ○ is the maximum. One step lower when: low bands with the path mostly in daylight; high bands with the path mostly dark or a low SFI; low bands when the short path crosses the dense auroral zone (30% or more); low and mid bands with a Bz warning and a path near the auroral zone. The thresholds are a starting point and will be reviewed against actual QSOs.</p></details>`;
+  if (!data) return wrap(`<p class="gtxt">No records yet of stations in Japan receiving your country (or area).</p>${how}`);
+  if (nWin < 10) return wrap(`<p class="gtxt">Too few samples at this time (${nWin}) to judge.</p>${how}`);
+  const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
+  const sfi = SFI_NOW ?? 100, near = Math.abs(sp.mag) >= 55 || (sp.aur != null && sp.aur >= 10), bz = gBzActive();
+  const out = [];
+  for (const b of G_BANDS) {
+    const d = data[b]; if (!d) continue;
+    let rate, days = null;
+    if (isEnt && d.wr) { rate = B36.indexOf(d.wr[h]) * 5; days = B36.indexOf(d.wd[h]); }
+    else if (d.r) { const lv = win.map(w => gLv(d.r[w])), nn = win.map(w => SUMMARY.n[w] || 0); rate = Math.round(lv.reduce((a, v, k) => a + v * 10 * nn[k], 0) / nWin); }
+    else continue;
+    let gr = rate >= 50 ? 2 : rate >= 20 ? 1 : rate >= 10 ? 0 : -1;
+    const why = [];
+    if (days != null) { if (days <= 1) gr = Math.min(gr, 0); else if (days === 2 && gr > 1) { gr = 1; why.push('heard on only 2 days, so ○ at most'); } }
+    if (!isEnt && gr > 1) gr = 1;
+    const grp = G_GROUP[b];
+    if (grp === 'low' && !(sp.dark >= 0.6 || lp.dark >= 0.8)) { gr--; why.push('path mostly in daylight now'); }
+    if (grp === 'high' && (sp.dark > 0.4 || sfi < 90)) { gr--; why.push(sp.dark > 0.4 ? 'path mostly dark now' : 'low SFI'); }
+    if (grp === 'low' && sp.aur != null && sp.aur >= 30) { gr--; why.push('short path crosses the dense auroral zone'); }
+    if (bz && near && (grp === 'low' || grp === 'mid')) { gr--; why.push('Bz warning'); }
+    if (gr >= 1) out.push({ b, gr, rate, days, why });
+  }
+  const list = out.length
+    ? out.map(x => `<div><b style="font-size:1.1em">${x.gr === 2 ? '◎' : '○'}</b> <b>${x.b}</b> heard in ${x.rate}% of samples${x.days != null ? ` (${x.days} days)` : ''}${x.why.length ? `<span style="color:var(--sub, var(--muted))"> * ${x.why.join(', ')}${x.why.some(w => !w.includes('at most')) ? ' — one step lower' : ''}</span>` : ''}</div>`).join('')
+    : `<p class="gtxt">No band to recommend at this time (few records, or bands closed).</p>`;
+  return wrap(`<div class="gtxt">${list}</div>${label ? `<p class="gfine">${label}</p>` : ''}<p class="gfine">Share of the ${nWin} samples within one hour of now in which stations in Japan heard your country.</p>${how}`);
+}
+function renderGuide(g, now) {
+  const box = document.getElementById('dxOut'); if (!box || !TARGET) return;
+  box.insertAdjacentHTML('afterbegin', '<div id="dxRec"></div>');
+  { const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
+    box.insertAdjacentHTML('afterbegin', `<div id="dxLb">${lbHTML(g, sp, lp, now)}</div>`); lbWire(); }
+  box.insertAdjacentHTML('beforeend', '<div id="dxGuide"></div>');
+  const fill = () => { const el = document.getElementById('dxGuide'); if (el) { el.innerHTML = guideHTML(g, now); gWatch(el); }
+    const er = document.getElementById('dxRec'); if (er) { er.innerHTML = recHTML(g, now); gWatch(er); } };
+  if (SUMMARY) fill(); else { fill(); loadSummary().then(fill).catch(fill); }
+}
+
+// ---- 届く強さの見込み（送信電力・アンテナ利得・周波数から。簡易な回線計算。検証中）
+var LB_F = { '160m': 1.85, '80m': 3.6, '60m': 5.36, '40m': 7.1, '30m': 10.13, '20m': 14.1, '17m': 18.1, '15m': 21.1, '12m': 24.93, '10m': 28.1, '6m': 50.2 };
+// 受信地点の外来雑音（ITU-R P.372 の郊外と田園の中間程度の目安）。雑音指数 Fa [dB]
+var LB_FA = { '160m': 55, '80m': 48, '60m': 44, '40m': 40, '30m': 36, '20m': 31, '17m': 28, '15m': 26, '12m': 24, '10m': 22, '6m': 14 };
+var LB = (() => { try { return Object.assign({ w: 100, g: 7, b: '20m' }, JSON.parse(localStorage.getItem('en.lb') || '{}')); } catch (e) { return { w: 100, g: 7, b: '20m' }; } })();
+var LB_ON = (() => { try { return localStorage.getItem('en.lbOn') === '1'; } catch (e) { return false; } })();
+var LB_CAT = [{ min: 6, name: 'strong (even SSB/CW)', a: 1 }, { min: -10, name: 'readable (CW/FT8)', a: 0.72 }, { min: -21, name: 'weak (FT8)', a: 0.42 }, { min: -999, name: 'unlikely', a: 0.12 }];
+function lbCalc(az, km, t, band, aur) {
+  const f = LB_F[band], Re = EARTH, h = 300, n = Math.max(1, Math.ceil(km / 3500)), d = km / n;
+  const s = 2 * Math.sqrt((Re + h) ** 2 + Re ** 2 - 2 * Re * (Re + h) * Math.cos(d / 2 / Re)), S = n * s;   // 電波が実際に進む道のり
+  const fsl = 32.45 + 20 * Math.log10(f) + 20 * Math.log10(S), refl = 2 * (n - 1);
+  const sfi = SFI_NOW ?? 100, R12 = Math.max(0, (sfi - 67) / 0.97);
+  let abs = 0, muf = 1e9;
+  for (let i = 0; i < n; i++) {
+    // D層の吸収：各ホップで電離層に出入りする2か所（両端から200km内側）の太陽天頂角で計算（George の式を簡略化）。夜もわずかに残る吸収を加える
+    for (const x of [i * d + Math.min(200, d / 4), (i + 1) * d - Math.min(200, d / 4)]) {
+      const [la, lo] = dest(STATION.lat, STATION.lon, az, x), chi = 90 - sunElev(la, lo, t);
+      const I = (1 + 0.0037 * R12) * Math.pow(Math.max(0, Math.cos(0.881 * chi * Math.PI / 180)), 1.3);
+      abs += 0.8 * 677.2 * I / (Math.pow(f + 1.2, 1.98) + 10.2) + 0.15 * Math.pow(10 / f, 2);
+    }
+    // MUF の推定：反射点の昼夜と SFI から foF2 を大まかに見積もり、ホップの長さに応じて倍率を掛ける
+    // F層は日没後すぐには弱まらないので、1.5時間前・3時間前の昼の度合いも少し残す
+    const [la, lo] = dest(STATION.lat, STATION.lon, az, (i + 0.5) * d), dayAt = tt => Math.max(0, Math.min(1, (sunElev(la, lo, tt) + 6) / 36));
+    const day = Math.max(dayAt(t), 0.7 * dayAt(t - 5400e3), 0.4 * dayAt(t - 10800e3));
+    const foN = 0.02 * sfi + 2.5, foD = 0.065 * sfi + 2.5, fo = foN + (foD - foN) * Math.sqrt(day);
+    muf = Math.min(muf, fo * Math.min(3.2, 1 + 2.2 * d / 3000));
+  }
+  const aurDb = aur == null ? 0 : Math.min(30, (aur >= 30 ? 12 : aur >= 10 ? 5 : 0) * Math.pow(14 / f, 1.5));
+  const loss = fsl + refl + abs + aurDb;
+  let snr = 10 * Math.log10(LB.w) + LB.g - loss - (-170 + LB_FA[band]);   // 受信側のアンテナは 0 dBi、帯域 2.5kHz
+  const why = [];
+  if (f > muf) { snr = -99; why.push(`above the estimated MUF ${muf.toFixed(0)} MHz`); }
+  else if (f > 0.9 * muf) { snr -= 6; why.push('close to the estimated MUF'); }
+  if (aurDb >= 3) why.push(`auroral absorption about ${aurDb.toFixed(0)} dB`);
+  const cat = LB_CAT.find(c => snr >= c.min);
+  return { snr, cat, muf, n, fsl, refl, abs, aurDb, why };
+}
+function lbHTML(g, sp, lp, now) {
+  const opt = Object.keys(LB_F).map(b => `<option${b === LB.b ? ' selected' : ''}>${b}</option>`).join('');
+  const r1 = lbCalc(g.az, g.km, now, LB.b, sp.aur), r2 = lbCalc((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now, LB.b, lp.aur);
+  const line = (n, az, r) => `<div><b>${n} ${az.toFixed(0)}°</b> estimated SNR ${r.snr <= -99 ? '―' : (r.snr >= 0 ? '+' : '') + r.snr.toFixed(0) + ' dB'} → <b>${r.cat.name}</b><br><span style="color:var(--muted);font-size:.9em"> loss ${(r.fsl + r.refl + r.abs + r.aurDb).toFixed(0)} dB (distance ${r.fsl.toFixed(0)}, ground reflection ${r.refl.toFixed(0)}, D-layer absorption ${r.abs.toFixed(0)}${r.aurDb >= 1 ? ', auroral zone ' + r.aurDb.toFixed(0) : ''}), estimated MUF ${r.muf.toFixed(0)} MHz, ${r.n} hop${r.n > 1 ? 's' : ''}${r.why.length ? '. ' + r.why.join(', ') : ''}</span></div>`;
+  return `<details class="gdet grec" id="lbBox"${LB_ON ? ' open' : ''}><summary>Signal estimate (power, antenna, band)<span style="color:#d64545;font-size:.85em"> (under evaluation)</span></summary>
+    <div class="gtxt" style="display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin:6px 0">
+      <label>Power <input id="lbW" type="number" min="1" max="1500" step="1" value="${LB.w}" style="width:5em"> W</label>
+      <label>Antenna gain <input id="lbG" type="number" min="-10" max="25" step="0.5" value="${LB.g}" style="width:4em"> dBi</label>
+      <label>Band <select id="lbB">${opt}</select></label></div>
+    <div class="gtxt">${line('Short path', g.az, r1)}${line('Long path', (g.az + 180) % 360, r2)}</div>
+    <p class="gfine">While open, the short- and long-path lines on the map fade toward the other station according to the estimate (strong: solid; readable/weak: medium/faint; unlikely: almost invisible). Typical gains: dipole 2 dBi, 3-el Yagi 7–8 dBi, 4-el Yagi 8–9 dBi, verticals 0–2 dBi.</p>
+    <details class="gdet" data-k="lbHow"${gOpen('lbHow')}><summary>How to read this</summary><p class="gfine">From your power and antenna gain, the path loss (spreading, ground/sea reflections, D-layer absorption, auroral absorption) is subtracted and compared with the noise at the other end to estimate the SNR in 2.5 kHz. Reflection height 300 km, maximum hop 3,500 km; D-layer absorption from the solar elevation along the path and the SFI (simplified George formula). The MUF is roughly estimated from the SFI and day/night at the reflection points — the least certain part. The other station is assumed to have a 0 dBi antenna and suburban noise. Results can be off by 10–20 dB; use them as a guide. Strong: +6 dB or more, readable: −10 dB or more, weak: −21 dB or more (near the FT8 decoding limit).</p></details></details>`;
+}
+function lbWire() {
+  const save = () => { try { localStorage.setItem('en.lb', JSON.stringify(LB)); } catch (e) {} };
+  const w = document.getElementById('lbW'), gg = document.getElementById('lbG'), b = document.getElementById('lbB'), box = document.getElementById('lbBox');
+  if (w) w.onchange = () => { LB.w = Math.max(1, +w.value || 100); save(); targetRender(); };
+  if (gg) gg.onchange = () => { LB.g = +gg.value || 0; save(); targetRender(); };
+  if (b) b.onchange = () => { LB.b = b.value; save(); targetRender(); };
+  if (box) box.addEventListener('toggle', () => { LB_ON = box.open; try { localStorage.setItem('en.lbOn', LB_ON ? '1' : '0'); } catch (e) {} drawMap(LASTP); });
+}
+function targetRender(){
+  if(!TARGET){drawMap(null);return}
+  const now=Date.now(),e=sunElev(TARGET.lat,TARGET.lon,now),[l,c]=dnState(e),[jl,jc]=dnState(sunElev(STATION.lat,STATION.lon,now));
+  const g=bearingDist(STATION.lat,STATION.lon,TARGET.lat,TARGET.lon);
+  if(g.km<50){$('dxOut').innerHTML='<p class="fn">Same location as your station.</p>';return}
+  const sp=pathStats(g.az,g.km,now),lp=pathStats((g.az+180)%360,2*Math.PI*EARTH-g.km,now);
+  const sk=needSkew(sp)?skewSearch(g,TARGET.lat,TARGET.lon):null;
+  drawMap({sp,lp,az:g.az,km:g.km,label:TARGET.short||'',sk});
+  $('dxOut').innerHTML=`<div class="tgt-who">${TARGET.label}<span class="loc">${TARGET.loc}</span></div>
+  <div class="tbl"><table class="paths-tbl"><thead><tr><th>Day/night<br><span class="th2">there / you (${esc(STATION.name)})</span></th><th>Short path<br><span class="th2">bearing, distance, highest geomag. lat.<br>aurora probability, darkness</span></th><th>Long path<br><span class="th2">same</span></th><th>Assessment (mainly low bands)</th></tr></thead>
+  <tbody><tr><td><span class="tag ${c}">${l}</span><br><span class="tag ${jc}">${jl}</span></td><td>${pathCell(sp)}</td><td>${pathCell(lp)}</td><td>${advise(sp,lp)}${skewNote(g,sp,sk,true)}</td></tr></tbody></table></div>
+  <p class="fn">Recalculated every minute. Space weather (Kp, solar wind, Bz) is the same as above for any station.</p>`;
+  renderGuide(g,now);
+}
+
 /* ---- load */
 async function load(){
+  loadDrap();
   const v={};const errs=[];
   const res=await Promise.allSettled(Object.entries(URLS).map(async([k,u])=>[k,await getJSON(u)]));
   for(const r of res){if(r.status!=='fulfilled'){errs.push(r.reason);continue}const[k,d]=r.value;
@@ -447,28 +1107,36 @@ async function load(){
       if(k==='mag'){const o=parseRtsw(d,{bz:'bz_gsm',bt:'bt'});if(o){Object.assign(v,{bz:o.bz,bz30:o.bz30,bt:o.bt,rtswAt:o.at});v.series=Object.assign(v.series||{},o.series)}}
       if(k==='wind'){const o=parseRtsw(d,{speed:'proton_speed',density:'proton_density'});if(o)Object.assign(v,{speed:o.speed,speed30:o.speed30,density:o.density,density30:o.density30})}
       if(k==='scales')Object.assign(v,parseScales(d));
-      if(k==='sfi')v.sfi=parseSfi(d);
+      if(k==='sfi'){v.sfi=parseSfi(d);SFI_NOW=v.sfi}
       if(k==='aur'){AUR=parseAur(d);v.aurMax=AUR.nmax}
       if(k==='kpf')v.kpf=parseKpf(d);
     }catch(e){errs.push(e)}}
   if(errs.length===Object.keys(URLS).length){
-    $('msg').style.display='block';$('msg').textContent='Could not load data from NOAA. Your network or the page that embeds this one may be blocking external connections. Use “Show sample data” to see the layout.';
-    $('upd').textContent='Load failed';
-  }else{$('msg').style.display=errs.length?'block':'none';if(errs.length)$('msg').textContent='Some data could not be loaded. Only the values that loaded are shown.';render(v)}
-  dayNight();
+    $('msg').style.display='block';$('msg').textContent='Could not get data from NOAA. Your network may be restricting external connections. "Sample data" shows the layout.';
+    $('upd').textContent='Failed to load';
+  }else{$('msg').style.display=errs.length?'block':'none';if(errs.length)$('msg').textContent='Some data could not be loaded; only the available values are shown.';render(v)}
+  dayNight();targetRender();
 }
 function demo(){
   const now=Date.now(),kh=[];for(let i=15;i>=0;i--)kh.push([now-i*3*3600e3,[1,1.3,2,2.7,4.3,4,3.3,2.3,2,1.7,1.3,1.7,1,0.7,1,1.3][15-i]]);
   const bzs=[];for(let i=360;i>=0;i-=5)bzs.push([now-i*60e3,2.5*Math.sin(i/40)+1.2]);
-  {const g=new Float32Array(360*181);let nm=0;for(let L=0;L<360;L++)for(let A=-90;A<=90;A++){const m=magLat(A,L>180?L-360:L),a=Math.max(0,55*Math.exp(-Math.pow((Math.abs(m)-66)/3.5,2)));g[L*181+A+90]=a;if(A>0&&a>nm)nm=a}AUR={grid:g,obs:now,fc:now+3600e3,nmax:nm}}
-  {const rec=[];for(let i=24;i>=0;i--){const t=now-i*15*60e3;rec.push({t,foF2:6.2+0.8*Math.sin(i/6),hF:null,hF2:265+(i<4?(4-i)*12:0)+6*Math.cos(i/5),spreadF:i<2})}IONO={recent:rec,latest:rec[rec.length-1]}}
-  const kpfDemo=[];{const b=Math.floor(now/(3*3600e3))*3*3600e3;for(let i=-8;i<24;i++){const t=b+i*3*3600e3;kpfDemo.push({t,kp:[2,2.33,1.67,2,2.67,3,2.33,2,1.67,2,2.33,3.67,5.33,4.67,3.33,2.67,2,1.67,2.33,2,2,2.67,3,2.33,2,1.67,2,2.33,2,1.67,2,2][i+8],kind:i<0?'observed':i===0?'estimated':'predicted'})}}
+  {const g=new Float32Array(360*181);let nm=0;for(let L=0;L<360;L++)for(let A=-90;A<=90;A++){const m=magLat(A,L>180?L-360:L),a=Math.max(0,55*Math.exp(-Math.pow((Math.abs(m)-66)/3.5,2)));g[L*181+A+90]=a;if(A>0&&a>nm)nm=a}AUR={grid:g,obs:Date.now(),fc:Date.now()+3600e3,nmax:nm}}
+  {const now=Date.now(),rec=[];for(let i=24;i>=0;i--){const t=now-i*15*60e3;rec.push({t,foF2:6.2+0.8*Math.sin(i/6),hF:null,hF2:265+(i<4?(4-i)*12:0)+6*Math.cos(i/5),spreadF:i<2})}IONO={recent:rec,latest:rec[rec.length-1]};}
+  const kpfDemo=[];{const b=Math.floor(Date.now()/(3*3600e3))*3*3600e3;for(let i=-8;i<24;i++){const t=b+i*3*3600e3;kpfDemo.push({t,kp:[2,2.33,1.67,2,2.67,3,2.33,2,1.67,2,2.33,3.67,5.33,4.67,3.33,2.67,2,1.67,2.33,2,2,2.67,3,2.33,2,1.67,2,2.33,2,1.67,2,2][i+8],kind:i<0?'observed':i===0?'estimated':'predicted'})}}
   render({demo:true,kpf:kpfDemo,aurMax:AUR.nmax,kp:1.3,kpHist:kh,bz:2.1,bz30:1.8,bt:4.6,speed:380,speed30:385,density:3.2,density30:3.5,S:0,Sprob:1,G:0,sfi:93,series:{bz:bzs}});
   $('msg').style.display='block';$('msg').textContent='Showing sample data (not real values).';dayNight();ionoRender();
 }
-$('reload').onclick=load;$('demo').onclick=demo;$('setGrid').onclick=setGrid;
-$('grid').addEventListener('keydown',e=>{if(e.key==='Enter')setGrid()});
-showQth();load();loadIono();setInterval(load,5*60e3);setInterval(loadIono,15*60e3);setInterval(()=>{dayNight();bandGuide(lastV)},60e3);
+$('reload').onclick=load;$('demo').onclick=demo;
+$('dxGo').onclick=findTarget;$('dxClr').onclick=()=>{$('dxIn').value='';TARGET=null;LS('nowcast_en.dx','');$('dxOut').innerHTML='';drawMap(null)};
+for(const id of['myGrid','dxIn'])$(id).addEventListener('keydown',e=>{if(e.key==='Enter')findTarget()});
+$('myGrid').addEventListener('change',async()=>{EX_ST=null;await setStation();dayNight();hrRender();if(TARGET)findTarget();else drawMap(null)});
+loadLand();window.addEventListener('resize',()=>drawMap(LASTP));
+(async()=>{const g=LS('nowcast_en.myGrid');if(g)$('myGrid').value=g;else{EX_ST=exampleSt();$('myGrid').value=EX_ST}await setStation();dayNight();const d=LS('nowcast_en.dx');
+  if(d){$('dxIn').value=d;findTarget()}else{EX_DX='JA1BBE';$('dxIn').value=EX_DX;findTarget()}loadNeeded()})();
+// 伝搬の見込み（地図と経路）の開閉。最初は開いた状態。開いたときに地図を描き直す
+(()=>{const det=$('propDet');if(!det)return;if(LS('nowcast_en.propOpen')==='0')det.open=false;
+  det.addEventListener('toggle',()=>{LS('nowcast_en.propOpen',det.open?'1':'0');if(det.open){targetRender();drawMap(LASTP)}})})();
+load();loadIono();setInterval(load,5*60e3);setInterval(loadIono,15*60e3);setInterval(()=>{dayNight();bandGuide(lastV);targetRender()},60e3);
 })();
 </script>
 </body>
