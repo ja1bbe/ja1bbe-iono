@@ -25,6 +25,7 @@
 .grec>summary{font-size:.95em}
 .gwarn{margin:6px 0 8px;padding:6px 8px;border-left:3px solid #d64545;background:rgba(214,69,69,.10);font-size:.88em;line-height:1.7}
 .gdet{margin:6px 0 0}
+.npline{margin:4px 0;line-height:1.75}.npr{color:#e9c46a;font-weight:700}
 .gdet>summary{cursor:pointer;font-size:.85em;font-weight:700;padding:3px 0;list-style:none}
 .gdet>summary::-webkit-details-marker{display:none}
 .gdet>summary::before{content:'▶ ';font-size:.8em}
@@ -126,7 +127,9 @@ th{color:var(--muted);font-weight:500}
 <div class="wrap">
 <header>
   <h1>Space Weather &amp; HF Propagation Nowcast</h1>
-  <p>Space weather and HF propagation between your station and any other station — with detailed records when the other station is in Japan (JA). Shared by JA1BBE as an idea and a working example; you are welcome to develop your own version for your region based on these ideas.</p>
+  <p><b>Explore the ionosphere. Understand the path. Make your next QSO.</b></p>
+  <p>Space weather and HF propagation along the path between your station and another station, with detailed records of reception by stations in Japan (collected by JA1BBE) when the other station is in Japan (JA). Space weather is constantly changing: use this page as a guide, compare it with your actual reception, and share what you discover. It is shared as an idea and a working example; you are welcome to develop your own version for your region based on these ideas.</p>
+  <p class="fn" style="margin-top:-4px">Use your browser's translate function to read this page in your language.</p>
 </header>
 <div class="bar">
   <span id="upd">Loading data…</span>
@@ -143,6 +146,12 @@ th{color:var(--muted);font-weight:500}
 <p class="why" style="margin:4px 0">The entities below are not yet confirmed on LoTW. If your country is on the list, I would be very grateful for your help.</p>
 <div id="hrList"></div>
 <p class="fn" id="hrUpd" style="margin-top:6px"></p>
+</section>
+<section class="verdict" id="nowpsk">
+<div class="lab">Is your signal reaching Japan? — receptions by stations in Japan (PSK Reporter)</div>
+<div id="npMine" class="gtxt">Loading…</div>
+<details class="gdet" id="npRecentD"><summary>Entities heard in Japan in the last 3 hours (all bands)</summary><div id="npRecent" class="gtxt"></div></details>
+<p class="fn" id="npNote" style="margin:6px 0 0"></p>
 </section>
 <section class="verdict" id="verdict">
   <div class="lab">Low bands (160 / 80 / 40m) — outlook at JA (Tokyo)</div>
@@ -161,7 +170,7 @@ th{color:var(--muted);font-weight:500}
 
 <details id="propDet" open><summary>Propagation outlook (map and path)</summary>
 <section class="verdict" id="target">
-  <div class="lab">Path to the other station (enter a grid locator or callsign for each)</div>
+  <div class="lab">Path between two stations (enter a callsign or grid locator for each station)</div>
   <div class="tgt-form">
     <label>Your station <input id="myGrid" value="PM95vq" maxlength="15" autocomplete="off" spellcheck="false" aria-label="Your grid locator or callsign" placeholder="FN31 / W1AW"></label>
     <label>Other station <input id="dxIn" placeholder="JA1BBE / PM95" maxlength="15" autocomplete="off" spellcheck="false" aria-label="Callsign or grid locator of the other station"></label>
@@ -171,14 +180,14 @@ th{color:var(--muted);font-weight:500}
   <p class="fn" id="stInfo"></p>
   <p class="fn" id="exNote" style="display:none;color:var(--gold)"></p>
   <div class="mapwrap"><canvas id="dxMap" role="img" aria-label="Azimuthal equidistant map centred on your station, with short and long paths, day and night, and the auroral zone"></canvas>
-    <div class="legend"><span><i style="background:var(--gold)"></i>Short path</span><span><i style="background:repeating-linear-gradient(90deg,#7fd3c6 0 4px,transparent 4px 7px)"></i>Long path</span><span><i style="background:repeating-linear-gradient(90deg,#c77dff 0 3px,transparent 3px 6px)"></i>Skewed path</span><span><i style="background:#163250"></i>Sea (day)</span><span><i style="background:#05080d;border:1px solid #333"></i>Night (sun −6° or lower)</span><span><i style="background:#3a3550"></i>Twilight</span><span><i style="background:rgba(80,220,140,.7)"></i>Aurora 10–30%</span><span><i style="background:rgba(240,90,80,.75)"></i>30% or more</span><span><i style="background:transparent;border:2px solid #f08a4b;border-radius:50%;width:10px"></i>Highest geomagnetic latitude</span></div>
-    <div style="margin-top:6px;text-align:center"><button id="magBtn" type="button" class="magbtn">▶ Geomagnetic latitude</button> <button id="drapBtn" type="button" class="magbtn">▶ D-layer absorption</button> <button id="stormBtn" type="button" class="magbtn">▶ Storm extent</button> <button id="ductBtn" type="button" class="magbtn">▶ Low-band long distance (possible ionospheric duct)</button> <span style="color:#d64545;font-size:.8em">(D-layer absorption, storm extent and low-band long distance are under evaluation)</span></div>
+    <div class="legend"><span><i style="background:var(--gold)"></i>Short path</span><span><i style="background:repeating-linear-gradient(90deg,#7fd3c6 0 4px,transparent 4px 7px)"></i>Long path</span><span><i style="background:repeating-linear-gradient(90deg,#c77dff 0 3px,transparent 3px 6px)"></i>Skewed path</span><span><i style="background:#163250"></i>Sea (day)</span><span><i style="background:#05080d;border:1px solid #333"></i>Night (sun −6° or lower)</span><span><i style="background:#3a3550"></i>Twilight</span><span><i style="background:rgba(80,220,140,.7)"></i>Aurora 10–30%</span><span><i style="background:rgba(240,90,80,.75)"></i>30% or more</span><span><i style="background:transparent;border:2px solid #f08a4b;border-radius:50%;width:10px"></i>Maximum geomagnetic latitude along the path</span></div>
+    <div style="margin-top:6px;text-align:center"><button id="magBtn" type="button" class="magbtn">▶ Geomagnetic latitude</button> <button id="drapBtn" type="button" class="magbtn">▶ D-layer absorption</button> <button id="stormBtn" type="button" class="magbtn">▶ Storm extent</button> <button id="ductBtn" type="button" class="magbtn">▶ Long-distance low-band propagation (possible ionospheric duct)</button> <span style="color:#d64545;font-size:.8em">(D-layer absorption, storm extent and long-distance low-band propagation are under evaluation)</span></div>
     <p id="drapNote" class="gfine" style="display:none;text-align:left;font-size:.8rem;max-width:760px;margin:6px auto 0"></p>
     <div id="ductNote" class="gfine" style="display:none;text-align:left;font-size:.8rem;max-width:760px;margin:6px auto 0"></div>
     <p id="stormNote" class="gfine" style="display:none;text-align:left;font-size:.8rem;max-width:760px;margin:6px auto 0"></p>
     <p id="magNote" class="gfine" style="display:none;text-align:center;font-size:.8rem">Dotted lines: geomagnetic latitude 0°, ±30°, ±70°; <span style="color:#f08a4b">orange: ±60°</span> (a guide to the equatorward edge of the auroral zone when quiet; it moves to lower latitudes as Kp rises). The field is approximated by a single dipole (as in the path assessment), so it differs from the real field by a few degrees in places.</p>
     <p class="fn" style="text-align:center">Azimuthal equidistant map centred on your station: the direction from the centre is the great-circle bearing (true north up) and the distance from the centre is the real distance. The rim is the antipode (about 20,000 km); the long path crosses the rim and reaches the other station from the opposite side.</p></div>
-  <div id="dxOut"><p class="fn">Enter a callsign (e.g. JA1BBE, ZF2AA) or a grid locator (e.g. PM95, FK89ab) and press "Show path" to see the bearing, distance, highest geomagnetic latitude, aurora probability, path darkness and an assessment for the short and long paths. For a callsign, the representative position of its DXCC entity is used. When the short path crosses the auroral zone, bearings up to 60° to either side are searched for a path that avoids it (approximated as a path that bends on the way) and shown as a purple dotted line. This is only a guide to paths bent by ionospheric tilts or scatter; it does not guarantee a contact.</p></div>
+  <div id="dxOut"><p class="fn">Enter a callsign (e.g. JA1BBE, ZF2AA) or a grid locator (e.g. PM95, FK89ab) and press "Show path" to see the bearing, distance, maximum geomagnetic latitude along the path, aurora probability, path darkness and an assessment for the short and long paths. For a callsign, the representative position of its DXCC entity is used. When the short path crosses the auroral zone, bearings up to 60° to either side are searched for a path that avoids it (approximated as a path that bends on the way) and shown as a purple dotted line. This is a model-based alternative path estimate, not a confirmed propagation route, and it does not guarantee a contact.</p></div>
 </section>
 </details>
 
@@ -196,19 +205,19 @@ th{color:var(--muted);font-weight:500}
 
 <h2>Paths from your station to major regions (with rotator bearings)</h2>
 <div class="tbl"><table class="paths-tbl">
-  <thead><tr><th>Region</th><th>Day/night<br><span class="th2">there / you</span></th><th>Short path<br><span class="th2">bearing, distance, highest geomag. lat.<br>aurora probability, darkness</span></th><th>Long path<br><span class="th2">same</span></th><th>Assessment (mainly low bands)</th></tr></thead>
+  <thead><tr><th>Region</th><th>Day/night<br><span class="th2">there / you</span></th><th>Short path<br><span class="th2">bearing, distance, max. geomag. lat.<br>aurora probability, darkness</span></th><th>Long path<br><span class="th2">same</span></th><th>Assessment (mainly low bands)</th></tr></thead>
   <tbody id="dn"></tbody>
 </table></div>
 <p class="fn" id="jaSun"></p>
 <p class="fn" id="aurInfo"></p>
-<p class="fn">Bearings are great-circle bearings from true north, calculated from the centre of your grid locator. A 4-character grid covers about 180 km east–west and 110 km north–south, so a 6-character grid (e.g. FN31pr) is more accurate. If your rotator is referenced to magnetic north, correct for the local magnetic declination. "Darkness" is the fraction of points on the path where the sun is −6° or lower. "Highest geomagnetic latitude" uses a dipole approximation; over North America it is higher than the geographic latitude because the geomagnetic pole is nearby. Aurora probability is the NOAA OVATION estimate 30–90 minutes ahead at the highest point on the path (30% or more: "crossing", 10–30%: "edge"). In the auroral zone, precipitating electrons increase absorption in the D and E layers, and 160m and 80m signals in particular can weaken greatly.</p>
+<p class="fn">Bearings are great-circle bearings from true north, calculated from the centre of your grid locator. A 4-character grid covers about 180 km east–west and 110 km north–south, so a 6-character grid (e.g. FN31pr) is more accurate. If your rotator is referenced to magnetic north, correct for the local magnetic declination. "Darkness" is the fraction of points on the path where the sun is −6° or lower. "Maximum geomagnetic latitude along the path" uses a dipole approximation; over North America it is higher than the geographic latitude because the geomagnetic pole is nearby. Aurora probability is the NOAA OVATION estimate 30–90 minutes ahead at the highest point on the path (30% or more: "crossing", 10–30%: "edge"). This is an estimate of auroral activity, not a direct probability of signal absorption or QSO failure. In the auroral zone, precipitating electrons increase absorption in the D and E layers, and 160m and 80m signals in particular can weaken greatly.</p>
 
 <h2>Ionosphere over Japan (Kokubunji, NICT) — JA side, for reference</h2>
 <div class="grid" id="ionoCards"></div>
 <div class="charts" id="ionoCharts" style="margin-top:10px"><div class="chart"><div class="n">Virtual height (last 6 hours, km)</div><div id="hfChart"></div></div>
 <div class="chart"><div class="n">foF2 (last 6 hours, MHz)</div><div id="foChart"></div></div></div>
 <p class="fn" id="ionoMsg"></p>
-<p class="fn">Virtual height is the reflection height derived from the echo delay; h'F is used when h'F2 is not available (e.g. at night). A sudden rise can precede a disturbance. The MUF guide is foF2 × 3 (roughly for a 3,000 km hop). These values are for the ionosphere directly above Kokubunji, Tokyo — the Japanese end of a path to JA — not the state along your whole path. NICT publishes the data once a day (around 11:30 UTC), so during the day they may be several hours old. Values include automatic processing.</p>
+<p class="fn">Virtual height is the reflection height derived from the echo delay; h'F is used when h'F2 is not available (e.g. at night). A sudden rise can precede a disturbance. As a rough guide, the MUF for a 3,000 km hop is often estimated as foF2 × 3; the actual value varies with ionospheric conditions and propagation geometry. These values are for the ionosphere directly above Kokubunji, Tokyo — the Japanese end of a path to JA — not the state along your whole path. NICT publishes the data once a day (around 11:30 UTC), so during the day they may be several hours old. Values include automatic processing.</p>
 <p class="fn">Source: National Institute of Information and Communications Technology (NICT), ionospheric observation data <a style="color:var(--gold)" href="https://wdc.nict.go.jp/Ionosphere/index.html" target="_blank" rel="noopener">https://wdc.nict.go.jp/Ionosphere/index.html</a></p>
 
 <div class="note">
@@ -491,7 +500,7 @@ function dayNight(){
   else $('aurInfo').textContent='Aurora data not available, so aurora probability is not shown.';
   const j=new Date(now+LOC_OFF*3600e3),base0=Date.UTC(j.getUTCFullYear(),j.getUTCMonth(),j.getUTCDate())-LOC_OFF*3600e3;let rise,set,prev=sunElev(JA[0],JA[1],base0);
   for(let m=1;m<=1440;m++){const t=base0+m*60e3,e=sunElev(JA[0],JA[1],t);if(prev<-0.833&&e>=-0.833)rise=t;if(prev>=-0.833&&e<-0.833)set=t;prev=e}
-  $('jaSun').textContent=`Your station (${STATION.name}): sunrise ${rise?fmtJST(rise):'―'}, sunset ${set?fmtJST(set):'―'} today (local time of this browser, calculated).`;
+  $('jaSun').textContent=`Your station (${STATION.name}): sunrise ${rise?fmtUTC(rise)+' / '+fmtJST(rise)+' local':'―'}, sunset ${set?fmtUTC(set)+' / '+fmtJST(set)+' local':'―'} today (calculated; local = time zone of this browser).`;
 }
 function parseAur(d){const g=new Float32Array(360*181);let nmax=0;
   for(const [lo,la,a] of d.coordinates){const L=((Math.round(lo)%360)+360)%360,A=Math.round(la);if(A<-90||A>90)continue;g[L*181+A+90]=a;if(A>0&&a>nmax)nmax=a}
@@ -652,7 +661,7 @@ function ductChart(band,hNow){const W=480,H=110,bw=W/24,rec=ductRec()[band],tot=
   s+=`<line x1="0" x2="${W}" y1="${H}" y2="${H}" stroke="#2c2c31"/></svg>`;
   return `<div style="margin-top:8px"><b>${band}</b> <span style="font-size:.9em">numbers = counts, scale = UTC (local time below), white band = now</span></div>`+s}
 function ductNoteSet(){if(DUCT_ON)ductEnsure();const b=document.getElementById('ductBtn'),n=document.getElementById('ductNote');
-  if(b)b.textContent=(DUCT_ON?'▼ ':'▶ ')+'Low-band long distance (possible ionospheric duct)';
+  if(b)b.textContent=(DUCT_ON?'▼ ':'▶ ')+'Long-distance low-band propagation (possible ionospheric duct)';
   if(!n)return;n.style.display=DUCT_ON?'':'none';if(!DUCT_ON)return;
   const t=Date.now(),grp=ductGrp(),st=ductState(t),d=st[0],hNow=new Date(t).getUTCHours();let now;
   if(!isJapanT(TARGET))now='<b>Now</b>: this overlay is for paths to Japan. Set the other station to a station in Japan (e.g. JA1BBE).';
@@ -660,7 +669,7 @@ function ductNoteSet(){if(DUCT_ON)ductEnsure();const b=document.getElementById('
   else if(d&&d.end){const bs=ductBands(d,t),side=d.end.who==='Japan'?'Japan':'your end';
     now=`<b>Now</b>: the path to Japan is mostly dark and ${side} is in ${d.end.rise?'morning':'evening'} twilight`+(bs.length?` — ${ductBandTxt(bs)} drawn on the map (${d.end.rise?'solid':'dotted'}).`:', but strong signals were rare at this time in the records.')}
   else{const nx=ductNext(t);now='<b>Now</b>: the condition is not met.'+(nx?` Next window from about ${ductHM(nx.t,0)} UTC (${ductHM(nx.t,LOC_OFF)} local).`:'')}
-  n.innerHTML=`<span style="color:#fff">━</span> 160m <span style="color:#5ad1ff">━</span> 80m Low-band long distance (possible ionospheric duct): on winter nights, distant stations on 160m and 80m are sometimes received with strong signals. In the records, this happened mostly when the path was largely dark and one end was in twilight around sunrise. This fits the idea of an "ionospheric duct" (signals trapped between the E and F layers), but it can also be explained by the minimum of D-layer absorption near the terminator; the records cannot tell which (under evaluation). The line is drawn only for bands with five or more strong receptions within ±2 hours in the records (white = 160m, cyan = 80m).`+
+  n.innerHTML=`<span style="color:#fff">━</span> 160m <span style="color:#5ad1ff">━</span> 80m Long-distance low-band propagation (possible ionospheric duct): on winter nights, distant stations on 160m and 80m are sometimes received with strong signals. In the records, this happened mostly when the path was largely dark and one end was in twilight around sunrise. This fits the idea of an "ionospheric duct" (signals trapped between the E and F layers), but it can also be explained by the minimum of D-layer absorption near the terminator; the records cannot tell which (under evaluation). The line is drawn only for bands with five or more strong receptions within ±2 hours in the records (white = 160m, cyan = 80m).`+
     `<br>${now}`+
     `<br><b>Records</b>: ${SUMMARY&&SUMMARY.d?`last ${SUMMARY.days} days (updated daily)`:'6–18 November 2026'}, samples of 8 minutes every 20 minutes. Number of reports in which stations in Japan received stations 8000 km or more away with strong signals (top 10% SNR of the receiving JA stations −5 dB or better). <span style="color:#7fd3c6">■</span>North America <span style="color:#e9c46a">■</span>Europe <span style="color:#9a9aa2">■</span>Other. In mid-November, North America peaked around 11–14 UTC (sunrise in North America) and Europe around 19–22 UTC (sunrise in Japan). Counts also depend on how many stations are active in each region, and the peaks shift with the season.`+
     ductChart('160m',hNow)+ductChart('80m',hNow)}
@@ -865,17 +874,23 @@ function gPhysics(g, now) {
 const NEEDED_URL='https://ja1bbe.github.io/ja1bbe-iono/needed.json';let NEEDED=null;
 async function loadNeeded(){try{NEEDED=await getJSON(NEEDED_URL)}catch(e){NEEDED=null}try{await loadCty()}catch(e){}try{if(!SUMMARY)await loadSummary()}catch(e){}hrRender()}
 function hrRarity(){if(!SUMMARY||!CTY||!STATION.ent)return'';const i=CTY.ent.findIndex(e=>e[0]===STATION.ent),d=i>=0?SUMMARY.e[String(i)]:null;
-  const lo=['160m','80m'].map(b=>{const x=d&&d[b]&&(d[b].wr||d[b].r);const n=x?[...x].filter(c=>c!=='0').length:0;return `${b} in ${n} of 24 hours`});
-  return `In the last ${SUMMARY.days} days, stations in Japan heard your country on ${lo.join(' and ')}.`}
+  const cnt=['160m','80m'].map(b=>{const x=d&&d[b]&&(d[b].wr||d[b].r);return[b,x?[...x].filter(c=>c!=='0').length:0]});
+  if(cnt.every(([b,n])=>n===0))return `In the last ${SUMMARY.days} days, stations in Japan did not hear your country on 160m or 80m.`;
+  return `In the last ${SUMMARY.days} days, stations in Japan heard your country on ${cnt.map(([b,n])=>`${b} in ${n} of 24 hours`).join(' and ')}.`}
+function hrHeardNow(){if(!NOWJ||!CTY||!STATION.ent)return[];const i=CTY.ent.findIndex(e=>e[0]===STATION.ent);if(i<0)return[];
+  const rb=(NOWJ.recent&&NOWJ.recent.bands)||{};return NP_BANDS.filter(b=>rb[b]&&(rb[b].all||[]).includes(i))}
 function hrRender(){const sec=$('hrSec');if(!sec)return;const L=NEEDED&&Array.isArray(NEEDED.entities)?NEEDED.entities:[];if(!L.length){sec.style.display='none';return}sec.style.display='';
   const nd=L.filter(e=>e.status!=='worked'),wk=L.filter(e=>e.status==='worked');
-  const chip=e=>`<span class="hrchip${STATION.ent===e.name?' me':''}">${esc(e.name)}${e.bands?` <small>${esc(e.bands)}</small>`:''}</span>`;
-  $('hrList').innerHTML=(nd.length?`<div class="hrh">Needed — please call me (${nd.length})</div><div>${nd.map(chip).join('')}</div>`:'')+(wk.length?`<div class="hrh">Worked, awaiting confirmation — please upload our QSO to LoTW (${wk.length})</div><div>${wk.map(chip).join('')}</div>`:'');
-  const me=STATION.ent&&L.find(e=>e.name===STATION.ent);
-  $('hrMine').innerHTML=me?(me.status==='worked'?`<div class="hrme"><b>${esc(STATION.ent)} is on JA1BBE's list!</b> If we have had a QSO, please upload it to LoTW. A new QSO confirmed on LoTW would also help.</div>`
-    :`<div class="hrme"><b>Your country (${esc(STATION.ent)}) is on JA1BBE's needed list!</b> ${hrRarity()} Call CQ toward Japan — you may find yourself in a pile-up from JA stations! See "Why can the path to JA be difficult?" below for the best times.</div>`)
+  const chip=e=>`<span class="hrchip${STATION.ent===e.name?' me':''}">${esc(e.name)}${e.bands?` <small>(${esc(e.bands)})</small>`:''}</span>`;
+  $('hrList').innerHTML=(nd.length?`<div class="hrh">Needed — please call me (${nd.length})</div><div>${nd.map(chip).join('')}</div>`:'')+
+    (wk.length?`<details class="gdet" style="margin-top:10px"><summary>Worked, awaiting LoTW confirmation (${wk.length}) — please upload our QSO to LoTW</summary><div style="margin-top:4px">${wk.map(chip).join('')}</div><p class="fn" style="margin:4px 0 0">Bands in brackets are the bands of our QSOs.</p></details>`:'');
+  const me=STATION.ent&&L.find(e=>e.name===STATION.ent),now=hrHeardNow();
+  const nowTxt=now.length?` <b>Your country is being heard in Japan right now on ${now.join(', ')} — this is a good time to call JA1BBE!</b>`:'';
+  $('hrMine').innerHTML=me?(me.status==='worked'?`<div class="hrme"><b>${esc(STATION.ent)} is on JA1BBE's list!</b> If we have had a QSO${me.bands?` (${esc(me.bands)})`:''}, please upload it to LoTW. A new QSO confirmed on LoTW would also help.</div>`
+    :`<div class="hrme"><b>Your country (${esc(STATION.ent)}) is on JA1BBE's needed list!</b>${nowTxt} ${hrRarity()} Call CQ toward Japan — you may find yourself in a pile-up from JA stations! See "Is your signal reaching Japan?" and "Why can the path to JA be difficult?" below.</div>`)
     :(STATION.ent?'':'<p class="fn" style="margin:0 0 4px">Enter your callsign as "Your station" to see whether your country is on the list.</p>');
-  $('hrUpd').textContent=NEEDED.updated?`List updated ${NEEDED.updated}.`:''}
+  $('hrUpd').textContent=NEEDED.updated?`List updated ${NEEDED.updated} (DXCC Mixed, current entities: ${nd.length} not worked yet, ${wk.length} worked but not confirmed on LoTW).`:''}
+
 // ---- Why the path to JA can be difficult (shown when the other station is in Japan)
 function diffHTML(g,now,phys){const sp=pathStats(g.az,g.km,now),hops=Math.ceil(g.km/3500),lowH=[...Array(24).keys()].filter(h=>phys.low[h].v===2),items=[];
   items.push(`<b>Distance</b>: ${(Math.round(g.km/100)*100).toLocaleString()} km on the short path (about ${hops} hop${hops>1?'s':''}). Every hop adds ground-reflection and absorption loss.`);
@@ -1013,7 +1028,7 @@ function recHTML(g, now) {
   const list = out.length
     ? out.map(x => `<div><b style="font-size:1.1em">${x.gr === 2 ? '◎' : '○'}</b> <b>${x.b}</b> heard in ${x.rate}% of samples${x.days != null ? ` (${x.days} days)` : ''}${x.why.length ? `<span style="color:var(--sub, var(--muted))"> * ${x.why.join(', ')}${x.why.some(w => !w.includes('at most')) ? ' — one step lower' : ''}</span>` : ''}</div>`).join('')
     : `<p class="gtxt">No band to recommend at this time (few records, or bands closed).</p>`;
-  return wrap(`<div class="gtxt">${list}</div>${label ? `<p class="gfine">${label}</p>` : ''}<p class="gfine">Share of the ${nWin} samples within one hour of now in which stations in Japan heard your country.</p>${how}`);
+  return wrap(`<div class="gtxt">${list}</div>${label ? `<p class="gfine">${label}</p>` : ''}<p class="gfine">Share of the ${nWin} samples within one hour of now in which stations in Japan heard your country (or area).</p>${how}`);
 }
 function renderGuide(g, now) {
   const box = document.getElementById('dxOut'); if (!box || !TARGET) return;
@@ -1093,15 +1108,41 @@ function targetRender(){
   const sk=needSkew(sp)?skewSearch(g,TARGET.lat,TARGET.lon):null;
   drawMap({sp,lp,az:g.az,km:g.km,label:TARGET.short||'',sk});
   $('dxOut').innerHTML=`<div class="tgt-who">${TARGET.label}<span class="loc">${TARGET.loc}</span></div>
-  <div class="tbl"><table class="paths-tbl"><thead><tr><th>Day/night<br><span class="th2">there / you (${esc(STATION.name)})</span></th><th>Short path<br><span class="th2">bearing, distance, highest geomag. lat.<br>aurora probability, darkness</span></th><th>Long path<br><span class="th2">same</span></th><th>Assessment (mainly low bands)</th></tr></thead>
+  <div class="tbl"><table class="paths-tbl"><thead><tr><th>Day/night<br><span class="th2">there / you (${esc(STATION.name)})</span></th><th>Short path<br><span class="th2">bearing, distance, max. geomag. lat.<br>aurora probability, darkness</span></th><th>Long path<br><span class="th2">same</span></th><th>Assessment (mainly low bands)</th></tr></thead>
   <tbody><tr><td><span class="tag ${c}">${l}</span><br><span class="tag ${jc}">${jl}</span></td><td>${pathCell(sp)}</td><td>${pathCell(lp)}</td><td>${advise(sp,lp)}${skewNote(g,sp,sk,true)}</td></tr></tbody></table></div>
   <p class="fn">Recalculated every minute. Space weather (Kp, solar wind, Bz) is the same as above for any station.</p>`;
   renderGuide(g,now);
 }
 
 /* ---- load */
+
+// ---- Is your signal reaching Japan? (now.json from ja1bbe/propagation, updated every 20 minutes)
+var NOW_URL='https://raw.githubusercontent.com/ja1bbe/propagation/main/data/summary/now.json';
+var NOWJ=null,NOW_TRIED=false;
+var NP_BANDS=['160m','80m','60m','40m','30m','20m','17m','15m','12m','10m','6m'];
+async function loadNow(){try{const r=await fetch(NOW_URL,{cache:'no-store'});if(!r.ok)throw new Error(r.status);NOWJ=await r.json()}catch(e){NOWJ=null}NOW_TRIED=true;
+  try{await loadCty()}catch(e){}try{if(!SUMMARY)await loadSummary()}catch(e){}nowRender();hrRender()}
+function npNext(i){// bands where your country is likely to be heard in Japan in the next 3 hours (records of the last 28 days)
+  if(!SUMMARY||i<0)return[];const d=SUMMARY.e[String(i)]||{},now=new Date(),h0=(now.getUTCHours()+(now.getUTCMinutes()>=30?1:0))%24,hs=[h0,(h0+1)%24,(h0+2)%24];
+  const dig=c=>c==='A'?10:/\d/.test(c)?+c:0;
+  return NP_BANDS.map(b=>{const x=d[b];if(!x||!x.r)return null;const rate=Math.max(...hs.map(h=>dig(x.r[h]))),days=x.wd?Math.max(...hs.map(h=>parseInt(x.wd[h],36)||0)):0;
+    return rate>=3&&days>=3?{b,rate:rate*10}:null}).filter(Boolean)}
+function nowRender(){const M=$('npMine'),R=$('npRecent'),N=$('npNote');if(!M)return;
+  if(!NOWJ){M.textContent=NOW_TRIED?'Could not load the latest receptions.':'Loading…';return}
+  const rb=NOWJ.recent.bands||{},rec=NOWJ.recent,clean=x=>esc(String(x).replace('Z',''));
+  let m='';
+  if(!STATION.ent||!CTY){m='<p class="gfine" style="margin:0">Enter your <b>callsign</b> as "Your station" to see whether your country is being heard in Japan now.</p>'}
+  else{const i=CTY.ent.findIndex(e=>e[0]===STATION.ent),heard=NP_BANDS.filter(b=>rb[b]&&(rb[b].all||[]).includes(i)),nx=npNext(i);
+    m=`<div class="npline">${heard.length?`<b>Yes.</b> Stations in Japan heard your country (${esc(STATION.ent)}) in the last 3 hours on <b>${heard.join(', ')}</b>.`:`Stations in Japan have not reported hearing your country (${esc(STATION.ent)}) in the last 3 hours.`}</div>`+
+      `<div class="npline">Next 3 hours <span style="color:#d64545;font-size:.85em">(under evaluation)</span>: ${nx.length?`in the last ${SUMMARY.days} days your country was often heard in Japan at these hours on ${nx.map(x=>`<b>${x.b}</b> (${x.rate}%)`).join(', ')}.`:`no band where your country was often heard in Japan at these hours in the last ${SUMMARY?SUMMARY.days:28} days.`}</div>`}
+  M.innerHTML=m;
+  R.innerHTML=`<p class="gfine" style="margin:0 0 4px">${clean(rec.from)}–${clean(rec.to)} UTC (${rec.samples} samples). <span class="npr">★</span> = rarely heard in Japan in recent records. Up to 8 per band, rare ones first, then by distance. Numbers in brackets are the number of entities heard on each band.</p>`+
+    (NP_BANDS.filter(b=>rb[b]).map(b=>`<div class="npline"><b>${b}</b> (${rb[b].n}): `+rb[b].top.map(x=>`<span title="${x.km.toLocaleString()} km from Tokyo · ${x.s} samples · SNR ${x.snr??'―'} dB">${x.rare?'<span class="npr">★'+esc(x.name)+'</span>':esc(x.name)}</span>`).join(', ')+'</div>').join('')||'<div class="npline">No entities heard in the last 3 hours.</div>');
+  N.textContent=`Reports by stations in Japan to PSK Reporter (8-minute samples every 20 minutes, as of ${NOWJ.generated}). These are receptions anywhere in Japan, not at a particular station.`}
+['npRecentD'].forEach(id=>{const d=document.getElementById(id);if(!d)return;try{if(localStorage.getItem('en.'+id)==='1')d.open=true}catch(e){}
+  d.addEventListener('toggle',()=>{try{localStorage.setItem('en.'+id,d.open?'1':'0')}catch(e){}})});
 async function load(){
-  loadDrap();
+  loadDrap();loadNow();
   const v={};const errs=[];
   const res=await Promise.allSettled(Object.entries(URLS).map(async([k,u])=>[k,await getJSON(u)]));
   for(const r of res){if(r.status!=='fulfilled'){errs.push(r.reason);continue}const[k,d]=r.value;
@@ -1132,7 +1173,7 @@ function demo(){
 $('reload').onclick=load;$('demo').onclick=demo;
 $('dxGo').onclick=findTarget;$('dxClr').onclick=()=>{$('dxIn').value='';TARGET=null;LS('nowcast_en.dx','');$('dxOut').innerHTML='';drawMap(null)};
 for(const id of['myGrid','dxIn'])$(id).addEventListener('keydown',e=>{if(e.key==='Enter')findTarget()});
-$('myGrid').addEventListener('change',async()=>{EX_ST=null;await setStation();dayNight();hrRender();if(TARGET)findTarget();else drawMap(null)});
+$('myGrid').addEventListener('change',async()=>{EX_ST=null;await setStation();dayNight();hrRender();nowRender();if(TARGET)findTarget();else drawMap(null)});
 loadLand();window.addEventListener('resize',()=>drawMap(LASTP));
 (async()=>{const g=LS('nowcast_en.myGrid');if(g)$('myGrid').value=g;else{EX_ST=exampleSt();$('myGrid').value=EX_ST}await setStation();dayNight();const d=LS('nowcast_en.dx');
   if(d){$('dxIn').value=d;findTarget()}else{EX_DX='JA1BBE';$('dxIn').value=EX_DX;findTarget()}loadNeeded()})();
