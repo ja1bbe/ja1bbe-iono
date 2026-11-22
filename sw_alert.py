@@ -215,6 +215,69 @@ BIN = 3 * 3600
 BIN_MIN_SAMPLES = 90           # 1分値が3時間（180個）のうち半分以上そろった区間だけ記録する
 R27_URL = 'https://ja1bbe.github.io/ja1bbe-iono/r27.html'
 
+# ---------------------------------------------------------------- いま開いている相手（propagation の now.json）
+# 日本の局が PSK Reporter に報告した受信の記録から、直近3時間に開いていたエンティティと、これから3時間の見通し。
+# メールには概要だけを載せ、詳しくはスマートフォン版（#now）へ案内する。
+NOW_URL = 'https://raw.githubusercontent.com/ja1bbe/propagation/main/data/summary/now.json'
+NOWPSK = None                  # main で読み込む
+NOW_MAX_AGE = 90 * 60          # これより古いまとめは載せない（秒）
+PSK_BANDS = ['160m', '80m', '60m', '40m', '30m', '20m', '17m', '15m', '12m', '10m', '6m']
+
+
+def load_nowpsk(now):
+    global NOWPSK
+    try:
+        d = fetch_json(NOW_URL)
+        g = datetime.strptime(d['generated'], '%Y-%m-%d %H:%MZ').replace(tzinfo=timezone.utc).timestamp()
+        NOWPSK = d if now - g <= NOW_MAX_AGE else None
+        if NOWPSK is None:
+            print('[いま開いている相手] まとめが古いため載せません:', d.get('generated'))
+    except Exception as e:
+        print('[いま開いている相手] 読み込めませんでした:', e)
+        NOWPSK = None
+
+
+def psk_summary(v, now):
+    """概要を (珍しい相手の行のリスト, 開いていたバンドの行, 見通しの行, 注意の行) で返す。なければ None"""
+    d = NOWPSK
+    if not d:
+        return None
+    rb = d.get('recent', {}).get('bands', {})
+    rare = []
+    for b in PSK_BANDS:
+        names = [x['name'] for x in rb.get(b, {}).get('top', []) if x.get('rare')]
+        if names:
+            rare.append(f"{b}：{'、'.join(names)}")
+    opened = '・'.join(f"{b} {rb[b]['n']}" for b in PSK_BANDS if b in rb)
+    ob = d.get('outlook', {}).get('bands', {})
+    hrs = d.get('outlook', {}).get('hours') or []
+    top = sorted((b for b in ob), key=lambda b: -ob[b].get('n', 0))[:4]
+    outlook = ''
+    if top and hrs:
+        outlook = f"これから3時間（日本時間{(hrs[0] + 9) % 24}〜{(hrs[-1] + 10) % 24}時）に開きやすいバンド：{'・'.join(top)}（検証中）"
+    caution = ''
+    if (v.get('kp') or 0) >= 5 or (rtsw_fresh(v, now) and (v.get('bz30') or 0) <= -10):
+        caution = '地磁気が乱れているため、高緯度を通る方面（欧州・北米など）は記録より弱まる可能性があります。'
+    return rare, opened, outlook, caution
+
+
+def psk_text(v, now):
+    s = psk_summary(v, now)
+    if not s:
+        return ''
+    rare, opened, outlook, caution = s
+    L = ['', '■ いま開いている相手（日本の局の受信、直近3時間）']
+    if rare:
+        L.append('珍しい相手（最近の日本の記録ではまれ）')
+        L += ['  ' + r for r in rare]
+    L.append('開いていたバンド（受信できたエンティティの数）：' + (opened or 'なし'))
+    if outlook:
+        L.append(outlook)
+    if caution:
+        L.append(caution)
+    L.append('詳しく見る（直近3時間・これからの見通し）：' + NOWCAST_URL + '#now')
+    return '\n'.join(L) + '\n'
+
 
 def _median(xs):
     xs = sorted(xs)
@@ -536,7 +599,7 @@ def footer(with_iono, howto=True):
 def full_text(v, hist, now, howto=True, expl=''):
     """NOAAの値＋国分寺の1行＋ひとこと解説＋フッター"""
     io = iono_text(now)
-    return status_text(v, hist, now) + ('\n' + io if io else '') + expl + footer(bool(io), howto)
+    return status_text(v, hist, now) + psk_text(v, now) + ('\n' + io if io else '') + expl + footer(bool(io), howto)
 
 
 # ---------------------------------------------------------------- HTMLのメール
@@ -617,6 +680,25 @@ def html_numbers(v, now):
     return f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0">{rows}</table>{when}'
 
 
+def html_psk(v, now, sec):
+    s = psk_summary(v, now)
+    if not s:
+        return ''
+    rare, opened, outlook, caution = s
+    P = lambda txt, size=14, color=C_INK, extra='': f'<div style="font:{size}px/1.6 {FONT};color:{color};{extra}">{txt}</div>'
+    inner = ''
+    if rare:
+        inner += P('珍しい相手（最近の日本の記録ではまれ）', 12, C_SUB)
+        inner += ''.join(P('<b>' + _e(r.split('：', 1)[0]) + '</b>：' + _e(r.split('：', 1)[1]), 14, '#8a5a00') for r in rare)
+    inner += P('開いていたバンド（受信できたエンティティの数）', 12, C_SUB, 'padding-top:6px;') + P(_e(opened or 'なし'))
+    if outlook:
+        inner += P(_e(outlook), 13, C_INK, 'padding-top:6px;')
+    if caution:
+        inner += P(_e(caution), 13, '#a3203f', 'padding-top:4px;')
+    inner += '<div style="padding-top:10px;">' + html_button('詳しく見る（直近3時間・これからの見通し）', NOWCAST_URL + '#now', solid=True) + '</div>'
+    return sec('いま開いている相手（日本の局の受信、直近3時間）', inner)
+
+
 def html_button(label, href, solid=False):
     bg, fg, bd = (C_LINK, '#ffffff', C_LINK) if solid else (C_PAPER, C_LINK, C_LINE)
     return (f'<a href="{_e(href)}" style="display:inline-block;margin:0 6px 8px 0;padding:10px 14px;border:1px solid {bd};'
@@ -650,6 +732,7 @@ def render_html(heading, lead, v, hist, st, now, expl, web=False):
         + (f'<div style="font:12px/1.5 {FONT};color:{C_SUB};padding-top:6px;">24時間の最大 Kp {_e(kp_mark(mx))}'
            + (f'（G{g_level(mx)}相当）' if g_level(mx) >= 1 else '') + '</div>' if mx is not None else '')
         + '</td></tr></table></td></tr>',
+        html_psk(v, now, sec),
         sec('いまの値', html_numbers(v, now)
             + (f'<div style="font:12px/1.6 {FONT};color:{C_INK};padding-top:8px;">{_e(HISTORY_LINE)}</div>' if HISTORY_LINE else '')),
         sec('地磁気の推移', html_kp_strip(hist, now)),
@@ -995,6 +1078,7 @@ def main():
     v, hist, errors = collect()
     for e in errors:
         print('[取得できず]', e)
+    load_nowpsk(now)
 
     global HISTORY_LINE
     try:   # 27日比較の記録（テスト送信のときは読むだけ）
