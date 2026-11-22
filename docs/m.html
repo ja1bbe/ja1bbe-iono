@@ -78,7 +78,9 @@ svg{display:block;width:100%;height:auto}
 .badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--recov-t);color:var(--recov);margin-left:6px;vertical-align:2px}
 .expl p{margin:0 0 10px;font-size:14px;line-height:1.75}
 .expl p b{font-weight:600}
-details{margin-top:6px} summary{font-size:13px;color:var(--link);cursor:pointer;padding:6px 0}
+details{margin-top:6px}
+.npline{margin:4px 0;line-height:1.7}.npr{color:#a87a12;font-weight:700}.nphl{color:#d64545;font-size:.85em}
+@media (prefers-color-scheme: dark){.npr{color:#d8b14a}} summary{font-size:13px;color:var(--link);cursor:pointer;padding:6px 0}
 .links a{display:block;color:var(--link);font-size:14px;padding:6px 0;text-decoration:none}
 footer{font-size:11px;color:var(--sub);line-height:1.7;padding:4px 4px 0}
 footer a{color:var(--link)}
@@ -123,6 +125,13 @@ footer a{color:var(--link)}
     <div class="word" id="hero-word">…</div>
     <div class="note" id="hero-note"></div>
     <div class="mx" id="hero-mx"></div>
+  </section>
+
+  <section class="card" id="nowpsk">
+    <h2>いま開いている相手と、これから3時間</h2>
+    <details class="gdet" id="npRecentD"><summary>直近3時間に開いていたエンティティ（日本の局の受信）</summary><div id="npRecent" class="gtxt">読み込み中…</div></details>
+    <details class="gdet" id="npOutD"><summary>これから3時間の見通し（過去の記録）<span style="color:#d64545;font-size:.85em">（検証中）</span></summary><div id="npOut" class="gtxt"></div></details>
+    <div class="fine" id="npNote"></div>
   </section>
 
   <section class="card" id="target">
@@ -940,7 +949,7 @@ function stormNoteSet(){const bd=$('drapBtn'),bs=$('stormBtn'),nd=$('drapNote'),
     (sub ? `<div class="sub">${sub.map(esc).join('<br>')}</div>` : '') + '</div>';
 
   async function load() {
-    loadDrap();
+    loadDrap(); loadNow();
     $('updated').textContent = '読み込み中…';
     const keys = Object.keys(SRC);
     const res = await Promise.allSettled(keys.map(k => get(SRC[k])));
@@ -1014,7 +1023,7 @@ function stormNoteSet(){const bd=$('drapBtn'),bs=$('stormBtn'),nd=$('drapNote'),
     // Kpの推移と予報：予報のファイルがあれば過去24時間〜3日先を、なければ過去24時間だけを描く
     let kpl = d.kpf ? parseKpf(d.kpf).filter(r => r.t >= now - 24 * 3600e3) : [];
     if (!kpl.length) kpl = kp.filter(r => r[0] > now - 86400e3 - 3 * 3600e3).map(r => ({ t: r[0], kp: r[1], kind: 'observed' }));
-    kpChart($('kp-chart'), kpl, now);
+    kpChart($('kp-chart'), kpl, now); KPL = kpl; nowRender();
     $('kpf-sum').textContent = d.kpf ? kpfSummary(kpl, now) : 'Kpの予報を取得できませんでした。過去24時間の値だけを表示しています。';
 
     // 方面別の経路判定
@@ -1073,6 +1082,60 @@ function stormNoteSet(){const bd=$('drapBtn'),bs=$('stormBtn'),nd=$('drapNote'),
   if ($('drapBtn')) { $('drapBtn').addEventListener('click', () => { DRAP_ON = !DRAP_ON; try { localStorage.setItem('drapOn', DRAP_ON ? '1' : '0'); } catch (e) {} stormNoteSet(); drawMap(LASTP); }); }
   if ($('magBtn')) { magBtnSet(); $('magBtn').addEventListener('click', () => { MAGLINES = !MAGLINES; try { localStorage.setItem('magLines', MAGLINES ? '1' : '0'); } catch (e) {} magBtnSet(); drawMap(LASTP); }); }
   (async () => { const g = LS('m.myGrid'); if (g) $('myGrid').value = g; await setStation(); const d = LS('m.dx'); if (d) $('dxIn').value = d; loadLand(); if (d) findTarget(); })();
+
+  // ---- いま開いている相手と、これから3時間（propagation の now.json。抜き取りのたびに更新）
+  var NOW_URL = 'https://raw.githubusercontent.com/ja1bbe/propagation/main/data/summary/now.json';
+  var NOWJ = null, KPL = [], NOW_TRIED = false;
+  var NP_BANDS = ['160m', '80m', '60m', '40m', '30m', '20m', '17m', '15m', '12m', '10m', '6m'];
+  async function loadNow() {
+    try { const r = await fetch(NOW_URL, { cache: 'no-store' }); if (!r.ok) throw new Error(r.status); NOWJ = await r.json(); } catch (e) { NOWJ = null; } NOW_TRIED = true;
+    try { await loadCty(); } catch (e) {}
+    nowRender();
+  }
+  // 地磁気の乱れの注意：これから3時間の Kp の予報が5以上、いまの Kp が5以上、または Bz の注意
+  function npCaution() {
+    const t = Date.now();
+    const f = (KPL || []).filter(r => r.t + 3 * 3600e3 > t && r.t < t + 3 * 3600e3).map(r => r.kp);
+    const kpMax = Math.max(SW_NOW && SW_NOW.kp != null ? SW_NOW.kp : 0, ...(f.length ? f : [0]));
+    const se = (typeof stormEdge === 'function') ? stormEdge() : null;
+    return { on: kpMax >= 5 || !!(se && se.show), kp: kpMax, bz: !!(se && se.show) };
+  }
+  function npHiLat(i) {
+    if (!CTY || !CTY.ent[i]) return false;
+    const e = CTY.ent[i], g = bearingDist(STATION.lat, STATION.lon, e[1], e[2]);
+    return Math.abs(pathStats(g.az, g.km, Date.now()).mag) >= 60;
+  }
+  function nowRender() {
+    const R = $('npRecent'), O = $('npOut'), N = $('npNote'); if (!R) return;
+    if (!NOWJ) { R.textContent = NOW_TRIED ? 'データを読み込めませんでした。' : '読み込み中…'; O.textContent = ''; N.textContent = ''; return; }
+    const cau = npCaution(), mark = i => cau.on && npHiLat(i) ? ' <span class="nphl" title="高緯度を通る経路">▼</span>' : '';
+    // 直近3時間
+    const rb = NOWJ.recent.bands || {}, rec = NOWJ.recent;
+    let h = `<div class="fine">UTC ${esc(String(rec.from).replace('Z', ''))}〜${esc(String(rec.to).replace('Z', ''))}（抜き取り${rec.samples}回）。<span class="npr">★</span>＝最近の日本の記録ではまれ。各バンドで、まれなものを先に、残りを遠い順に最大8つ。括弧の数は、そのバンドで受信できたエンティティの数です。</div>`;
+    const lines = NP_BANDS.filter(b => rb[b]).map(b => `<div class="npline"><b>${b}</b>（${rb[b].n}）：` +
+      rb[b].top.map(x => `<span title="${x.km.toLocaleString()} km・抜き取り${x.s}回・SNR ${x.snr ?? '―'} dB">${x.rare ? '<span class="npr">★' + esc(x.name) + '</span>' : esc(x.name)}</span>${mark(x.e)}`).join('、') + '</div>');
+    R.innerHTML = h + (lines.join('') || '<div class="npline">この3時間に受信できたエンティティはありませんでした。</div>');
+    // これから3時間
+    const ob = NOWJ.outlook.bands || {}, hrs = NOWJ.outlook.hours || [];
+    const hj = hrs.length ? `UTC ${hrs[0]}〜${(hrs[hrs.length - 1] + 1) % 24}時（日本時間 ${(hrs[0] + 9) % 24}〜${(hrs[hrs.length - 1] + 10) % 24}時）` : '';
+    let o = `<div class="fine">${hj}に、直近${NOWJ.outlook.days ?? 28}日間の記録で受信の割合が3割以上、かつ3日以上受信できたエンティティです。比較的珍しいものを先に最大8つ。数字はその時間帯の受信の割合です。</div>`;
+    if (cau.on) o += `<div class="gwarn">地磁気が${cau.bz ? '乱れる兆し（Bz の注意）' : `乱れる予報（Kp ${cau.kp.toFixed(1)}）`}があります。<span class="nphl">▼</span> の付いた相手は、経路が高緯度（地磁気緯度60°以上）を通るため、記録より弱まる可能性があります。</div>`;
+    o += NP_BANDS.filter(b => ob[b]).map(b => `<div class="npline"><b>${b}</b>（${ob[b].n}）：` +
+      ob[b].top.map(x => `${esc(x.name)} ${x.rate}%${mark(x.e)}`).join('、') + '</div>').join('') || '<div class="npline">見通しを出せる記録がありません。</div>';
+    // 採点（直近7日間）
+    const sc = NOWJ.score7 || {}; let n = 0, hit = 0, pn = 0, ph = 0;
+    for (const b in sc) { n += sc[b][0]; hit += sc[b][1]; pn += sc[b][2]; ph += sc[b][3]; }
+    o += n >= 30 ? `<div class="fine">採点（直近7日間）：見通しに挙げた相手のうち、実際に3時間以内に受信できた割合 ${Math.round(hit / n * 100)}%（${n}件）。比較のため、「直近3時間に受信できた相手は、次の3時間も受信できる」という単純な見込みでは ${pn ? Math.round(ph / pn * 100) : '―'}%（${pn}件）。</div>`
+      : `<div class="fine">採点：見通しは3時間後に実際の受信と突き合わせて採点しています。件数がたまったら、ここに的中の割合を表示します。</div>`;
+    O.innerHTML = o;
+    N.textContent = `日本の局が PSK Reporter に報告した受信の記録（20分ごとに8分間の抜き取り、${esc(NOWJ.generated)} 時点）。日本全体の記録なので、ご自分の局で聞こえるとは限りません。`;
+  }
+  // 開閉の状態を覚える。メールのリンク（#now）から開いたときは両方開く
+  ['npRecentD', 'npOutD'].forEach(id => { const d = $(id); if (!d) return;
+    try { if (location.hash === '#now' || localStorage.getItem('m.' + id) === '1') d.open = true; } catch (e) {}
+    d.addEventListener('toggle', () => { try { localStorage.setItem('m.' + id, d.open ? '1' : '0'); } catch (e) {} }); });
+  if (location.hash === '#now') setTimeout(() => { const s = $('nowpsk'); if (s) s.scrollIntoView(); }, 300);
+
   setInterval(() => { if (!document.hidden && AUR !== undefined) paths(Date.now()); }, 60e3);   // 昼夜と暗さは1分ごとに計算し直す
   document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
   setInterval(() => { if (!document.hidden) load(); }, 5 * 60e3);
