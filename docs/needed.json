@@ -1,0 +1,543 @@
+{
+ "updated": "2026-11-22",
+ "note": "JA1BBE: DXCC entities not yet confirmed on LoTW (Mixed). needed = not worked yet; worked = worked but not confirmed on LoTW.",
+ "entities": [
+  {
+   "name": "Amsterdam & St. Paul Is.",
+   "status": "needed"
+  },
+  {
+   "name": "Annobon Island",
+   "status": "needed"
+  },
+  {
+   "name": "Ascension Island",
+   "status": "needed"
+  },
+  {
+   "name": "Aves Island",
+   "status": "needed"
+  },
+  {
+   "name": "Bahamas",
+   "status": "needed"
+  },
+  {
+   "name": "Baker & Howland Islands",
+   "status": "needed"
+  },
+  {
+   "name": "Botswana",
+   "status": "needed"
+  },
+  {
+   "name": "Bouvet",
+   "status": "needed"
+  },
+  {
+   "name": "British Virgin Islands",
+   "status": "needed"
+  },
+  {
+   "name": "Cabo Verde",
+   "status": "needed"
+  },
+  {
+   "name": "Christmas Island",
+   "status": "needed"
+  },
+  {
+   "name": "Cocos Island",
+   "status": "needed"
+  },
+  {
+   "name": "Comoros",
+   "status": "needed"
+  },
+  {
+   "name": "Crozet Island",
+   "status": "needed"
+  },
+  {
+   "name": "DPR of Korea",
+   "status": "needed"
+  },
+  {
+   "name": "Dem. Rep. of the Congo",
+   "status": "needed"
+  },
+  {
+   "name": "Desecheo Island",
+   "status": "needed"
+  },
+  {
+   "name": "Dominica",
+   "status": "needed"
+  },
+  {
+   "name": "El Salvador",
+   "status": "needed"
+  },
+  {
+   "name": "Equatorial Guinea",
+   "status": "needed"
+  },
+  {
+   "name": "Eritrea",
+   "status": "needed"
+  },
+  {
+   "name": "Ethiopia",
+   "status": "needed"
+  },
+  {
+   "name": "Faroe Islands",
+   "status": "needed"
+  },
+  {
+   "name": "Fernando de Noronha",
+   "status": "needed"
+  },
+  {
+   "name": "Franz Josef Land",
+   "status": "needed"
+  },
+  {
+   "name": "Glorioso Islands",
+   "status": "needed"
+  },
+  {
+   "name": "Grenada",
+   "status": "needed"
+  },
+  {
+   "name": "Guantanamo Bay",
+   "status": "needed"
+  },
+  {
+   "name": "Guinea-Bissau",
+   "status": "needed"
+  },
+  {
+   "name": "Guyana",
+   "status": "needed"
+  },
+  {
+   "name": "Heard Island",
+   "status": "needed"
+  },
+  {
+   "name": "ITU HQ",
+   "status": "needed"
+  },
+  {
+   "name": "Johnston Island",
+   "status": "needed"
+  },
+  {
+   "name": "Juan Fernandez Islands",
+   "status": "needed"
+  },
+  {
+   "name": "Juan de Nova, Europa",
+   "status": "needed"
+  },
+  {
+   "name": "Kerguelen Islands",
+   "status": "needed"
+  },
+  {
+   "name": "Kingdom of Eswatini",
+   "status": "needed"
+  },
+  {
+   "name": "Kure Island",
+   "status": "needed"
+  },
+  {
+   "name": "Liberia",
+   "status": "needed"
+  },
+  {
+   "name": "Libya",
+   "status": "needed"
+  },
+  {
+   "name": "Liechtenstein",
+   "status": "needed"
+  },
+  {
+   "name": "Lord Howe Island",
+   "status": "needed"
+  },
+  {
+   "name": "Mali",
+   "status": "needed"
+  },
+  {
+   "name": "Malpelo Island",
+   "status": "needed"
+  },
+  {
+   "name": "Martinique",
+   "status": "needed"
+  },
+  {
+   "name": "Mauritania",
+   "status": "needed"
+  },
+  {
+   "name": "Mayotte",
+   "status": "needed"
+  },
+  {
+   "name": "Mellish Reef",
+   "status": "needed"
+  },
+  {
+   "name": "Midway Island",
+   "status": "needed"
+  },
+  {
+   "name": "Monaco",
+   "status": "needed"
+  },
+  {
+   "name": "Montserrat",
+   "status": "needed"
+  },
+  {
+   "name": "N.Z. Subantarctic Is.",
+   "status": "needed"
+  },
+  {
+   "name": "Navassa Island",
+   "status": "needed"
+  },
+  {
+   "name": "Niger",
+   "status": "needed"
+  },
+  {
+   "name": "Palestine",
+   "status": "needed"
+  },
+  {
+   "name": "Palmyra & Jarvis Islands",
+   "status": "needed"
+  },
+  {
+   "name": "Peter 1 Island",
+   "status": "needed"
+  },
+  {
+   "name": "Pitcairn Island",
+   "status": "needed"
+  },
+  {
+   "name": "Pr. Edward & Marion Is.",
+   "status": "needed"
+  },
+  {
+   "name": "Pratas Island",
+   "status": "needed"
+  },
+  {
+   "name": "Revillagigedo",
+   "status": "needed"
+  },
+  {
+   "name": "Saba & St. Eustatius",
+   "status": "needed"
+  },
+  {
+   "name": "Sable Island",
+   "status": "needed"
+  },
+  {
+   "name": "San Andres & Providencia",
+   "status": "needed"
+  },
+  {
+   "name": "San Felix & San Ambrosio",
+   "status": "needed"
+  },
+  {
+   "name": "Sierra Leone",
+   "status": "needed"
+  },
+  {
+   "name": "Sint Maarten",
+   "status": "needed"
+  },
+  {
+   "name": "South Georgia Island",
+   "status": "needed"
+  },
+  {
+   "name": "South Orkney Islands",
+   "status": "needed"
+  },
+  {
+   "name": "South Sandwich Islands",
+   "status": "needed"
+  },
+  {
+   "name": "South Shetland Islands",
+   "status": "needed"
+  },
+  {
+   "name": "St. Barthelemy",
+   "status": "needed"
+  },
+  {
+   "name": "St. Kitts & Nevis",
+   "status": "needed"
+  },
+  {
+   "name": "St. Lucia",
+   "status": "needed"
+  },
+  {
+   "name": "St. Paul Island",
+   "status": "needed"
+  },
+  {
+   "name": "St. Peter & St. Paul",
+   "status": "needed"
+  },
+  {
+   "name": "St. Pierre & Miquelon",
+   "status": "needed"
+  },
+  {
+   "name": "St. Vincent",
+   "status": "needed"
+  },
+  {
+   "name": "Syria",
+   "status": "needed"
+  },
+  {
+   "name": "Togo",
+   "status": "needed"
+  },
+  {
+   "name": "Trindade & Martim Vaz",
+   "status": "needed"
+  },
+  {
+   "name": "Tristan da Cunha & Gough",
+   "status": "needed"
+  },
+  {
+   "name": "Tromelin Island",
+   "status": "needed"
+  },
+  {
+   "name": "Turkmenistan",
+   "status": "needed"
+  },
+  {
+   "name": "Turks & Caicos Islands",
+   "status": "needed"
+  },
+  {
+   "name": "Uganda",
+   "status": "needed"
+  },
+  {
+   "name": "United Nations HQ",
+   "status": "needed"
+  },
+  {
+   "name": "Wake Island",
+   "status": "needed"
+  },
+  {
+   "name": "Afghanistan",
+   "status": "worked",
+   "bands": "20m"
+  },
+  {
+   "name": "Albania",
+   "status": "worked",
+   "bands": "20m 15m"
+  },
+  {
+   "name": "American Samoa",
+   "status": "worked",
+   "bands": "40m 30m 20m"
+  },
+  {
+   "name": "Angola",
+   "status": "worked",
+   "bands": "40m"
+  },
+  {
+   "name": "Armenia",
+   "status": "worked",
+   "bands": "40m 17m 15m 10m"
+  },
+  {
+   "name": "Austral Islands",
+   "status": "worked",
+   "bands": "40m"
+  },
+  {
+   "name": "Bangladesh",
+   "status": "worked",
+   "bands": "40m 15m 12m"
+  },
+  {
+   "name": "Barbados",
+   "status": "worked",
+   "bands": "15m"
+  },
+  {
+   "name": "Cameroon",
+   "status": "worked",
+   "bands": "40m 20m 17m"
+  },
+  {
+   "name": "Central African Republic",
+   "status": "worked",
+   "bands": "40m 20m"
+  },
+  {
+   "name": "Chad",
+   "status": "worked",
+   "bands": "20m"
+  },
+  {
+   "name": "Chesterfield Islands",
+   "status": "worked",
+   "bands": "20m 17m 15m"
+  },
+  {
+   "name": "Cocos (Keeling) Islands",
+   "status": "worked",
+   "bands": "15m"
+  },
+  {
+   "name": "Conway Reef",
+   "status": "worked",
+   "bands": "40m"
+  },
+  {
+   "name": "Cote d'Ivoire",
+   "status": "worked",
+   "bands": "20m"
+  },
+  {
+   "name": "Easter Island",
+   "status": "worked",
+   "bands": "10m"
+  },
+  {
+   "name": "Egypt",
+   "status": "worked",
+   "bands": "15m"
+  },
+  {
+   "name": "Guadeloupe",
+   "status": "worked",
+   "bands": "15m"
+  },
+  {
+   "name": "Honduras",
+   "status": "worked",
+   "bands": "20m"
+  },
+  {
+   "name": "Iran",
+   "status": "worked",
+   "bands": "20m 17m"
+  },
+  {
+   "name": "Iraq",
+   "status": "worked",
+   "bands": "20m"
+  },
+  {
+   "name": "Jan Mayen",
+   "status": "worked",
+   "bands": "20m"
+  },
+  {
+   "name": "Jordan",
+   "status": "worked",
+   "bands": "20m"
+  },
+  {
+   "name": "Minami Torishima",
+   "status": "worked",
+   "bands": "40m 15m"
+  },
+  {
+   "name": "Mount Athos",
+   "status": "worked",
+   "bands": "40m"
+  },
+  {
+   "name": "Nicaragua",
+   "status": "worked",
+   "bands": "40m 20m"
+  },
+  {
+   "name": "Nigeria",
+   "status": "worked",
+   "bands": "20m"
+  },
+  {
+   "name": "Republic of the Congo",
+   "status": "worked",
+   "bands": "30m"
+  },
+  {
+   "name": "Rotuma Island",
+   "status": "worked",
+   "bands": "40m 15m 10m"
+  },
+  {
+   "name": "Sao Tome & Principe",
+   "status": "worked",
+   "bands": "40m 20m"
+  },
+  {
+   "name": "Senegal",
+   "status": "worked",
+   "bands": "40m 20m"
+  },
+  {
+   "name": "Svalbard",
+   "status": "worked",
+   "bands": "40m 20m"
+  },
+  {
+   "name": "Tajikistan",
+   "status": "worked",
+   "bands": "20m 15m"
+  },
+  {
+   "name": "Tunisia",
+   "status": "worked",
+   "bands": "15m"
+  },
+  {
+   "name": "Tuvalu",
+   "status": "worked",
+   "bands": "40m 20m"
+  },
+  {
+   "name": "UK Base Areas on Cyprus",
+   "status": "worked",
+   "bands": "15m"
+  },
+  {
+   "name": "Western Sahara",
+   "status": "worked",
+   "bands": "40m"
+  }
+ ]
+}
