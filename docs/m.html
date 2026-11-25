@@ -1159,9 +1159,9 @@ function stormNoteSet(){const bd=$('drapBtn'),bs=$('stormBtn'),nd=$('drapNote'),
     O.innerHTML = o;
     N.textContent = `日本の局が PSK Reporter に報告した受信の記録（20分ごとに8分間の抜き取り、${esc(NOWJ.generated)} 時点）。日本全体の記録なので、ご自分の局で聞こえるとは限りません。`;
   }
-  // 開閉の状態を覚える。メールのリンク（#now）から開いたときは両方開く
+  // 開閉の状態を覚える（標準は閉じた状態）。メールのリンク（#now）から開いたときは、この欄の位置へ移動するだけ
   ['npRecentD', 'npOutD'].forEach(id => { const d = $(id); if (!d) return;
-    try { if (location.hash === '#now' || localStorage.getItem('m.' + id) === '1') d.open = true; } catch (e) {}
+    try { if (localStorage.getItem('m.' + id) === '1') d.open = true; } catch (e) {}   // 標準は閉じた状態。前回開いていたときだけ開く
     d.addEventListener('toggle', () => { try { localStorage.setItem('m.' + id, d.open ? '1' : '0'); } catch (e) {} }); });
   if (location.hash === '#now') setTimeout(() => { const s = $('nowpsk'); if (s) s.scrollIntoView(); }, 300);
 
