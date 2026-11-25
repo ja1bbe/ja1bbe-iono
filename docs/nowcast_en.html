@@ -193,6 +193,7 @@ th{color:var(--muted);font-weight:500}
 
 <h2>Current values</h2>
 <div class="grid" id="cards"></div>
+<p class="fn" id="btNote">Bt is the strength of the solar-wind magnetic field (regardless of direction) and is the upper limit of how far Bz can turn south. Bt itself does not affect radio signals directly, but a large Bt (roughly 10 nT or more) means there is plenty of "fuel" for a disturbance: if the field rotates and Bz turns south, it can approach the size of Bt. When Bt is large and Bz is south, the geomagnetic field is likely to be disturbed — watch high-latitude paths, especially on the low bands. With a large Bt but Bz staying north, a major disturbance is unlikely.</p>
 
 <h2>Trends</h2>
 <div class="charts">
@@ -275,7 +276,7 @@ function render(v){
   const c=[];
   if(v.kp!=null)c.push(card('Kp index',v.kp.toFixed(1),'',lvKp(v.kp),['Quiet','Unsettled','Active','Storm','Severe storm'][lvKp(v.kp)-1]));
   if(v.bz!=null){const b=v.bz30??v.bz;c.push(card('Bz (30-min avg)',(b>=0?'+':'')+b.toFixed(1),'nT',lvBz(b),b<0?'South':'North'))}
-  if(v.bt!=null)c.push(card('Bt',v.bt.toFixed(1),'nT',v.bt<10?2:v.bt<20?3:4,'Field strength'));
+  if(v.bt!=null){const bz=v.bz30??v.bz,warn=v.bt>=10&&bz!=null&&bz<=-5;c.push(card('Bt',v.bt.toFixed(1),'nT',warn?4:v.bt<10?2:v.bt<20?3:4,v.bt>=10?(warn?'Large Bt, Bz south: watch out':'Large Bt: watch the Bz direction'):'Upper limit of southward Bz'))}
   if(v.speed!=null){const s=v.speed30??v.speed;c.push(card('Solar wind speed',s.toFixed(0),'km/s',lvV(s),'30-min avg'))}
   if(v.density!=null){const n=v.density30??v.density;c.push(card('Solar wind density',n.toFixed(1),'/cm³',lvN(n),'30-min avg'))}
   if(v.S!=null)c.push(card('S scale','S'+v.S,'',lvS(v.S),v.Sprob!=null?`Proton event probability today ${v.Sprob}%`:'Radiation storm'));
