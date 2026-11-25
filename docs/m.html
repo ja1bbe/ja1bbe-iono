@@ -30,6 +30,8 @@
 #dxLb label{white-space:nowrap}
 .grec{margin:4px 0 10px;padding:6px 10px;border:1px solid #c9971f;border-radius:8px;background:rgba(216,177,74,.08)}
 .grec>summary{font-size:.95em}
+.ttrow{padding:6px 0;border-top:1px solid var(--line,rgba(127,127,127,.25));font-size:.9em;line-height:1.55}.ttrow.now{background:rgba(43,159,216,.10)}.ttg{color:var(--sub);font-size:.85em}.ttsub{color:var(--sub);font-size:.88em;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.glgo{background:transparent;border:1px solid #2b9fd8;color:#2b9fd8;border-radius:6px;padding:2px 8px;font-size:.85em;cursor:pointer;white-space:nowrap}
 .gld{margin:6px 0;font-size:.86em;line-height:1.6;color:var(--sub)}.gld.on{color:inherit;border-left:3px solid #5ad1ff;padding-left:8px}
 .gwarn{margin:6px 0 8px;padding:6px 8px;border-left:3px solid #d64545;background:rgba(214,69,69,.10);font-size:.88em;line-height:1.7}
 .gdet{margin:6px 0 0}
@@ -154,6 +156,7 @@ footer a{color:var(--link)}
     <p id="drapNote" class="fine" style="display:none;text-align:left"></p>
     <p id="stormNote" class="fine" style="display:none;text-align:left"></p>
     <p id="magNote" class="fine" style="display:none;text-align:center">点線は地磁気緯度 0°・±30°・±70°、<span style="color:#f08a4b">橙は ±60°</span>（静穏時のオーロラ帯の赤道側の縁の目安。Kp が上がるとこれより低緯度まで広がります）。地球の磁場を一つの棒磁石とみなす近似（経路の判定と同じ計算）で、実際の地磁気とは場所によって数度ずれます。</p>
+    <details class="gdet" id="glTTD"><summary>グレイラインダクトの時刻表（いまから24時間）<span style="color:#d64545;font-size:.85em">（検証中）</span></summary><div id="glTT" class="gtxt">計算中…</div></details>
     <div id="dxOut"></div>
     <details><summary>地図と入力の見方</summary>
       <div class="fine">自局と相手は、グリッドロケータ（4桁または6桁）か、コールサインで入れます。コールサインの場合はcty.datにもとづくエンティティの代表位置で計算します（登録済みの局はそのグリッド）。地図は自局を中心にした正距方位図で、中心から見た方向がそのまま大圏方位（上が真北）、中心からの距離が実際の距離です。外周は地球の裏側（約20,000km）で、長経路は外周を越えて反対側から相手に届きます。橙色の丸は、短経路の上で地磁気緯度が最も高くなる地点です。短経路がオーロラ帯にかかるときは、左右60°までずらした方位の中から、オーロラ帯を避けて相手に届く経路（途中で曲がる経路として近似）を探し、紫の点線で示します。電離層の傾きや散乱で電波が曲がる経路の目安で、届くことを保証するものではありません。入力した内容は、この端末のブラウザが覚えています。</div>
@@ -537,7 +540,7 @@ const detourTxt = x => x < 100 ? '遠回りはごくわずか' : `遠回り 約$
     $('stInfo').innerHTML = `<span class="t4">自局の「${esc(raw)}」を判別できなかったため、PM95 を基準にしています。</span>`;
   }
   async function findTarget() {
-    await setStation();
+    await setStation(); try { glTTRender(); } catch (e) {}
     const raw = $('dxIn').value.trim().toUpperCase(); $('dxIn').value = raw;
     if (!raw) { TARGET = null; $('dxOut').innerHTML = ''; paths(Date.now()); return; }
     const r = await resolve(raw);
@@ -934,6 +937,31 @@ function stormNoteSet(){const bd=$('drapBtn'),bs=$('stormBtn'),nd=$('drapNote'),
     n.innerHTML = '<b>線の見分け</b>：細い線と「記録・北米中部」などの文字は、日本の局の受信の記録で 160m（白）・80m（水色）の遠距離が強く入りやすかった方面です（電離圏ダクト・記録）。太い線と「グレイラインダクト」の文字は、入れた相手局への経路で、自局か相手局が薄明（太陽高度 −18°〜+3°）のとき、夜の側を通る経路です。太い線の明るく光る区間は、経路が薄明を通る区間。長い破線は、自局が薄明のときの、境目に沿う二方向です' + (gs.bands.length ? `（いま ${gs.az.map(a => Math.round(a) + '°').join('・')}）` : '（自局はいま薄明ではありません）') + '。' +
       '<br><b>考え方</b>：F層は夜も残りますが、D層と E層は太陽光で作られ、夕方に消え、朝に作られます。昼夜の境目では電離層が傾くため、電波が E層と F層の間の谷間へ導かれる「入口」ができ、谷間に入った電波は D層を通らずに遠くまで進むと考えられます（電離圏ダクト）。境目で D層の吸収が最も小さくなるだけでも同じ形になり、記録からはどちらか見分けられません。バンドの色分けは太陽高度による目安（160m は −18°〜−6°、80m は −12°〜+3°）です（検証中）。記録のグラフは PC版で見られます。'; }
   document.addEventListener('click', e => { if (e.target && e.target.id === 'ductBtn') { DUCT_ON = !DUCT_ON; try { localStorage.setItem('m.ductOn', DUCT_ON ? '1' : '0'); } catch (e2) {} ductNoteSet(); drawMap(LASTP); } });
+  // ---- グレイラインダクトの時刻表：いまから24時間（PC版と同じ計算。自局の欄の局から）
+  const GLTT = [['米国東部（W1AW）', 'FN31'], ['米国中部', 'EM15'], ['米国西部', 'DM79'], ['米国北西部', 'CN87'], ['アラスカ', 'BP51'], ['ハワイ', 'BL01'], ['アンティグア（V26JJ）', 'FK97'], ['プエルトリコ', 'FK68'], ['コロンビア', 'FJ24'], ['アルゼンチン', 'GF05'], ['ウルグアイ', 'GF15'], ['ブラジル', 'GG66'],
+    ['英国', 'IO91'], ['ドイツ', 'JO62'], ['モスクワ', 'KO85'], ['カナリア諸島', 'IL18'], ['モロッコ', 'IM63'], ['南アフリカ', 'KG33'], ['ケニア', 'KI88'], ['アラブ首長国連邦', 'LL75'], ['インド', 'MK82'], ['オーストラリア（シドニー）', 'QF56'], ['ニュージーランド', 'RF70'], ['イースター島', 'DG52']];
+  function glTTCalc(t0) { const tw = e => e >= -18 && e <= 3, out = [], step = 10 * 60e3, N = 24 * 6;
+    const darkF = (az, km, t) => { let n = 0, d = 0; for (let x = 0; x <= km; x += 300) { const [la, lo] = dest(STATION.lat, STATION.lon, az, x); n++; if (sunElev(la, lo, t) < -6) d++; } return d / n; };
+    for (const [nm, gq] of GLTT) { const la = (gq.charCodeAt(1) - 65) * 10 - 90 + (+gq[3]) + 0.5, lo = (gq.charCodeAt(0) - 65) * 20 - 180 + (+gq[2]) * 2 + 1, g = bearingDist(STATION.lat, STATION.lon, la, lo); if (g.km < 1500) continue;
+      let cur = null; const wins = [];
+      for (let k = 0; k <= N; k++) { const t = t0 + k * step, eS = sunElev(STATION.lat, STATION.lon, t), eT = sunElev(la, lo, t); let r = '';
+        if (tw(eS) || tw(eT)) { if (darkF(g.az, g.km, t) >= 0.7) r = 'sp'; else if (darkF((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, t) >= 0.7) r = 'lp'; }
+        if (r) { const side = tw(eS) && tw(eT) ? '両端' : tw(eT) ? (sunElev(la, lo, t + 18e5) > eT ? '相手側の夜明け' : '相手側の夕暮れ') : (sunElev(STATION.lat, STATION.lon, t + 18e5) > eS ? '自局側の夜明け' : '自局側の夕暮れ');
+          if (!cur) cur = { a: t, b: t, r, side }; else cur.b = t; } else if (cur) { wins.push(cur); cur = null; } }
+      if (cur) wins.push(cur);
+      for (const w of wins) { if (w.b - w.a < step) continue; const az = w.r === 'sp' ? g.az : (g.az + 180) % 360, km = w.r === 'sp' ? g.km : 2 * Math.PI * EARTH - g.km; out.push({ nm, gq, ...w, az, hemi: routeHemi(az, km) }); } }
+    return out.sort((x, y) => x.a - y.a); }
+  function glTTRender() { const box = $('glTT'), d = $('glTTD'); if (!box || !d || !d.open) return; const L = glTTCalc(Math.floor(Date.now() / 6e5) * 6e5);
+    const hm = t => { const x = new Date(t + 9 * 3600e3); return String(x.getUTCHours()).padStart(2, '0') + ':' + String(x.getUTCMinutes()).padStart(2, '0'); };
+    box.innerHTML = `<div class="fine" style="margin:0 0 6px">自局（${esc(STATION.name)}）から見て、主な相手との間で「グレイラインダクト：あり」（自局か相手局が薄明で、経路の 7割以上が夜）になる時間帯です。いまから24時間、日本時間。太陽の位置だけで決まります。「地図で見る」で、その相手を伝搬レーダーに描きます。</div>` +
+      (L.length ? L.map(w => { const nowIn = w.a <= Date.now() && Date.now() <= w.b;
+        return `<div class="ttrow${nowIn ? ' now' : ''}"><div><b>${hm(w.a)}〜${hm(w.b + 6e5)}</b>${nowIn ? ' <b style="color:#2b9fd8">いま</b>' : ''}　${esc(w.nm)} <span class="ttg">${w.gq}</span></div>` +
+          `<div class="ttsub">${w.r === 'sp' ? '短経路' : '長経路'} ${Math.round(w.az)}°（${w.hemi}）・${w.side}<button type="button" class="glgo" data-g="${w.gq}">地図で見る</button></div></div>`; }).join('')
+        : '<div class="fine">この24時間に「あり」になる相手はありません。</div>'); }
+  document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('.glgo'); if (!b) return; $('dxIn').value = b.dataset.g; findTarget(); const m = $('dxMap'); if (m) m.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+  (() => { const d = document.getElementById('glTTD'); if (!d) return; try { if (localStorage.getItem('m.glTTD') === '1') d.open = true; } catch (e) {}
+    d.addEventListener('toggle', () => { try { localStorage.setItem('m.glTTD', d.open ? '1' : '0'); } catch (e) {} if (d.open) setTimeout(glTTRender, 30); });
+    setInterval(() => { if (!document.hidden) glTTRender(); }, 10 * 60e3); if (d.open) setTimeout(glTTRender, 800); })();
   function drawMap(P) {
     LASTP = P; const cv = $('dxMap'); if (!cv) return;
     const W = cv.clientWidth || 320, dpr = window.devicePixelRatio || 1;
