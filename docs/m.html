@@ -79,6 +79,8 @@ svg{display:block;width:100%;height:auto}
 .expl p{margin:0 0 10px;font-size:14px;line-height:1.75}
 .expl p b{font-weight:600}
 details{margin-top:6px}
+.dest-h .rec1{font-size:.8em;color:#a87a12;font-weight:700;white-space:nowrap}
+@media (prefers-color-scheme: dark){.dest-h .rec1{color:#d8b14a}}
 .npline{margin:4px 0;line-height:1.7}.npr{color:#a87a12;font-weight:700}.nphl{color:#d64545;font-size:.85em}
 @media (prefers-color-scheme: dark){.npr{color:#d8b14a}} summary{font-size:13px;color:var(--link);cursor:pointer;padding:6px 0}
 .links a{display:block;color:var(--link);font-size:14px;padding:6px 0;text-decoration:none}
@@ -156,6 +158,7 @@ footer a{color:var(--link)}
 
   <section class="card">
     <h2>方面別の経路判定（ローテーター方位つき）</h2>
+    <p class="fine" style="margin:-4px 0 6px">方面の名前の右は、いまのお薦めバンドです（<span style="color:#d64545">検証中</span>）。「記録」は日本の局が受信できた割合、「物理の目安」は経路の昼夜と SFI からの目安です。</p>
     <div id="dests"><div class="fine">計算しています…</div></div>
     <div class="fine" id="jaSun"></div>
     <div class="fine" id="aurInfo"></div>
@@ -443,12 +446,38 @@ const detourTxt = x => x < 100 ? '遠回りはごくわずか' : `遠回り 約$
   const dnState = e => e > 6 ? ['昼', 'day'] : e > -6 ? ['薄明', 'gl'] : ['夜', 'night'];
   const leg = (title, p) => `<div class="leg"><div class="lab">${title}</div><div class="az">${p.az.toFixed(0)}°</div>` +
     `<div class="sub">${(Math.round(p.km / 100) * 100).toLocaleString()} km<br>地磁気緯度 ${p.mag >= 0 ? 'N' : 'S'}${Math.abs(p.mag).toFixed(0)}°<br>オーロラ ${aurTxt(p.aur)}<br>暗さ ${(p.dark * 100).toFixed(0)}%</div></div>`;
+  // ---- 方面ごとの「いまのお薦めバンド」（PC版と同じ選び方。検証中）
+  // 方面の代表地点のグリッド大区画について、日本の局が受信できた記録（直近28日間、いまの前後1時間）から、
+  // 受信の割合が2割以上のバンドのうち最も割合の高いものを選ぶ。いまの経路と宇宙天気で一段下げる条件は、
+  // 相手を入れたときの「いまお勧めのバンド」と同じ。記録で選べないときや、自局が日本から離れているときは、物理の目安を出す。
+  function regionRec(la, lo, sp, lp, now) {
+    const h = new Date(now).getUTCHours(), sfi = SFI_NOW ?? 100, bz = gBzActive(), near = Math.abs(sp.mag) >= 55 || (sp.aur != null && sp.aur >= 10);
+    const adj = (b, gr) => { const grp = G_GROUP[b];
+      if (grp === 'low' && !(sp.dark >= 0.6 || lp.dark >= 0.8)) gr--;
+      if (grp === 'high' && (sp.dark > 0.4 || sfi < 90)) gr--;
+      if (grp === 'low' && sp.aur != null && sp.aur >= 30) gr--;
+      if (bz && near && (grp === 'low' || grp === 'mid')) gr--;
+      return gr; };
+    const jaHome = bearingDist(STATION.lat, STATION.lon, 35.68, 139.76).km < 1500;
+    if (jaHome && SUMMARY && SUMMARY.f) {
+      const f = llToGrid(la, lo).slice(0, 2), data = SUMMARY.f[f], win = [(h + 23) % 24, h, (h + 1) % 24], nWin = win.reduce((a, w) => a + (SUMMARY.n[w] || 0), 0);
+      if (data && nWin >= 10) { let best = null;
+        for (const b of G_BANDS) { const d = data[b]; if (!d || !d.r) continue;
+          const rate = Math.round(win.reduce((a, w) => a + gLv(d.r[w]) * 10 * (SUMMARY.n[w] || 0), 0) / nWin);
+          if (adj(b, rate >= 20 ? 1 : rate >= 10 ? 0 : -1) >= 1 && (!best || rate > best.rate)) best = { b, rate }; }
+        if (best) return `お薦め ${best.b}（記録 ${best.rate}%）`; } }
+    let b;
+    if (sp.dark >= 0.7 || lp.dark >= 0.8) b = (sp.aur != null && sp.aur >= 30) ? '30m' : '40m';
+    else if (sp.dark >= 0.3) b = '20m';
+    else b = sfi >= 120 ? '15m' : sfi >= 95 ? '17m' : '20m';
+    return `お薦め ${b}（物理の目安）`;
+  }
   function paths(now) {
     const ej = sunElev(STATION.lat, STATION.lon, now), [jl, jc] = dnState(ej);
     $('dests').innerHTML = DESTS.map(([n, la, lo]) => {
       const [l, c] = dnState(sunElev(la, lo, now)), g = bearingDist(STATION.lat, STATION.lon, la, lo);
       const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
-      return `<div class="dest"><div class="dest-h"><b>${esc(n)}</b><span>相手<span class="tag ${c}">${l}</span> 自局<span class="tag ${jc}">${jl}</span></span></div>` +
+      return `<div class="dest"><div class="dest-h"><b>${esc(n)} <span class="rec1">${regionRec(la, lo, sp, lp, now)}</span></b><span>相手<span class="tag ${c}">${l}</span> 自局<span class="tag ${jc}">${jl}</span></span></div>` +
         `<div class="adv">${advise(sp, lp)}</div><div class="legs">${leg('短経路', sp)}${leg('長経路', lp)}</div></div>`;
     }).join('');
     $('aurInfo').textContent = AUR ? `オーロラ（OVATION）：観測 ${jst(AUR.obs)}、予測対象 ${jst(AUR.fc)}（日本時間）。北半球の最大確率 ${AUR.nmax.toFixed(0)}%。`
@@ -949,7 +978,7 @@ function stormNoteSet(){const bd=$('drapBtn'),bs=$('stormBtn'),nd=$('drapNote'),
     (sub ? `<div class="sub">${sub.map(esc).join('<br>')}</div>` : '') + '</div>';
 
   async function load() {
-    loadDrap(); loadNow();
+    loadDrap(); loadNow(); if (!SUMMARY) { try { loadSummary().then(() => paths(Date.now())).catch(() => {}); } catch (e) {} }
     $('updated').textContent = '読み込み中…';
     const keys = Object.keys(SRC);
     const res = await Promise.allSettled(keys.map(k => get(SRC[k])));
