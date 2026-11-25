@@ -170,6 +170,7 @@ footer a{color:var(--link)}
   <section class="card">
     <h2>いまの値</h2>
     <div class="grid" id="nums"></div>
+    <p class="fine" id="btNote">Bt は太陽風の磁場の強さ（向きを問わない大きさ）で、Bz が南を向いたときに取り得る大きさの上限です。Bt そのものは電波に直接は効きませんが、Bt が大きい（目安 10nT 以上）ときは「乱れの燃料が多い」状態で、磁場の向きが変わって Bz が南を向くと、Bt に近い大きさまで南向きになることがあります。Bt が大きく Bz が南向きのときは地磁気が乱れやすいので、欧州・北米など北回りの経路、特にローバンドに警戒してください。Bt が大きくても Bz が北向きのままなら、大きな乱れにはなりにくいです。</p>
     <div class="fine" id="nums-when"></div>
     <div class="spark-lab"><span>太陽風の速さ（直近2時間）</span><b id="sp-now"></b></div>
     <div id="sp-chart"></div>
@@ -1040,7 +1041,7 @@ function stormNoteSet(){const bd=$('drapBtn'),bs=$('stormBtn'),nd=$('drapNote'),
     // いまの値
     const nums = [];
     if (v.sp30 !== undefined) nums.push(cell('太陽風の速さ', v.sp30.toFixed(0), 'km/s', ['30分平均'].concat(isNaN(v.den) ? [] : [`密度 ${v.den.toFixed(1)}/cm³`])));
-    if (v.bz30 !== undefined) nums.push(cell('Bz（磁場の南北）', (v.bz30 >= 0 ? '+' : '') + v.bz30.toFixed(1), 'nT', [(v.bz30 < 0 ? '南向き' : '北向き') + '・30分平均'].concat(isNaN(v.bt) ? [] : [`磁場の強さ Bt ${v.bt.toFixed(1)}nT`])));
+    if (v.bz30 !== undefined) nums.push(cell('Bz（磁場の南北）', (v.bz30 >= 0 ? '+' : '') + v.bz30.toFixed(1), 'nT', [(v.bz30 < 0 ? '南向き' : '北向き') + '・30分平均'].concat(isNaN(v.bt) ? [] : [`磁場の強さ Bt ${v.bt.toFixed(1)}nT`]).concat(!isNaN(v.bt) && v.bt >= 10 ? [v.bz30 <= -5 ? 'Bt が大きく南向き：乱れに警戒' : 'Bt が大きい：南を向くと乱れやすい'] : [])));
     if (v.kp !== undefined) nums.push(cell('Kp指数', kpMark(v.kp), '', [`${jst(v.kpAt)}〜${jst(v.kpAt + 3 * 3600e3)}の値`]));
     if (v.sfi !== undefined) nums.push(cell('SFI（太陽電波）', v.sfi.toFixed(0), '', ['NOAAスケール ' + ['R', 'S', 'G'].filter(k => v[k] !== undefined).map(k => k + v[k]).join(' ')]));
     $('nums').innerHTML = nums.join('') || '<div class="err">NOAAの値を取得できませんでした。</div>';
