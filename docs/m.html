@@ -955,12 +955,20 @@ function stormNoteSet(){const bd=$('drapBtn'),bs=$('stormBtn'),nd=$('drapNote'),
         if (grp) out.push(grp); const az = w.r === 'sp' ? g.az : (g.az + 180) % 360, km = w.r === 'sp' ? g.km : 2 * Math.PI * EARTH - g.km; grp = { nm, gq, r: w.r, az, hemi: routeHemi(az, km), wins: [w], a: w.a }; }
       if (grp) out.push(grp); }
     return out.sort((x, y) => x.a - y.a); }
-  function glTTRender() { const box = $('glTT'), d = $('glTTD'); if (!box || !d || !d.open) return; const L = glTTCalc(Math.floor(Date.now() / 6e5) * 6e5);
+const GLTT_ENT={'FN31':'United States','EM15':'United States','DM79':'United States','CN87':'United States','BP51':'Alaska','BL01':'Hawaii','FK97':'Antigua & Barbuda','FK68':'Puerto Rico','FJ24':'Colombia','GF05':'Argentina','GF15':'Uruguay','GG66':'Brazil','IO91':'England','JO62':'Fed. Rep. of Germany','KO85':'European Russia','IL18':'Canary Islands','IM63':'Morocco','KG33':'South Africa','KI88':'Kenya','LL75':'United Arab Emirates','MK82':'India','QF56':'Australia','RF70':'New Zealand','DG52':'Easter Island','PM95':'Japan'};
+// 時刻表の行の「記録（PSK）」：窓の時間帯に日本の局がその地域（グリッドの大区画）を受信できた割合（直近28日間）と、直近3時間の受信
+function glTTRec(w){const jaHome=bearingDist(STATION.lat,STATION.lon,35.68,139.76).km<1500;if(!jaHome)return'—（自局が日本のときだけ）';if(!SUMMARY)return'記録を読み込み中';
+  const hs=new Set();for(const x of w.wins)for(let t=x.a;t<=x.b+6e5;t+=36e5)hs.add(new Date(t).getUTCHours());const H=[...hs],nW=H.reduce((a,h)=>a+(SUMMARY.n[h]||0),0),data=SUMMARY.f&&SUMMARY.f[w.gq.slice(0,2)];
+  let txt=(data&&nW>=10)?['160m','80m'].map(b=>{const d=data[b];return`${b} ${d&&d.r?Math.round(H.reduce((a,h)=>a+gLv(d.r[h])*10*(SUMMARY.n[h]||0),0)/nW):0}%`}).join('・'):'記録なし';
+  const nm=GLTT_ENT[w.gq],idx=nm&&CTY?CTY.ent.findIndex(e=>e[0]===nm):-1;
+  if(idx>=0&&NOWJ&&NOWJ.recent){const rb=NOWJ.recent.bands||{},heard=['160m','80m'].filter(b=>rb[b]&&(rb[b].all||[]).includes(idx));if(heard.length)txt+=`<br><b style="color:#2b9fd8">直近3時間に受信あり（${heard.join('・')}）</b>`}
+  return txt}
+  async function glTTRender() { const box = $('glTT'), d = $('glTTD'); if (!box || !d || !d.open) return; try { await loadCty(); } catch (e) {} try { if (!SUMMARY) await loadSummary(); } catch (e) {} const L = glTTCalc(Math.floor(Date.now() / 6e5) * 6e5);
     const hm = t => { const x = new Date(t + 9 * 3600e3); return String(x.getUTCHours()).padStart(2, '0') + ':' + String(x.getUTCMinutes()).padStart(2, '0'); };
-    box.innerHTML = `<div class="fine" style="margin:0 0 6px">自局（${esc(STATION.name)}）から見て、主な相手との間で「グレイラインダクト：あり」（自局か相手局が薄明で、経路の 7割以上が夜）になる時間帯です。いまから24時間、日本時間。太陽の位置だけで決まります。「地図で見る」で、その相手を伝搬レーダーに描きます。</div>` +
+    box.innerHTML = `<div class="fine" style="margin:0 0 6px">自局（${esc(STATION.name)}）から見て、主な相手との間で「グレイラインダクト：あり」（自局か相手局が薄明で、経路の 7割以上が夜）になる時間帯です。いまから24時間、日本時間。時間帯は太陽の位置（物理の条件）で決まります。「記録（PSK）」は、その時間帯に日本の局がその地域を 160m・80m で受信できた割合（PSK Reporter、直近28日間）です。「地図で見る」で、その相手を伝搬レーダーに描きます。</div>` +
       (L.length ? L.map(w => { const nowIn = w.wins.some(x => x.a <= Date.now() && Date.now() <= x.b), sides = w.wins.map(x => x.side).filter((v, i, a) => !i || v !== a[i - 1]);
         return `<div class="ttrow${nowIn ? ' now' : ''}"><div><b>${w.wins.map(x => `${hm(x.a)}〜${hm(x.b + 6e5)}`).join('・')}</b>${nowIn ? ' <b style="color:#2b9fd8">いま</b>' : ''}　${esc(w.nm)} <span class="ttg">${w.gq}</span></div>` +
-          `<div class="ttsub">${w.r === 'sp' ? '短経路' : '長経路'} ${Math.round(w.az)}°（${w.hemi}）・${sides.join(' → ')}<button type="button" class="glgo" data-g="${w.gq}">地図で見る</button></div></div>`; }).join('')
+          `<div class="ttsub" style="display:block">記録（PSK）：${glTTRec(w)}</div><div class="ttsub">${w.r === 'sp' ? '短経路' : '長経路'} ${Math.round(w.az)}°（${w.hemi}）・${sides.join(' → ')}<button type="button" class="glgo" data-g="${w.gq}">地図で見る</button></div></div>`; }).join('')
         : '<div class="fine">この24時間に「あり」になる相手はありません。</div>'); }
   document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('.glgo'); if (!b) return; $('dxIn').value = b.dataset.g; findTarget(); const m = $('dxMap'); if (m) m.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
   (() => { const d = document.getElementById('glTTD'); if (!d) return; try { if (localStorage.getItem('m.glTTD') === '1') d.open = true; } catch (e) {}
