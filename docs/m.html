@@ -949,14 +949,18 @@ function stormNoteSet(){const bd=$('drapBtn'),bs=$('stormBtn'),nd=$('drapNote'),
         if (r) { const side = tw(eS) && tw(eT) ? '両端' : tw(eT) ? (sunElev(la, lo, t + 18e5) > eT ? '相手側の夜明け' : '相手側の夕暮れ') : (sunElev(STATION.lat, STATION.lon, t + 18e5) > eS ? '自局側の夜明け' : '自局側の夕暮れ');
           if (!cur) cur = { a: t, b: t, r, side }; else cur.b = t; } else if (cur) { wins.push(cur); cur = null; } }
       if (cur) wins.push(cur);
-      for (const w of wins) { if (w.b - w.a < step) continue; const az = w.r === 'sp' ? g.az : (g.az + 180) % 360, km = w.r === 'sp' ? g.km : 2 * Math.PI * EARTH - g.km; out.push({ nm, gq, ...w, az, hemi: routeHemi(az, km) }); } }
+      // 同じ経路の窓が 3時間以内に続くときは、一つにまとめる
+      const ok = wins.filter(w => w.b - w.a >= step); let grp = null;
+      for (const w of ok) { if (grp && grp.r === w.r && w.a - grp.wins[grp.wins.length - 1].b <= 3 * 3600e3) { grp.wins.push(w); continue; }
+        if (grp) out.push(grp); const az = w.r === 'sp' ? g.az : (g.az + 180) % 360, km = w.r === 'sp' ? g.km : 2 * Math.PI * EARTH - g.km; grp = { nm, gq, r: w.r, az, hemi: routeHemi(az, km), wins: [w], a: w.a }; }
+      if (grp) out.push(grp); }
     return out.sort((x, y) => x.a - y.a); }
   function glTTRender() { const box = $('glTT'), d = $('glTTD'); if (!box || !d || !d.open) return; const L = glTTCalc(Math.floor(Date.now() / 6e5) * 6e5);
     const hm = t => { const x = new Date(t + 9 * 3600e3); return String(x.getUTCHours()).padStart(2, '0') + ':' + String(x.getUTCMinutes()).padStart(2, '0'); };
     box.innerHTML = `<div class="fine" style="margin:0 0 6px">自局（${esc(STATION.name)}）から見て、主な相手との間で「グレイラインダクト：あり」（自局か相手局が薄明で、経路の 7割以上が夜）になる時間帯です。いまから24時間、日本時間。太陽の位置だけで決まります。「地図で見る」で、その相手を伝搬レーダーに描きます。</div>` +
-      (L.length ? L.map(w => { const nowIn = w.a <= Date.now() && Date.now() <= w.b;
-        return `<div class="ttrow${nowIn ? ' now' : ''}"><div><b>${hm(w.a)}〜${hm(w.b + 6e5)}</b>${nowIn ? ' <b style="color:#2b9fd8">いま</b>' : ''}　${esc(w.nm)} <span class="ttg">${w.gq}</span></div>` +
-          `<div class="ttsub">${w.r === 'sp' ? '短経路' : '長経路'} ${Math.round(w.az)}°（${w.hemi}）・${w.side}<button type="button" class="glgo" data-g="${w.gq}">地図で見る</button></div></div>`; }).join('')
+      (L.length ? L.map(w => { const nowIn = w.wins.some(x => x.a <= Date.now() && Date.now() <= x.b), sides = w.wins.map(x => x.side).filter((v, i, a) => !i || v !== a[i - 1]);
+        return `<div class="ttrow${nowIn ? ' now' : ''}"><div><b>${w.wins.map(x => `${hm(x.a)}〜${hm(x.b + 6e5)}`).join('・')}</b>${nowIn ? ' <b style="color:#2b9fd8">いま</b>' : ''}　${esc(w.nm)} <span class="ttg">${w.gq}</span></div>` +
+          `<div class="ttsub">${w.r === 'sp' ? '短経路' : '長経路'} ${Math.round(w.az)}°（${w.hemi}）・${sides.join(' → ')}<button type="button" class="glgo" data-g="${w.gq}">地図で見る</button></div></div>`; }).join('')
         : '<div class="fine">この24時間に「あり」になる相手はありません。</div>'); }
   document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('.glgo'); if (!b) return; $('dxIn').value = b.dataset.g; findTarget(); const m = $('dxMap'); if (m) m.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
   (() => { const d = document.getElementById('glTTD'); if (!d) return; try { if (localStorage.getItem('m.glTTD') === '1') d.open = true; } catch (e) {}

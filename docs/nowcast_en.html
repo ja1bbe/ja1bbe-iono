@@ -580,13 +580,17 @@ function glTTCalc(t0){const tw=e=>e>=-18&&e<=3,out=[],step=10*60e3,N=24*6;
       if(r){const side=tw(eS)&&tw(eT)?'both ends':tw(eT)?(sunElev(la,lo,t+18e5)>eT?'their sunrise':'their sunset'):(sunElev(STATION.lat,STATION.lon,t+18e5)>eS?'your sunrise':'your sunset');
         if(!cur)cur={a:t,b:t,r,side};else cur.b=t}else if(cur){wins.push(cur);cur=null}}
     if(cur)wins.push(cur);
-    for(const w of wins){if(w.b-w.a<step)continue;const az=w.r==='sp'?g.az:(g.az+180)%360,km=w.r==='sp'?g.km:2*Math.PI*EARTH-g.km;out.push({nm,gq,...w,az,hemi:routeHemi(az,km)})}}
+    // windows on the same path within 3 hours of each other are shown in one row
+    const ok=wins.filter(w=>w.b-w.a>=step);let grp=null;
+    for(const w of ok){if(grp&&grp.r===w.r&&w.a-grp.wins[grp.wins.length-1].b<=3*3600e3){grp.wins.push(w);continue}
+      if(grp)out.push(grp);const az=w.r==='sp'?g.az:(g.az+180)%360,km=w.r==='sp'?g.km:2*Math.PI*EARTH-g.km;grp={nm,gq,r:w.r,az,hemi:routeHemi(az,km),wins:[w],a:w.a}}
+    if(grp)out.push(grp)}
   return out.sort((x,y)=>x.a-y.a)}
 function glTTRender(){const box=$('glTT'),d=$('glTTD');if(!box||!d||!d.open)return;const L=glTTCalc(Math.floor(Date.now()/6e5)*6e5);
   const hm=t=>{const x=new Date(t);return String(x.getUTCHours()).padStart(2,'0')+':'+String(x.getUTCMinutes()).padStart(2,'0')},lh=t=>{const x=new Date(t+LOC_OFF*3600e3);return String(x.getUTCHours()).padStart(2,'0')+':'+String(x.getUTCMinutes()).padStart(2,'0')};
   box.innerHTML=`<p class="gfine" style="margin:0 0 6px">Times in the next 24 hours when a grey-line duct is possible between your station (${esc(STATION.name)}) and the main stations below (either end in twilight and the path at least 70% dark). UTC and your local time. It depends only on the Sun, not on space weather. "Show on map" draws that station on the propagation radar.</p>`+
     (L.length?`<div class="tbl"><table class="paths-tbl"><thead><tr><th>Time (UTC / local)</th><th>Station (grid)</th><th>Path</th><th>Twilight</th><th></th></tr></thead><tbody>`+
-    L.map(w=>{const nowIn=w.a<=Date.now()&&Date.now()<=w.b;return`<tr${nowIn?' style="background:rgba(90,209,255,.10)"':''}${w.gq==='PM95'?' class="jarow"':''}><td style="white-space:nowrap">${hm(w.a)}–${hm(w.b+6e5)} UTC${nowIn?' <b style="color:#5ad1ff">now</b>':''}<br><span class="th2">${lh(w.a)}–${lh(w.b+6e5)} local</span></td><td>${esc(w.nm)}<br><span class="th2">${w.gq}</span></td><td>${w.r==='sp'?'Short path':'Long path'} ${Math.round(w.az)}°<br><span class="th2">${w.hemi}</span></td><td>${w.side}</td><td><button type="button" class="glgo" data-g="${w.gq==='PM95'?'JA1BBE':w.gq}">Show on map</button></td></tr>`}).join('')+
+    L.map(w=>{const nowIn=w.wins.some(x=>x.a<=Date.now()&&Date.now()<=x.b),sides=w.wins.map(x=>x.side).filter((v,i,a)=>!i||v!==a[i-1]);return`<tr${nowIn?' style="background:rgba(90,209,255,.10)"':''}${w.gq==='PM95'?' class="jarow"':''}><td style="white-space:nowrap">${w.wins.map(x=>`${hm(x.a)}–${hm(x.b+6e5)} UTC<br><span class="th2">${lh(x.a)}–${lh(x.b+6e5)} local</span>`).join('<br>')}${nowIn?' <b style="color:#5ad1ff">now</b>':''}</td><td>${esc(w.nm)}<br><span class="th2">${w.gq}</span></td><td>${w.r==='sp'?'Short path':'Long path'} ${Math.round(w.az)}°<br><span class="th2">${w.hemi}</span></td><td>${sides.join(' →<br>')}</td><td><button type="button" class="glgo" data-g="${w.gq==='PM95'?'JA1BBE':w.gq}">Show on map</button></td></tr>`}).join('')+
     `</tbody></table></div>`:'<p class="gfine">No grey-line duct with these stations in the next 24 hours.</p>')}
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('.glgo');if(!b)return;$('dxIn').value=b.dataset.g;findTarget();const m=$('dxMap');if(m)m.scrollIntoView({behavior:'smooth',block:'center'})});
 (()=>{const d=document.getElementById('glTTD');if(!d)return;try{if(localStorage.getItem('en.glTTD')==='1')d.open=true}catch(e){}
