@@ -25,6 +25,7 @@
 .grec>summary{font-size:.95em}
 .gwarn{margin:6px 0 8px;padding:6px 8px;border-left:3px solid #d64545;background:rgba(214,69,69,.10);font-size:.88em;line-height:1.7}
 .gdet{margin:6px 0 0}
+.gld{margin:4px 0 8px;font-size:.92rem;color:#9aa6b4}.gld.on{color:#e9eef5;border-left:3px solid #5ad1ff;padding-left:8px}
 .npline{margin:4px 0;line-height:1.75}.npr{color:#e9c46a;font-weight:700}
 .gdet>summary{cursor:pointer;font-size:.85em;font-weight:700;padding:3px 0;list-style:none}
 .gdet>summary::-webkit-details-marker{display:none}
@@ -662,6 +663,38 @@ function ductChart(band,hNow){const W=480,H=110,bw=W/24,rec=ductRec()[band],tot=
     if(h%3===0)s+=`<text x="${h*bw+bw/2}" y="${H+12}" fill="#9a9aa2" font-size="10" text-anchor="middle">${h}</text><text x="${h*bw+bw/2}" y="${H+25}" fill="#77777f" font-size="9" text-anchor="middle">${locH(h)}</text>`}
   s+=`<line x1="0" x2="${W}" y1="${H}" y2="${H}" stroke="#2c2c31"/></svg>`;
   return `<div style="margin-top:8px"><b>${band}</b> <span style="font-size:.9em">numbers = counts, scale = UTC (local time below), white band = now</span></div>`+s}
+// ---- Grey-line duct for any pair of stations (same rules as the Japanese version; under evaluation)
+function sunAz(lat,lon,t){const d=new Date(t),doy=(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())-Date.UTC(d.getUTCFullYear(),0,0))/864e5;
+  const hr=d.getUTCHours()+d.getUTCMinutes()/60,g=2*Math.PI/365*(doy-1+(hr-12)/24);
+  const eq=229.18*(0.000075+0.001868*Math.cos(g)-0.032077*Math.sin(g)-0.014615*Math.cos(2*g)-0.040849*Math.sin(2*g));
+  const dec=0.006918-0.399912*Math.cos(g)+0.070257*Math.sin(g)-0.006758*Math.cos(2*g)+0.000907*Math.sin(2*g)-0.002697*Math.cos(3*g)+0.00148*Math.sin(3*g);
+  const ha=((hr*60+eq+4*lon)/4-180)*Math.PI/180,la=lat*Math.PI/180;
+  return(Math.atan2(Math.sin(ha),Math.cos(ha)*Math.sin(la)-Math.tan(dec)*Math.cos(la))*180/Math.PI+180)%360}
+const glBands=e=>[...(e>=-18&&e<=-6?['160m']:[]),...(e>=-12&&e<=3?['80m']:[])];
+function grayState(t){const e=sunElev(STATION.lat,STATION.lon,t),bands=glBands(e);if(!bands.length)return{e,bands};const a=sunAz(STATION.lat,STATION.lon,t);return{e,bands,az:[(a+90)%360,(a+270)%360]}}
+function glRoute(t){if(!TARGET)return null;const tw=e=>e>=-18&&e<=3,eS=sunElev(STATION.lat,STATION.lon,t),eT=sunElev(TARGET.lat,TARGET.lon,t);if(!tw(eS)&&!tw(eT))return null;
+  const g=bearingDist(STATION.lat,STATION.lon,TARGET.lat,TARGET.lon);if(g.km<50)return null;
+  const sp=pathStats(g.az,g.km,t),lp=pathStats((g.az+180)%360,2*Math.PI*EARTH-g.km,t),routes=[];if(sp.dark>=0.7)routes.push('sp');if(lp.dark>=0.7)routes.push('lp');if(!routes.length)return null;
+  const bs=['160m','80m'].filter(b=>(tw(eS)&&glBands(eS).includes(b))||(tw(eT)&&glBands(eT).includes(b)));
+  return{who:tw(eS)&&tw(eT)?'both ends':tw(eT)?'other station':'your station',bs,routes,eS,eT,sp,lp,g}}
+function routeHemi(az,km){let mx=-90,mn=90;for(let x=0;x<=km;x+=250){const[la]=dest(STATION.lat,STATION.lon,az,x);if(la>mx)mx=la;if(la<mn)mn=la}
+  const[le]=dest(STATION.lat,STATION.lon,az,km),hi=Math.max(STATION.lat,le),lo=Math.min(STATION.lat,le),nEx=mx-hi,sEx=lo-mn;
+  if(nEx>=5&&nEx>=sEx)return'via north';if(sEx>=5)return'via south';return(az%360)<180?'eastward':'westward'}
+// Measured: reception records exist only for stations in Japan, so this works when one of the two stations is in Japan
+function glMeasure(t){if(!TARGET)return'';const tJ=isJapanT(TARGET),sJ=isJapanLL(STATION.lat,STATION.lon);
+  if(!tJ&&!sJ)return'<br><span style="font-size:.92em">Measured: reception records are available only when one of the two stations is in Japan.</span>';
+  const far=tJ?{ent:STATION.ent,lat:STATION.lat,lon:STATION.lon}:{ent:TARGET.ent,lat:TARGET.lat,lon:TARGET.lon};
+  const bands=['160m','80m'],h=new Date(t).getUTCHours(),win=[(h+23)%24,h,(h+1)%24];let idx=-1;if(far.ent&&CTY)idx=CTY.ent.findIndex(e=>e[0]===far.ent);const parts=[];
+  if(idx>=0&&NOWJ&&NOWJ.recent){const rb=NOWJ.recent.bands||{},heard=bands.filter(b=>rb[b]&&(rb[b].all||[]).includes(idx));parts.push(heard.length?`heard in Japan in the last 3 hours on ${heard.join(', ')}`:'not heard in Japan in the last 3 hours (160m, 80m)')}
+  else if(idx<0)parts.push('last 3 hours: enter a callsign (not a grid) to check')
+  if(SUMMARY){const data=idx>=0?SUMMARY.e[String(idx)]:SUMMARY.f&&SUMMARY.f[llToGrid(far.lat,far.lon).slice(0,2)],nW=win.reduce((a,w)=>a+(SUMMARY.n[w]||0),0);
+    if(data&&nW>=10)parts.push(`share of samples heard in Japan at this hour in the last ${SUMMARY.days} days: `+bands.map(b=>{const d=data[b];return`${b} ${d&&d.r?Math.round(win.reduce((a,w)=>a+gLv(d.r[w])*10*(SUMMARY.n[w]||0),0)/nW):0}%`}).join(', '));else parts.push('no records at this hour')}
+  return parts.length?'<br><span style="font-size:.92em">Measured: '+parts.join('; ')+'.</span>':''}
+function glStatus(t){if(!TARGET)return null;const tw=e=>e>=-18&&e<=3,eS=sunElev(STATION.lat,STATION.lon,t),eT=sunElev(TARGET.lat,TARGET.lon,t),r=glRoute(t);
+  if(r){const g=r.g,rs=r.routes.map(x=>x==='sp'?`short path ${Math.round(g.az)}° (${routeHemi(g.az,g.km)})`:`long path ${Math.round((g.az+180)%360)}° (${routeHemi((g.az+180)%360,2*Math.PI*EARTH-g.km)})`);
+    return{on:true,html:`<b>Grey-line duct: yes</b> (physical conditions) — ${rs.join(', ')}; twilight at ${r.who}; ${r.bs.map(b=>`<span style="color:${DUCT_COL[b]}">${b}</span>`).join(', ')}`+glMeasure(t)}}
+  const why=!tw(eS)&&!tw(eT)?`neither your station (${eS.toFixed(0)}°) nor the other station (${eT.toFixed(0)}°) is in twilight`:`${tw(eT)?'the other station':'your station'} is in twilight, but neither path is 70% dark`;
+  return{on:false,html:`<b>Grey-line duct: no</b> (physical conditions: ${why})`+glMeasure(t)}}
 function ductNoteSet(){if(DUCT_ON)ductEnsure();const b=document.getElementById('ductBtn'),n=document.getElementById('ductNote');
   if(b)b.textContent=(DUCT_ON?'▼ ':'▶ ')+'Long-distance low-band propagation (possible ionospheric duct)';
   if(!n)return;n.style.display=DUCT_ON?'':'none';if(!DUCT_ON)return;
@@ -674,7 +707,7 @@ function ductNoteSet(){if(DUCT_ON)ductEnsure();const b=document.getElementById('
   n.innerHTML=`<span style="color:#fff">━</span> 160m <span style="color:#5ad1ff">━</span> 80m Long-distance low-band propagation (possible ionospheric duct): on winter nights, distant stations on 160m and 80m are sometimes received with strong signals. In the records, this happened mostly when the path was largely dark and one end was in twilight around sunrise. This fits the idea of an "ionospheric duct" (signals trapped between the E and F layers), but it can also be explained by the minimum of D-layer absorption near the terminator; the records cannot tell which (under evaluation). The line is drawn only for bands with five or more strong receptions within ±2 hours in the records (white = 160m, cyan = 80m).`+
     `<br>${now}`+
     `<br><b>Records</b>: ${SUMMARY&&SUMMARY.d?`last ${SUMMARY.days} days (updated daily)`:'6–18 November 2026'}, samples of 8 minutes every 20 minutes. Number of reports in which stations in Japan received stations 8000 km or more away with strong signals (top 10% SNR of the receiving JA stations −5 dB or better). <span style="color:#7fd3c6">■</span>North America <span style="color:#e9c46a">■</span>Europe <span style="color:#9a9aa2">■</span>Other. In mid-November, North America peaked around 11–14 UTC (sunrise in North America) and Europe around 19–22 UTC (sunrise in Japan). Counts also depend on how many stations are active in each region, and the peaks shift with the season.`+
-    ductChart('160m',hNow)+ductChart('80m',hNow)}
+    ductChart('160m',hNow)+ductChart('80m',hNow);n.innerHTML+=(()=>{const gs=grayState(Date.now());return '<br><b>Grey-line duct</b>: the thick white (160m) / cyan (80m) line is the path to the other station when either station is in twilight (Sun −18° to +3°) and the path is at least 70% dark; the bright section is where the path passes through twilight. The long dashed lines are the two directions along the grey line from your station when you are in twilight'+(gs.bands.length?` (now ${gs.az.map(a=>Math.round(a)+'°').join(' and ')})`:' (you are not in twilight now)')+'. <b>Idea</b>: the F layer stays at night, but the D and E layers are made by sunlight and disappear in the evening. At the grey line the ionosphere tilts, which may open an "entrance" that guides signals into the valley between the E and F layers, where they travel far without D-layer absorption. The same pattern can also come simply from minimum D-layer absorption near the grey line; the records cannot tell them apart yet (under evaluation). Band colours are physical guides (160m: −18° to −6°, 80m: −12° to +3°).'})()}
 document.addEventListener('click',e=>{if(e.target&&e.target.id==='ductBtn'){DUCT_ON=!DUCT_ON;try{localStorage.setItem('en.ductOn',DUCT_ON?'1':'0')}catch(e2){}ductNoteSet();drawMap(LASTP)}});
 document.addEventListener('DOMContentLoaded',()=>{try{ductNoteSet()}catch(e){}});
 function drawMap(P){
@@ -731,6 +764,14 @@ function drawMap(P){
   c.font='11px sans-serif';
   for(const[n,la,lo]of DIRS){const[x,y]=pr(la,lo);c.fillStyle='#9aa6b4';c.beginPath();c.arc(x,y,2.5,0,2*Math.PI);c.fill();c.fillText(n,x+5,y+4)}
   // ローバンドの遠距離（電離圏ダクトの可能性）：条件に当たる方面への短経路を白い線で
+  const mapLabel=(txt,x,y,a,b)=>{c.font='bold 11px sans-serif';const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1;let px=-dy/L,py=dx/L;
+    if(px*(x-S.cx)+py*(y-S.cy)<0){px=-px;py=-py}const w=c.measureText(txt).width,h=15,ox=x+px*16,oy=y+py*16;let lx=px>=0?ox:ox-w;
+    const half=Math.sqrt(Math.max(0,(S.R-6)**2-(oy-6-S.cy)**2));lx=Math.min(Math.max(lx,S.cx-half+4),S.cx+half-w-4);
+    c.fillStyle='rgba(10,14,20,.78)';c.fillRect(lx-4,oy-h+3,w+8,h+2);c.fillStyle='#ffffff';c.textAlign='left';c.fillText(txt,lx,oy)};
+  if(DUCT_ON){try{const gs=grayState(Date.now());if(gs.bands.length)for(const az of gs.az){const pts=[];for(let x=0;x<=19900;x+=150){const[la,lo]=dest(STATION.lat,STATION.lon,az,x);pts.push(pr(la,lo))}
+      gs.bands.forEach((b,k)=>{const o=gs.bands.length>1?(k?2.2:-2.2):0,P2=pts.map((q,i)=>{const a=pts[Math.max(0,i-1)],bb=pts[Math.min(pts.length-1,i+1)],dx=bb[0]-a[0],dy=bb[1]-a[1],L=Math.hypot(dx,dy)||1;return[q[0]-dy/L*o,q[1]+dx/L*o]}),line=()=>{c.beginPath();P2.forEach((q,i)=>i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1]));c.stroke()};
+        c.setLineDash([12,7]);c.strokeStyle='rgba(0,0,0,.5)';c.lineWidth=4;line();c.strokeStyle=DUCT_COL[b];c.lineWidth=2;line();c.setLineDash([])});
+      const i72=Math.floor(pts.length*0.72);mapLabel('Grey line '+Math.round(az)+'°',pts[i72][0],pts[i72][1],pts[i72-1],pts[i72+1]||pts[i72])}}catch(e){}}
   if(DUCT_ON){try{ductNoteSet();const placed=[],tn=Date.now();for(const d of ductState(tn)){if(!d.end)continue;const bs=ductBands(d,tn);if(!bs.length)continue;const pts=[];
       for(let x=0;x<d.g.km;x+=150){const[la,lo]=dest(STATION.lat,STATION.lon,d.g.az,x);pts.push(pr(la,lo))}pts.push(pr(d.la,d.lo));
       // 2本のときは、左右に少しずらして並べる
@@ -752,6 +793,13 @@ function drawMap(P){
     c.strokeStyle=grad(S.cx,S.cy,e1[0],e1[1],'127,211,198',1,aMid);c.beginPath();c.moveTo(S.cx,S.cy);c.lineTo(e1[0],e1[1]);c.stroke();
     c.strokeStyle=grad(e2[0],e2[1],t[0],t[1],'127,211,198',aMid,aL);c.beginPath();c.moveTo(e2[0],e2[1]);c.lineTo(t[0],t[1]);c.stroke();c.setLineDash([]);
     c.strokeStyle=grad(S.cx,S.cy,t[0],t[1],'216,177,74',1,aS);c.lineWidth=3.2;c.beginPath();c.moveTo(S.cx,S.cy);c.lineTo(t[0],t[1]);c.stroke();
+    if(DUCT_ON){try{const tn=Date.now(),r=glRoute(tn);if(r){const segs=[];if(r.routes.includes('sp'))segs.push([[S.cx,S.cy],t]);if(r.routes.includes('lp')){segs.push([[S.cx,S.cy],e1]);segs.push([e2,t])}
+      for(const rt of r.routes){const az3=rt==='sp'?r.g.az:(r.g.az+180)%360,km3=rt==='sp'?r.g.km:2*Math.PI*EARTH-r.g.km;let prev=null,pen=false;c.strokeStyle='rgba(255,236,170,.55)';c.lineWidth=12;c.lineCap='round';c.beginPath();
+        for(let x=0;x<=km3;x+=100){const[la,lo]=dest(STATION.lat,STATION.lon,az3,x),e=sunElev(la,lo,tn),q=pr(la,lo),inT=e>=-18&&e<=3;if(prev&&Math.hypot(q[0]-prev[0],q[1]-prev[1])>S.R*0.35)pen=false;if(inT){if(!pen){c.moveTo(q[0],q[1]);pen=true}else c.lineTo(q[0],q[1])}else pen=false;prev=q}
+        c.stroke();c.lineCap='butt'}
+      r.bs.forEach((b,k)=>{const o=r.bs.length>1?(k?3:-3):0;for(const[a,b2]of segs){const dx=b2[0]-a[0],dy=b2[1]-a[1],L=Math.hypot(dx,dy)||1,ox=-dy/L*o,oy=dx/L*o;
+          c.strokeStyle='rgba(0,0,0,.55)';c.lineWidth=7;c.beginPath();c.moveTo(a[0]+ox,a[1]+oy);c.lineTo(b2[0]+ox,b2[1]+oy);c.stroke();c.strokeStyle=DUCT_COL[b];c.lineWidth=3.6;c.beginPath();c.moveTo(a[0]+ox,a[1]+oy);c.lineTo(b2[0]+ox,b2[1]+oy);c.stroke()}});
+      const[a,b2]=segs[0],hm=r.routes[0]==='sp'?routeHemi(r.g.az,r.g.km):routeHemi((r.g.az+180)%360,2*Math.PI*EARTH-r.g.km);mapLabel('Grey-line duct ('+(r.routes[0]==='sp'?'short path, ':'long path, ')+hm+')',(a[0]+b2[0])/2,(a[1]+b2[1])/2,a,b2)}}catch(e){}}
     const se=STORM_ON?stormEdge():null;
     if(se&&se.show){
       // 広がりの見込みの縁（北と南の地磁気緯度 ±edge）
@@ -770,7 +818,7 @@ function drawMap(P){
     const mp=pa(az,bx);c.strokeStyle='#f08a4b';c.lineWidth=2;c.beginPath();c.arc(mp[0],mp[1],6,0,2*Math.PI);c.stroke();
     c.fillStyle='#f08a4b';c.font='bold 11px sans-serif';c.fillText(`${sp.mag>=0?'N':'S'}${Math.abs(sp.mag).toFixed(0)}°`,mp[0]+8,mp[1]-6);
     c.fillStyle='#e05555';c.beginPath();c.arc(t[0],t[1],6,0,2*Math.PI);c.fill();c.strokeStyle='#fff';c.lineWidth=1.5;c.stroke();
-    c.fillStyle='#fff';c.font='bold 12px sans-serif';c.fillText(label,t[0]+9,t[1]+4)}
+    c.fillStyle='#fff';c.font='bold 12px sans-serif';{const right=t[0]>S.cx+S.R*0.55;c.textAlign=right?'right':'left';c.fillText(label,t[0]+(right?-10:9),t[1]+(right?-8:4));c.textAlign='left'}}
   c.restore();
   // 外周と方位の目盛り
   c.strokeStyle='#5a6573';c.lineWidth=1.2;c.beginPath();c.arc(S.cx,S.cy,S.R,0,2*Math.PI);c.stroke();
@@ -1109,7 +1157,7 @@ function targetRender(){
   const sp=pathStats(g.az,g.km,now),lp=pathStats((g.az+180)%360,2*Math.PI*EARTH-g.km,now);
   const sk=needSkew(sp)?skewSearch(g,TARGET.lat,TARGET.lon):null;
   drawMap({sp,lp,az:g.az,km:g.km,label:TARGET.short||'',sk});
-  $('dxOut').innerHTML=`<div class="tgt-who">${TARGET.label}<span class="loc">${TARGET.loc}</span></div>
+  $('dxOut').innerHTML=`<div class="tgt-who">${TARGET.label}<span class="loc">${TARGET.loc}</span></div>${(()=>{const g=glStatus(Date.now());return g?`<div class="gld ${g.on?'on':''}">${g.html}<span style="color:#d64545;font-size:.85em"> (under evaluation)</span></div>`:''})()}
   <div class="tbl"><table class="paths-tbl"><thead><tr><th>Day/night<br><span class="th2">there / you (${esc(STATION.name)})</span></th><th>Short path<br><span class="th2">bearing, distance, max. geomag. lat.<br>aurora probability, darkness</span></th><th>Long path<br><span class="th2">same</span></th><th>Assessment (mainly low bands)</th></tr></thead>
   <tbody><tr><td><span class="tag ${c}">${l}</span><br><span class="tag ${jc}">${jl}</span></td><td>${pathCell(sp)}</td><td>${pathCell(lp)}</td><td>${advise(sp,lp)}${skewNote(g,sp,sk,true)}</td></tr></tbody></table></div>
   <p class="fn">Recalculated every minute. Space weather (Kp, solar wind, Bz) is the same as above for any station.</p>`;
@@ -1185,5 +1233,6 @@ loadLand();window.addEventListener('resize',()=>drawMap(LASTP));
 load();loadIono();setInterval(load,5*60e3);setInterval(loadIono,15*60e3);setInterval(()=>{dayNight();bandGuide(lastV);targetRender()},60e3);
 })();
 </script>
+<p style="text-align:center;color:#666;font-size:.72rem;margin:18px 0 8px">Version: 2026-11-26</p>
 </body>
 </html>

@@ -30,6 +30,7 @@
 #dxLb label{white-space:nowrap}
 .grec{margin:4px 0 10px;padding:6px 10px;border:1px solid #c9971f;border-radius:8px;background:rgba(216,177,74,.08)}
 .grec>summary{font-size:.95em}
+.gld{margin:6px 0;font-size:.86em;line-height:1.6;color:var(--sub)}.gld.on{color:inherit;border-left:3px solid #5ad1ff;padding-left:8px}
 .gwarn{margin:6px 0 8px;padding:6px 8px;border-left:3px solid #d64545;background:rgba(214,69,69,.10);font-size:.88em;line-height:1.7}
 .gdet{margin:6px 0 0}
 .gdet>summary{cursor:pointer;font-size:.85em;font-weight:700;padding:3px 0;list-style:none}
@@ -148,6 +149,8 @@ footer a{color:var(--link)}
     <canvas id="dxMap" role="img" aria-label="自局を中心にした正距方位図。短経路と長経路、昼夜、オーロラ帯を表示"></canvas>
     <div class="legend"><span><i style="background:#d8b14a"></i>短経路</span><span><i style="background:repeating-linear-gradient(90deg,#7fd3c6 0 4px,transparent 4px 7px)"></i>長経路</span><span><i style="background:repeating-linear-gradient(90deg,#c77dff 0 3px,transparent 3px 6px)"></i>ずらした方位</span><span><i style="background:#05080d"></i>夜</span><span><i style="background:#3a3550"></i>薄明</span><span><i style="background:rgba(80,220,140,.8)"></i>オーロラ10〜30%</span><span><i style="background:rgba(240,90,80,.8)"></i>30%以上</span></div>
     <div style="margin-top:6px;text-align:center"><button id="magBtn" type="button" class="magbtn">▶ 地磁気緯度線を重ねる</button> <br><button id="drapBtn" type="button" class="magbtn" style="margin-top:6px">▶ D層の吸収を重ねる</button> <button id="stormBtn" type="button" class="magbtn" style="margin-top:6px">▶ 嵐の広がりを重ねる</button><br><span style="color:var(--storm);font-size:.75em">（D層の吸収と嵐の広がりは検証中）</span></div>
+    <div style="text-align:center;margin-top:6px"><button id="ductBtn" type="button" class="magbtn">▶ ローバンドの遠距離・グレイラインダクトを重ねる</button></div>
+    <div id="ductNote" class="fine" style="display:none;text-align:left"></div>
     <p id="drapNote" class="fine" style="display:none;text-align:left"></p>
     <p id="stormNote" class="fine" style="display:none;text-align:left"></p>
     <p id="magNote" class="fine" style="display:none;text-align:center">点線は地磁気緯度 0°・±30°・±70°、<span style="color:#f08a4b">橙は ±60°</span>（静穏時のオーロラ帯の赤道側の縁の目安。Kp が上がるとこれより低緯度まで広がります）。地球の磁場を一つの棒磁石とみなす近似（経路の判定と同じ計算）で、実際の地磁気とは場所によって数度ずれます。</p>
@@ -217,6 +220,7 @@ footer a{color:var(--link)}
     <a href="https://wdc.nict.go.jp/Ionosphere/index.html">https://wdc.nict.go.jp/Ionosphere/index.html</a><br>
     観測値は自動処理の結果を含みます。運用の目安としてお使いください。国分寺の値は1日1回まとめて公開されるため、数時間〜1日前の値のことがあります。
   </footer>
+<p style="text-align:center;color:var(--sub);font-size:.7rem;margin:14px 0 4px">版：2026-11-26</p>
 </main>
 
 <script>
@@ -874,7 +878,8 @@ function stormNoteSet(){const bd=$('drapBtn'),bs=$('stormBtn'),nd=$('drapNote'),
         `電離層の傾きや散乱で曲がる経路なので、届くかどうかは条件しだいです。</div>`
       : `<div class="adv"><b>ずらした方位</b>：短経路は${where}。左右60°までずらしても、オーロラ帯を避けて届く経路は見つかりませんでした。</div>`;
     drawMap({ sp, lp, az: g.az, km: g.km, label: TARGET.short, sk });
-    $('dxOut').innerHTML = `<div class="tgt-who">${esc(TARGET.title)}<small>${esc(TARGET.loc)}</small></div>` +
+    const gst = glStatus(now);
+    $('dxOut').innerHTML = `<div class="tgt-who">${esc(TARGET.title)}<small>${esc(TARGET.loc)}</small></div>` + (gst ? `<div class="gld${gst.on ? ' on' : ''}">${gst.html}<span style="color:#d64545;font-size:.85em">（検証中）</span></div>` : '') +
       `<div class="dest" style="border-top:0"><div class="dest-h"><span>相手<span class="tag ${c}">${l}</span> 自局<span class="tag ${jc}">${jl}</span></span></div>` +
       `<div class="adv">${advise(sp, lp)}</div>${skTxt}<div class="legs">${leg('短経路', sp)}${leg('長経路', lp)}${sk ? leg('ずらした方位', sk) : ''}</div></div>`;
     renderGuide(g, now);
@@ -884,6 +889,51 @@ function stormNoteSet(){const bd=$('drapBtn'),bs=$('stormBtn'),nd=$('drapNote'),
   // 地磁気緯度線の表示の切り替え（状態は覚えておく）
   var MAGLINES = (() => { try { return localStorage.getItem('magLines') === '1'; } catch (e) { return false; } })();
   function magBtnSet() { const b = $('magBtn'), n = $('magNote'); if (b) b.textContent = (MAGLINES ? '▼ ' : '▶ ') + '地磁気緯度線を重ねる'; if (n) n.style.display = MAGLINES ? '' : 'none'; }
+  // ---- ローバンドの遠距離（電離圏ダクトの可能性）とグレイラインダクト（PC版と同じ判定。検証中）
+  var DUCT_ON = (() => { try { return localStorage.getItem('m.ductOn') === '1'; } catch (e) { return false; } })();
+  var DUCT_COL = { '160m': '#ffffff', '80m': '#5ad1ff' };
+  var DUCT_REG = [['北米中部', 'EM', 35, -90], ['北米西部', 'DM', 35, -110], ['北米北西部', 'DN', 45, -110], ['欧州西部', 'JN', 45, 10], ['欧州北部', 'JO', 55, 10], ['欧州東部', 'KN', 45, 30]];
+  function ductState(t) { const tw = e => e >= -18 && e <= 3, eJ = sunElev(STATION.lat, STATION.lon, t), eJ2 = sunElev(STATION.lat, STATION.lon, t + 18e5);
+    return DUCT_REG.map(([n, f, la, lo]) => { const g = bearingDist(STATION.lat, STATION.lon, la, lo), sp = pathStats(g.az, g.km, t), eD = sunElev(la, lo, t), eD2 = sunElev(la, lo, t + 18e5); let end = null;
+      if (sp.dark >= 0.7) { if (tw(eD)) end = { rise: eD2 > eD }; else if (tw(eJ)) end = { rise: eJ2 > eJ }; } return { n, f, la, lo, g, sp, end }; }); }
+  function ductBands(d, t) { if (!SUMMARY || !SUMMARY.d) return []; const grp = ['EM', 'DM', 'DN'].includes(d.f) ? 'na' : 'eu', h = new Date(t).getUTCHours();
+    return ['160m', '80m'].filter(b => { let n = 0; for (let k = -2; k <= 2; k++) n += ((SUMMARY.d[b] || {})[grp] || [])[(h + k + 24) % 24] || 0; return n >= 5; }); }
+  function sunAz(lat, lon, t) { const d = new Date(t), doy = (Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - Date.UTC(d.getUTCFullYear(), 0, 0)) / 864e5;
+    const hr = d.getUTCHours() + d.getUTCMinutes() / 60, g = 2 * Math.PI / 365 * (doy - 1 + (hr - 12) / 24);
+    const eq = 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g) - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g));
+    const dec = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g) - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
+    const ha = ((hr * 60 + eq + 4 * lon) / 4 - 180) * Math.PI / 180, la = lat * Math.PI / 180;
+    return (Math.atan2(Math.sin(ha), Math.cos(ha) * Math.sin(la) - Math.tan(dec) * Math.cos(la)) * 180 / Math.PI + 180) % 360; }
+  const bandsOf = e => [...(e >= -18 && e <= -6 ? ['160m'] : []), ...(e >= -12 && e <= 3 ? ['80m'] : [])];
+  function grayState(t) { const e = sunElev(STATION.lat, STATION.lon, t), bands = bandsOf(e); if (!bands.length) return { e, bands }; const a = sunAz(STATION.lat, STATION.lon, t); return { e, bands, az: [(a + 90) % 360, (a + 270) % 360] }; }
+  function glRoute(t) { if (!TARGET) return null; const tw = e => e >= -18 && e <= 3, eS = sunElev(STATION.lat, STATION.lon, t), eT = sunElev(TARGET.lat, TARGET.lon, t); if (!tw(eS) && !tw(eT)) return null;
+    const g = bearingDist(STATION.lat, STATION.lon, TARGET.lat, TARGET.lon); if (g.km < 50) return null;
+    const sp = pathStats(g.az, g.km, t), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, t), routes = [];
+    if (sp.dark >= 0.7) routes.push('sp'); if (lp.dark >= 0.7) routes.push('lp'); if (!routes.length) return null;
+    const bs = ['160m', '80m'].filter(b => (tw(eS) && bandsOf(eS).includes(b)) || (tw(eT) && bandsOf(eT).includes(b)));
+    return { who: tw(eS) && tw(eT) ? '両端' : tw(eT) ? '相手側' : '自局側', bs, routes, eS, eT, sp, lp, g }; }
+  function routeHemi(az, km) { let mx = -90, mn = 90; for (let x = 0; x <= km; x += 250) { const [la] = dest(STATION.lat, STATION.lon, az, x); if (la > mx) mx = la; if (la < mn) mn = la; }
+    const [le] = dest(STATION.lat, STATION.lon, az, km), hi = Math.max(STATION.lat, le), lo = Math.min(STATION.lat, le), nEx = mx - hi, sEx = lo - mn;
+    if (nEx >= 5 && nEx >= sEx) return '北回り'; if (sEx >= 5) return '南回り'; return (az % 360) < 180 ? '東回り' : '西回り'; }
+  function glMeasure(t) { if (!TARGET) return ''; const bands = ['160m', '80m'], h = new Date(t).getUTCHours(), win = [(h + 23) % 24, h, (h + 1) % 24];
+    let idx = -1; if (TARGET.ent && CTY) idx = CTY.ent.findIndex(e => e[0] === TARGET.ent); const parts = [];
+    if (idx >= 0 && NOWJ && NOWJ.recent) { const rb = NOWJ.recent.bands || {}, heard = bands.filter(b => rb[b] && (rb[b].all || []).includes(idx));
+      parts.push(heard.length ? `直近3時間に日本で受信あり（${heard.join('・')}）` : '直近3時間に日本での受信なし（160m・80m）'); }
+    else if (idx < 0) parts.push('直近3時間：グリッドで入れたため判定なし');
+    if (SUMMARY) { const data = idx >= 0 ? SUMMARY.e[String(idx)] : SUMMARY.f && SUMMARY.f[llToGrid(TARGET.lat, TARGET.lon).slice(0, 2)], nW = win.reduce((a, w) => a + (SUMMARY.n[w] || 0), 0);
+      if (data && nW >= 10) parts.push('28日間のこの時間帯の受信の割合 ' + bands.map(b => { const d = data[b]; return `${b} ${d && d.r ? Math.round(win.reduce((a, w) => a + gLv(d.r[w]) * 10 * (SUMMARY.n[w] || 0), 0) / nW) : 0}%`; }).join('・') + (idx < 0 ? '（周辺の大区画）' : ''));
+      else parts.push('28日間のこの時間帯の記録なし'); }
+    return parts.length ? '<br>実測：' + parts.join('、') : ''; }
+  function glStatus(t) { if (!TARGET) return null; const tw = e => e >= -18 && e <= 3, eS = sunElev(STATION.lat, STATION.lon, t), eT = sunElev(TARGET.lat, TARGET.lon, t), r = glRoute(t);
+    if (r) { const g = r.g, rs = r.routes.map(x => x === 'sp' ? `短経路 ${Math.round(g.az)}°（${routeHemi(g.az, g.km)}）` : `長経路 ${Math.round((g.az + 180) % 360)}°（${routeHemi((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km)}）`);
+      return { on: true, html: `<b>グレイラインダクト：あり</b>（物理の条件） — ${rs.join('・')}、${r.who}が薄明、${r.bs.map(b => `<span style="color:${b === '80m' ? '#2b9fd8' : 'inherit'}">${b}</span>`).join('・')}` + glMeasure(t) }; }
+    const why = !tw(eS) && !tw(eT) ? `自局（${eS.toFixed(0)}°）も相手局（${eT.toFixed(0)}°）も薄明ではありません` : `${tw(eT) ? '相手側' : '自局側'}は薄明ですが、短経路・長経路とも夜が 7割未満です`;
+    return { on: false, html: `<b>グレイラインダクト：なし</b>（物理の条件：${why}）` + glMeasure(t) }; }
+  function ductNoteSet() { const b = $('ductBtn'), n = $('ductNote'); if (b) b.textContent = (DUCT_ON ? '▼ ' : '▶ ') + 'ローバンドの遠距離・グレイラインダクトを重ねる'; if (!n) return; n.style.display = DUCT_ON ? '' : 'none'; if (!DUCT_ON) return;
+    const t = Date.now(), gs = grayState(t);
+    n.innerHTML = '<b>線の見分け</b>：細い線と「記録・北米中部」などの文字は、日本の局の受信の記録で 160m（白）・80m（水色）の遠距離が強く入りやすかった方面です（電離圏ダクト・記録）。太い線と「グレイラインダクト」の文字は、入れた相手局への経路で、自局か相手局が薄明（太陽高度 −18°〜+3°）のとき、夜の側を通る経路です。太い線の明るく光る区間は、経路が薄明を通る区間。長い破線は、自局が薄明のときの、境目に沿う二方向です' + (gs.bands.length ? `（いま ${gs.az.map(a => Math.round(a) + '°').join('・')}）` : '（自局はいま薄明ではありません）') + '。' +
+      '<br><b>考え方</b>：F層は夜も残りますが、D層と E層は太陽光で作られ、夕方に消え、朝に作られます。昼夜の境目では電離層が傾くため、電波が E層と F層の間の谷間へ導かれる「入口」ができ、谷間に入った電波は D層を通らずに遠くまで進むと考えられます（電離圏ダクト）。境目で D層の吸収が最も小さくなるだけでも同じ形になり、記録からはどちらか見分けられません。バンドの色分けは太陽高度による目安（160m は −18°〜−6°、80m は −12°〜+3°）です（検証中）。記録のグラフは PC版で見られます。'; }
+  document.addEventListener('click', e => { if (e.target && e.target.id === 'ductBtn') { DUCT_ON = !DUCT_ON; try { localStorage.setItem('m.ductOn', DUCT_ON ? '1' : '0'); } catch (e2) {} ductNoteSet(); drawMap(LASTP); } });
   function drawMap(P) {
     LASTP = P; const cv = $('dxMap'); if (!cv) return;
     const W = cv.clientWidth || 320, dpr = window.devicePixelRatio || 1;
@@ -933,6 +983,26 @@ function stormNoteSet(){const bd=$('drapBtn'),bs=$('stormBtn'),nd=$('drapNote'),
     for (const km of [5000, 10000, 15000]) { c.beginPath(); c.arc(S.cx, S.cy, km / HALF * S.R, 0, 2 * Math.PI); c.stroke(); }
     c.setLineDash([]); c.font = fs + 'px sans-serif'; c.textAlign = 'left';
     for (const [n, la, lo] of MAPDIRS) { const [x, y] = pr(la, lo); c.fillStyle = '#b8c2ce'; c.beginPath(); c.arc(x, y, 2, 0, 2 * Math.PI); c.fill(); c.fillText(n, x + 4, y + 3); }
+    // 線と重ならないよう、線に直角の向きに離し、黒い下地を付けて文字を置く（円の内側に収める）
+    const mapLabel = (txt, x, y, a, b) => { c.font = 'bold ' + fs + 'px sans-serif'; const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1; let px = -dy / L, py = dx / L;
+      if (px * (x - S.cx) + py * (y - S.cy) < 0) { px = -px; py = -py; } const w = c.measureText(txt).width, h = fs + 4, ox = x + px * 14, oy = y + py * 14; let lx = px >= 0 ? ox : ox - w;
+      const half = Math.sqrt(Math.max(0, (S.R - 6) ** 2 - (oy - 6 - S.cy) ** 2)); lx = Math.min(Math.max(lx, S.cx - half + 4), S.cx + half - w - 4);
+      c.fillStyle = 'rgba(10,14,20,.8)'; c.fillRect(lx - 3, oy - h + 3, w + 6, h + 1); c.fillStyle = '#ffffff'; c.textAlign = 'left'; c.fillText(txt, lx, oy); };
+    if (DUCT_ON) { try { const tn = Date.now(), grp = {};
+      for (const d of ductState(tn)) { if (!d.end) continue; const bs = ductBands(d, tn); if (!bs.length) continue; const q = pr(d.la, d.lo), dx = q[0] - S.cx, dy = q[1] - S.cy, L = Math.hypot(dx, dy) || 1;
+        bs.forEach((b, k) => { const o = bs.length > 1 ? (k ? 2 : -2) : 0, ox = -dy / L * o, oy = dx / L * o; c.setLineDash(d.end.rise ? [] : [4, 4]);
+          c.strokeStyle = 'rgba(0,0,0,.55)'; c.lineWidth = 3.4; c.beginPath(); c.moveTo(S.cx + ox, S.cy + oy); c.lineTo(q[0] + ox, q[1] + oy); c.stroke();
+          c.strokeStyle = DUCT_COL[b]; c.lineWidth = 1.6; c.beginPath(); c.moveTo(S.cx + ox, S.cy + oy); c.lineTo(q[0] + ox, q[1] + oy); c.stroke(); c.setLineDash([]); });
+        c.fillStyle = DUCT_COL[bs[0]]; c.beginPath(); c.arc(q[0], q[1], 3, 0, 2 * Math.PI); c.fill();
+        const area = d.n.startsWith('北米') ? '北米' : '欧州'; (grp[area] = grp[area] || []).push({ n: d.n.replace(area, ''), q }); }
+      for (const area in grp) { const Lr = grp[area], far = Lr.reduce((m, x) => Math.hypot(x.q[0] - S.cx, x.q[1] - S.cy) > Math.hypot(m.q[0] - S.cx, m.q[1] - S.cy) ? x : m, Lr[0]);
+        mapLabel(Lr.length > 1 ? `記録・${area}（${Lr.map(x => x.n).join('・')}）` : `記録・${area}${Lr[0].n}`, S.cx + (far.q[0] - S.cx) * 0.45, S.cy + (far.q[1] - S.cy) * 0.45, [S.cx, S.cy], far.q); }
+      const gs = grayState(tn);
+      if (gs.bands.length) for (const az of gs.az) { const e = pa(az, HALF); gs.bands.forEach((b, k) => { const o = gs.bands.length > 1 ? (k ? 2 : -2) : 0, dx = e[0] - S.cx, dy = e[1] - S.cy, L = Math.hypot(dx, dy) || 1, ox = -dy / L * o, oy = dx / L * o;
+          c.setLineDash([10, 6]); c.strokeStyle = 'rgba(0,0,0,.5)'; c.lineWidth = 3.4; c.beginPath(); c.moveTo(S.cx + ox, S.cy + oy); c.lineTo(e[0] + ox, e[1] + oy); c.stroke();
+          c.strokeStyle = DUCT_COL[b]; c.lineWidth = 1.8; c.beginPath(); c.moveTo(S.cx + ox, S.cy + oy); c.lineTo(e[0] + ox, e[1] + oy); c.stroke(); c.setLineDash([]); });
+        const q = pa(az, HALF * 0.72); mapLabel('グレイライン ' + Math.round(az) + '°', q[0], q[1], [S.cx, S.cy], e); }
+    } catch (e) {} }
     if (P) {
       const { sp, az, km, label, sk } = P, t = pa(az, km);
       if (sk) {
@@ -948,6 +1018,19 @@ function stormNoteSet(){const bd=$('drapBtn'),bs=$('stormBtn'),nd=$('drapNote'),
       c.strokeStyle = grad(S.cx, S.cy, e1[0], e1[1], '127,211,198', 1, aMid); c.beginPath(); c.moveTo(S.cx, S.cy); c.lineTo(e1[0], e1[1]); c.stroke();
       c.strokeStyle = grad(e2[0], e2[1], t[0], t[1], '127,211,198', aMid, aL); c.beginPath(); c.moveTo(e2[0], e2[1]); c.lineTo(t[0], t[1]); c.stroke(); c.setLineDash([]);
       c.strokeStyle = grad(S.cx, S.cy, t[0], t[1], '216,177,74', 1, aS); c.lineWidth = 3; c.beginPath(); c.moveTo(S.cx, S.cy); c.lineTo(t[0], t[1]); c.stroke();
+      if (DUCT_ON) { try { const tn = Date.now(), r = glRoute(tn); if (r) {
+        const segs = []; if (r.routes.includes('sp')) segs.push([[S.cx, S.cy], t]); if (r.routes.includes('lp')) { segs.push([[S.cx, S.cy], e1]); segs.push([e2, t]); }
+        for (const rt of r.routes) { const az3 = rt === 'sp' ? r.g.az : (r.g.az + 180) % 360, km3 = rt === 'sp' ? r.g.km : 2 * Math.PI * EARTH - r.g.km; let prev = null, pen = false;
+          c.strokeStyle = 'rgba(255,236,170,.55)'; c.lineWidth = 10; c.lineCap = 'round'; c.beginPath();
+          for (let x = 0; x <= km3; x += 100) { const [la, lo] = dest(STATION.lat, STATION.lon, az3, x), e = sunElev(la, lo, tn), q = pr(la, lo), inT = e >= -18 && e <= 3;
+            if (prev && Math.hypot(q[0] - prev[0], q[1] - prev[1]) > S.R * 0.35) pen = false; if (inT) { if (!pen) { c.moveTo(q[0], q[1]); pen = true; } else c.lineTo(q[0], q[1]); } else pen = false; prev = q; }
+          c.stroke(); c.lineCap = 'butt'; }
+        r.bs.forEach((b, k) => { const o = r.bs.length > 1 ? (k ? 2.5 : -2.5) : 0;
+          for (const [a, b2] of segs) { const dx = b2[0] - a[0], dy = b2[1] - a[1], L = Math.hypot(dx, dy) || 1, ox = -dy / L * o, oy = dx / L * o;
+            c.strokeStyle = 'rgba(0,0,0,.55)'; c.lineWidth = 6; c.beginPath(); c.moveTo(a[0] + ox, a[1] + oy); c.lineTo(b2[0] + ox, b2[1] + oy); c.stroke();
+            c.strokeStyle = DUCT_COL[b]; c.lineWidth = 3.2; c.beginPath(); c.moveTo(a[0] + ox, a[1] + oy); c.lineTo(b2[0] + ox, b2[1] + oy); c.stroke(); } });
+        const [a, b2] = segs[0], hm = r.routes[0] === 'sp' ? routeHemi(r.g.az, r.g.km) : routeHemi((r.g.az + 180) % 360, 2 * Math.PI * EARTH - r.g.km);
+        mapLabel('グレイラインダクト（' + (r.routes[0] === 'sp' ? '短経路・' : '長経路・') + hm + '）', (a[0] + b2[0]) / 2, (a[1] + b2[1]) / 2, a, b2); } } catch (e) {} }
       const se = STORM_ON ? stormEdge() : null;
       if (se && se.show) {
         for (const L of [se.edge, -se.edge]) { const pts = []; for (let a2 = 0; a2 <= 360; a2 += 2) { const [la, lo] = dest(GMPOLE.lat, GMPOLE.lon, a2, (90 - L) * RAD * EARTH); pts.push(pr(la, lo)); }
@@ -964,7 +1047,7 @@ function stormNoteSet(){const bd=$('drapBtn'),bs=$('stormBtn'),nd=$('drapNote'),
       const mp = pa(az, bx); c.strokeStyle = '#f08a4b'; c.lineWidth = 2; c.beginPath(); c.arc(mp[0], mp[1], 5, 0, 2 * Math.PI); c.stroke();
       c.fillStyle = '#f08a4b'; c.font = 'bold ' + fs + 'px sans-serif'; c.fillText(`${sp.mag >= 0 ? 'N' : 'S'}${Math.abs(sp.mag).toFixed(0)}°`, mp[0] + 7, mp[1] - 5);
       c.fillStyle = '#e05555'; c.beginPath(); c.arc(t[0], t[1], 5, 0, 2 * Math.PI); c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 1.5; c.stroke();
-      c.fillStyle = '#fff'; c.font = 'bold ' + (fs + 1) + 'px sans-serif'; c.fillText(label, t[0] + 8, t[1] + 4);
+      c.fillStyle = '#fff'; c.font = 'bold ' + (fs + 1) + 'px sans-serif'; { const right = t[0] > S.cx + S.R * 0.5; c.textAlign = right ? 'right' : 'left'; c.fillText(label, t[0] + (right ? -9 : 8), t[1] + (right ? -8 : 4)); c.textAlign = 'left'; }
     }
     c.restore();
     c.strokeStyle = '#5a6573'; c.lineWidth = 1.2; c.beginPath(); c.arc(S.cx, S.cy, S.R, 0, 2 * Math.PI); c.stroke();
@@ -1109,6 +1192,7 @@ function stormNoteSet(){const bd=$('drapBtn'),bs=$('stormBtn'),nd=$('drapNote'),
   for (const id of ['myGrid', 'dxIn']) $(id).addEventListener('keydown', e => { if (e.key === 'Enter') { e.target.blur(); findTarget(); } });
   $('myGrid').addEventListener('change', async () => { await setStation(); paths(Date.now()); });
   window.addEventListener('resize', () => drawMap(LASTP));
+  ductNoteSet();
   if ($('stormBtn')) { stormNoteSet(); $('stormBtn').addEventListener('click', () => { STORM_ON = !STORM_ON; try { localStorage.setItem('stormOn', STORM_ON ? '1' : '0'); } catch (e) {} stormNoteSet(); drawMap(LASTP); }); }
   if ($('drapBtn')) { $('drapBtn').addEventListener('click', () => { DRAP_ON = !DRAP_ON; try { localStorage.setItem('drapOn', DRAP_ON ? '1' : '0'); } catch (e) {} stormNoteSet(); drawMap(LASTP); }); }
   if ($('magBtn')) { magBtnSet(); $('magBtn').addEventListener('click', () => { MAGLINES = !MAGLINES; try { localStorage.setItem('magLines', MAGLINES ? '1' : '0'); } catch (e) {} magBtnSet(); drawMap(LASTP); }); }
