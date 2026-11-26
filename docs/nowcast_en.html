@@ -224,6 +224,13 @@ details.tier[open]>summary{margin-bottom:16px}
   .magbtn{font-size:.78rem;padding:3px 8px;margin:2px 0}
   #hrList{max-height:16rem;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:6px 8px;-webkit-overflow-scrolling:touch}
 }
+.sumbox{margin:10px 0 4px;padding:10px 14px;border:1px solid var(--gold);border-radius:8px;background:rgba(216,177,74,.07)}
+.sumbox .sh{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;color:var(--gold);margin-bottom:4px}
+.sumrow{display:grid;grid-template-columns:9.5em 1fr;gap:10px;padding:6px 0;border-top:1px solid var(--line);font-size:.92rem;line-height:1.6}
+.sumrow .k{color:var(--muted);font-size:.85rem;padding-top:1px}
+@media (max-width:560px){.sumrow{grid-template-columns:1fr;gap:0}}
+h4.stp{display:flex;align-items:center;gap:8px;margin:22px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--line);font-size:.98rem;color:var(--ink)}
+h4.stp span{flex:none;white-space:nowrap;font-size:.75rem;font-weight:700;color:#111;background:var(--gold);border-radius:4px;padding:1px 8px}
 </style>
 </head>
 <body>
@@ -1174,7 +1181,7 @@ function diffHTML(g,now,phys){const sp=pathStats(g.az,g.km,now),hops=Math.ceil(g
   items.push(`<b>Darkness window</b>: `+(lowH.length?`in the next 24 hours, most of the path (80% or more) is dark — the time for 160m/80m — at ${gWindows(lowH)}.`+(lowH.length<=3?' This window is short — be ready on time.':''):'in the next 24 hours there is no time when most of the path is dark, so 160m and 80m are very difficult now.'));
   items.push(`<b>JA frequencies</b>: Japanese low-band allocations are narrow and split. On FT8, many JA stations use 1.908 MHz (160m) and 3.531 MHz (80m) rather than 1.840 / 3.573 MHz — listen there too, or work split.`);
   return `<details class="gdet" data-k="diff"${gOpen('diff')}><summary>Why can the path to JA be difficult? — hints</summary><div class="gtxt">${items.join('<br>')}</div><p class="gfine">Propagation loss is almost the same in both directions, but noise, power and antennas differ between stations. "Heard in Japan" is a guide to, not the same as, "you can hear Japan".</p></details>`}
-function guideHTML(g, now) {
+function guideParts(g, now) {
   const head = Array.from({ length: 24 }, (_, h) => `<th>${h}</th>`).join(''), headJ = Array.from({ length: 24 }, (_, h) => `<th class="gj">${locH(h)}</th>`).join('');
   const cellE = c => { const v = gLv(c), bg = v >= 6 ? 'rgba(216,177,74,.85)' : v >= 3 ? 'rgba(127,211,198,.55)' : v >= 1 ? 'rgba(127,211,198,.22)' : 'transparent'; return `<td style="background:${bg}"></td>`; };
   const cellP = (x, mark) => { const bg = x.v === 2 ? 'rgba(199,125,255,.55)' : x.v === 1 ? 'rgba(199,125,255,.2)' : 'transparent'; return `<td style="background:${bg}">${x.v === 2 && x.lp ? 'L' : ''}</td>`; };
@@ -1229,7 +1236,9 @@ function guideHTML(g, now) {
     <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">Local</th>${headJ}</tr>${pRows}</table></div>
     <details class="gdet" data-k="howP"${gOpen('howP')}><summary>How to read this</summary><p class="gfine">Dark purple marks: for the low bands, hours when most of the short path (or else the long path) is dark (sun −6° or lower); for the mid bands, hours when the path mixes day and night; for the high bands, hours when most of the path is in daylight with enough SFI. This is a day/night guide, not a detailed ionospheric (MUF) prediction. The auroral zone is the present one, so hours ahead may change.</p></details>`;
   const aPart = agree.length ? `<details class="gdet gagree" data-k="agree"${gOpen('agree')}><summary>Hours where the records and the physics guide agree (${agree.length} band${agree.length > 1 ? 's' : ''})</summary>${agree.join('<br>')}</details>` : '';
-  return `<div class="gbox"><div class="gttl" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">Best bands and times<span style="color:var(--c5);font-size:.85em;white-space:nowrap">under evaluation</span></div><p class="gfine" style="margin:0 0 6px">We are still checking these guides against actual QSOs.</p>${gBzWarn(pathStats(g.az, g.km, now))}${RS ? diffHTML(g, now, phys) : ''}${aPart}${ePart}${plHTML(g, now)}${pPart}</div>`;
+  const eState = !RS ? 'notja' : !SUMMARY ? (SUMMARY_P ? 'loading' : 'fail') : !eData ? 'none' : 'ok';
+  return { bz: gBzWarn(pathStats(g.az, g.km, now)), agree, eState, pl: plHTML(g, now), diff: RS ? `<div class="gbox" style="margin-top:4px">${diffHTML(g, now, phys)}</div>` : '',
+    pPart: `<div class="gbox">${pPart}</div>`, ePart: `<div class="gbox" style="margin-top:4px">${ePart}</div>` };
 }
 // ---- いまお勧めのバンド（PSK の実績＋いまの物理の条件・宇宙天気。検証中）
 var B36 = '0123456789abcdefghijklmnopqrstuvwxyz';
@@ -1268,10 +1277,13 @@ function plHTML(g, now) {
     <details class="gdet" data-k="plHow"${gOpen('plHow')}><summary>How to read this</summary><p class="gfine">FT8 reception reports do not tell which path the signal took. So, for each reception, we checked whether 70% or more of the short path and of the long path (excluding 1,000 km at each end) was dark. On the low bands absorption is strong on the day side, so if only one path was dark, the signal probably came that way. The Japanese end is near Tokyo and the other end is the entity's representative position; the auroral zone is not included. DX cluster: spots by JA stations whose comments mention LP, SP or skew are counted. These come from operators who checked with their antennas, so they help verify the estimate, but there are still few of them.</p></details>`;
   return `<details class="gdet" data-k="pl"${gOpen('pl')}><summary>Short path or long path? (low bands)<span style="color:#d64545;font-size:.85em"> (under evaluation)</span></summary>${body}</details>`;
 }
+var REC_SUM = '';
 function recHTML(g, now) {
-  if (!recSubj()) return '';
-  const h = new Date(now).getUTCHours(), title = `Recommended bands now (UTC ${h}h, ${locH(h)}h local)`;
+  REC_SUM = '';
+  if (!recSubj()) { REC_SUM = 'Shown when the other station is in Japan (e.g. JA1BBE): it uses the records of stations in Japan receiving your country.'; return ''; }
+  const h = new Date(now).getUTCHours(), title = `Breakdown of the recommended bands (UTC ${h}h, ${locH(h)}h local)`;
   const wrap = body => `<details class="gdet grec" data-k="rec"${gOpen('rec')}><summary>${title}<span style="color:#d64545;font-size:.85em"> (under evaluation)</span></summary>${body}</details>`;
+  if (!SUMMARY) REC_SUM = SUMMARY_P ? 'Loading the records from Japan…' : 'Could not load the records from Japan.';
   if (!SUMMARY) return wrap(`<p class="gfine">${SUMMARY_P ? 'Loading the records from Japan…' : 'Could not load the records from Japan.'}</p>`);
   const RS = recSubj(); if (!RS) return '';
   let data = null, isEnt = false, label = '';
@@ -1279,7 +1291,8 @@ function recHTML(g, now) {
   if (!data) { const f = llToGrid(RS.lat, RS.lon).slice(0, 2); if (SUMMARY.f[f]) { data = SUMMARY.f[f]; label = `(records for the surrounding grid field ${f}, so ○ at most)`; } }
   const win = [(h + 23) % 24, h, (h + 1) % 24], nWin = win.reduce((a, w) => a + (SUMMARY.n[w] || 0), 0);
   const how = `<details class="gdet" data-k="recHow"${gOpen('recHow')}><summary>How to read this</summary><p class="gfine">For one hour either side of now (UTC ${win[0]}–${(h + 2) % 24}), the share of samples in the last ${SUMMARY.days} days in which stations in Japan received your country. ◎: 50% or more, ○: 20% or more. Not shown when there are fewer than 10 samples. To avoid short-term operations (e.g. DXpeditions), ◎ needs receptions on 3 or more days, ○ on 2 days; 1 day is not shown. If only nearby grid-field records exist, ○ is the maximum. One step lower when: low bands with the path mostly in daylight; high bands with the path mostly dark or a low SFI; low bands when the short path crosses the dense auroral zone (30% or more); low and mid bands with a Bz warning and a path near the auroral zone. The thresholds are a starting point and will be reviewed against actual QSOs.</p></details>`;
-  if (!data) return wrap(`<p class="gtxt">No records yet of stations in Japan receiving your country (or area).</p>${how}`);
+  if (!data) { REC_SUM = 'No records yet of stations in Japan receiving your country (or area).'; return wrap(`<p class="gtxt">No records yet of stations in Japan receiving your country (or area).</p>${how}`); }
+  if (nWin < 10) REC_SUM = `Too few samples at this time (${nWin}) to judge.`;
   if (nWin < 10) return wrap(`<p class="gtxt">Too few samples at this time (${nWin}) to judge.</p>${how}`);
   const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
   const sfi = SFI_NOW ?? 100, near = Math.abs(sp.mag) >= 55 || (sp.aur != null && sp.aur >= 10), bz = gBzActive();
@@ -1301,6 +1314,8 @@ function recHTML(g, now) {
     if (bz && near && (grp === 'low' || grp === 'mid')) { gr--; why.push('Bz warning'); }
     if (gr >= 1) out.push({ b, gr, rate, days, why });
   }
+  REC_SUM = out.length ? out.map(x => `${x.gr === 2 ? '◎' : '○'} <b>${x.b}</b> (${x.rate}%)`).join('　') + (label ? '　<span style="color:var(--muted);font-size:.85em">records of the surrounding area</span>' : '')
+    : 'No band to recommend at this time (few records, or bands closed).';
   const list = out.length
     ? out.map(x => `<div><b style="font-size:1.1em">${x.gr === 2 ? '◎' : '○'}</b> <b>${x.b}</b> heard in ${x.rate}% of samples${x.days != null ? ` (${x.days} days)` : ''}${x.why.length ? `<span style="color:var(--sub, var(--muted))"> * ${x.why.join(', ')}${x.why.some(w => !w.includes('at most')) ? ' — one step lower' : ''}</span>` : ''}</div>`).join('')
     : `<p class="gtxt">No band to recommend at this time (few records, or bands closed).</p>`;
@@ -1308,13 +1323,28 @@ function recHTML(g, now) {
 }
 function renderGuide(g, now) {
   const box = document.getElementById('dxOut'); if (!box || !TARGET) return;
-  box.insertAdjacentHTML('afterbegin', '<div id="dxRec"></div>');
-  { const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
-    box.insertAdjacentHTML('afterbegin', `<div id="dxLb">${lbHTML(g, sp, lp, now)}</div>`); lbWire(); }
-  box.insertAdjacentHTML('beforeend', '<div id="dxGuide"></div>');
-  const fill = () => { const el = document.getElementById('dxGuide'); if (el) { el.innerHTML = guideHTML(g, now); gWatch(el); }
-    const er = document.getElementById('dxRec'); if (er) { er.innerHTML = recHTML(g, now); gWatch(er); } };
+  const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
+  const lb = document.getElementById('dxLb'); if (lb) { lb.innerHTML = lbHTML(g, sp, lp, now); lbWire(); }
+  const put = (id, html) => { const el = document.getElementById(id); if (el) { el.innerHTML = html; gWatch(el); } };
+  const fill = () => { const P = guideParts(g, now);
+    put('dxGuide', P.pPart); put('dxRec', recHTML(g, now)); put('dxDiff', P.diff); put('dxPl', P.pl);
+    put('dxRes', P.ePart); put('dxSum', sumHTML(g, now, P)); };
   if (SUMMARY) fill(); else { fill(); loadSummary().then(fill).catch(fill); }
+}
+// ---- Summary: the outlook now (recommended bands, beam headings, grey-line duct, hours where records and physics agree)
+function sumHTML(g, now, P) {
+  const L = 2 * Math.PI * EARTH - g.km, km = x => (x >= 1000 ? Math.round(x / 100) * 100 : Math.round(x)).toLocaleString('en-US');
+  const row = (k, v) => `<div class="sumrow"><span class="k">${k}</span><div>${v}</div></div>`;
+  const gl = glStatus(now);
+  const ag = P.eState === 'ok' ? (P.agree.length ? P.agree.join('<br>') : 'No hours in the next 24 hours where the records and the physics guide agree (see Details and Results).')
+    : P.eState === 'notja' ? 'Shown when the other station is in Japan (e.g. JA1BBE). See the physics guide in Details.'
+    : P.eState === 'loading' ? 'Loading the records from Japan…' : P.eState === 'fail' ? 'Could not load the records from Japan (see the physics guide in Details).'
+    : 'No records yet of stations in Japan receiving your country, so this cannot be shown (see the physics guide in Details).';
+  return `<div class="sumbox"><div class="sh"><span>Summary: the outlook now</span><span style="color:var(--c5);font-size:.85em;font-weight:400">under evaluation</span></div>${P.bz || ''}
+    ${row('Recommended bands now<br>'+'<span class="kd kd-pre">Forecast</span>', REC_SUM || '—')}
+    ${row('Beam heading', `Short path <b class="az">${Math.round(g.az)}°</b> (${km(g.km)} km)　Long path <b class="az">${Math.round((g.az + 180) % 360)}°</b> (${km(L)} km)`)}
+    ${gl ? row('Long-distance low bands<br><span class="kd kd-phy">Physics</span><span class="kd kd-obs">Observed</span>', `<div class="gld ${gl.on ? 'on' : ''}" style="margin:0">${gl.html}</div>`) : ''}
+    ${row('Next 24 hours<br><span class="kd kd-pre">Forecast</span><span class="kd kd-phy">Physics</span>', `<span style="font-size:.85em;color:var(--muted)">Hours where the records from Japan and the physics guide agree</span><br>${ag}`)}</div>`;
 }
 
 // ---- 届く強さの見込み（送信電力・アンテナ利得・周波数から。簡易な回線計算。検証中）
@@ -1383,10 +1413,17 @@ function targetRender(){
   const sp=pathStats(g.az,g.km,now),lp=pathStats((g.az+180)%360,2*Math.PI*EARTH-g.km,now);
   const sk=needSkew(sp)?skewSearch(g,TARGET.lat,TARGET.lon):null;
   drawMap({sp,lp,az:g.az,km:g.km,label:TARGET.short||'',sk});
-  $('dxOut').innerHTML=`<div class="tgt-who">${TARGET.label}<span class="loc">${TARGET.loc}</span></div>${(()=>{const g=glStatus(Date.now());return g?`<div class="gld ${g.on?'on':''}">${g.html}<span style="color:#d64545;font-size:.85em"> (under evaluation)</span></div>`:''})()}
+  $('dxOut').innerHTML=`<div class="tgt-who">${TARGET.label}<span class="loc">${TARGET.loc}</span></div>
+  <div id="dxSum"></div>
+  <h4 class="stp"><span>Details</span>The path now, and the physics guide for the next 24 hours<span class="kd kd-phy">Physics</span></h4>
   <div class="tbl"><table class="paths-tbl"><thead><tr><th>Day/night<br><span class="th2">there / you (${esc(STATION.name)})</span></th><th>Short path<br><span class="th2">bearing, distance, max. geomag. lat.<br>aurora probability, darkness</span></th><th>Long path<br><span class="th2">same</span></th><th>Assessment (mainly low bands)</th></tr></thead>
   <tbody><tr><td><span class="tag ${c}">${l}</span><br><span class="tag ${jc}">${jl}</span></td><td>${pathCell(sp)}</td><td>${pathCell(lp)}</td><td>${advise(sp,lp)}${skewNote(g,sp,sk,true)}</td></tr></tbody></table></div>
-  <p class="fn">Recalculated every minute. Space weather (Kp, solar wind, Bz) is the same as above for any station.</p>`;
+  <p class="fn">Recalculated every minute. Space weather (Kp, solar wind, Bz) is the same as above for any station.</p>
+  <div id="dxGuide"></div>
+  <h4 class="stp"><span>Advice</span>Recommended bands, path hints and expected signal</h4>
+  <div id="dxRec"></div><div id="dxDiff"></div><div id="dxPl"></div><div id="dxLb"></div>
+  <h4 class="stp"><span>Results</span>Records of stations in Japan receiving your country<span class="kd kd-obs">Observed</span></h4>
+  <div id="dxRes"></div>`;
   renderGuide(g,now);
 }
 
