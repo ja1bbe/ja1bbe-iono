@@ -243,6 +243,7 @@ h4.stp span{flex:none;white-space:nowrap;font-size:.75rem;font-weight:700;color:
   <span id="upd">データを取得しています…</span>
   <button id="reload" type="button">今すぐ更新</button>
   <button id="demo" type="button">サンプルデータで表示</button>
+  <button id="resetView" type="button" title="開閉や重ね表示の記憶を消して、最初の表示に戻します（自局と届く強さの設定は残します）">標準表示に戻す</button>
   <span>5分ごとに自動更新</span>
   <a href="https://ja1bbe.wixsite.com/mysite/contact" target="_blank" rel="noopener" style="margin-left:auto;color:#e9c46a;text-decoration:underline">✉ ご意見・ご感想はこちら</a>
 </div>
@@ -1621,9 +1622,15 @@ loadLand();window.addEventListener('resize',()=>drawMap(LASTP));
 // 目次：閉じている段は開いてから移る
 document.querySelectorAll('.toc a').forEach(a=>a.addEventListener('click',()=>{const d=$(a.getAttribute('href').slice(1));if(d&&!d.open)d.open=true}));
 if(location.hash==='#now'){const t1=$('t1');if(t1)t1.open=true;const d=$('npRecentD');if(d)d.open=true;setTimeout(()=>{const s=$('nowpsk');if(s)s.scrollIntoView({block:'start'})},900)}
+// ---- 標準表示に戻す：開閉・重ね表示・相手の記憶を消して読み直す（自局 nowcast.myGrid と届く強さの設定 lb は残す）
+document.addEventListener('click',e=>{if(!e.target||e.target.id!=='resetView')return;
+  const KEEP=new Set(['nowcast.myGrid','lb']),VIEW=['drapOn','ductOn','dxpOn','stormOn','magLines','lbOn','guide.open','nowcast.dx','nowcast.propOpen'];
+  try{const ks=[];for(let i=0;i<localStorage.length;i++)ks.push(localStorage.key(i));
+    for(const k of ks){if(KEEP.has(k))continue;if(VIEW.includes(k)||/^pc\./.test(k)||/^nowcast\.t\d$/.test(k))localStorage.removeItem(k)}}catch(e2){}
+  location.href=location.pathname+location.search});
 load();loadIono();setInterval(load,5*60e3);setInterval(loadIono,15*60e3);setInterval(()=>{dayNight();bandGuide(lastV);targetRender()},60e3);
 })();
 </script>
-<p style="text-align:center;color:#666;font-size:.72rem;margin:18px 0 8px">版：2026-11-27b</p>
+<p style="text-align:center;color:#666;font-size:.72rem;margin:18px 0 8px">版：2026-11-27c</p>
 </body>
 </html>
