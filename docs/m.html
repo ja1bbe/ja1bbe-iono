@@ -198,6 +198,32 @@ details.tier[open]>summary{margin-bottom:16px}
 .trend .tmx{font-size:.85rem;color:var(--muted)}
 .trend .tnote{margin:4px 0 0;font-size:.92rem;line-height:1.6}
 .rel a{color:var(--gold);margin-right:8px}
+.swh{display:none;margin:4px 0 0;font-size:.72rem;color:var(--muted);text-align:center}
+.win{max-height:70vh;overflow:auto;border:1px solid var(--line);border-radius:8px;-webkit-overflow-scrolling:touch}
+.win thead th{position:sticky;top:0;z-index:2;background:var(--panel2,#1b1f26)}
+.win td:first-child,.win th:first-child{position:sticky;left:0;z-index:1;background:var(--bg,#0f1114)}
+.win thead th:first-child{z-index:3}
+@media (max-width:640px){
+  .swh{display:block}
+  /* 札・値のカード・推移のグラフは、横に並べてスライド */
+  .picks{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:42%;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+  .picks .pk{scroll-snap-align:start}
+  .grid{grid-template-columns:none!important;grid-auto-flow:column;grid-auto-columns:44%;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}
+  .grid>*{scroll-snap-align:start}
+  .charts{grid-template-columns:none!important;grid-auto-flow:column;grid-auto-columns:88%;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}
+  .charts>*{scroll-snap-align:start}
+  /* 表：字が縦に1字ずつ折れないよう、幅を保って横にスライド */
+  .win{font-size:.8rem}
+  .win table{min-width:640px;font-size:.8rem}
+  .win td:first-child{white-space:normal!important;min-width:6.5em;max-width:7.5em;background:var(--panel)}
+  .win td{min-width:5.5em}
+  .tbl table{min-width:600px}
+  .paths-tbl th{white-space:nowrap}
+  .gtbl::before{content:'← 横にスライド →';display:block;font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:2px}
+  .gt{min-width:640px}
+  .gt th.gb{position:sticky;left:0;z-index:1;background:var(--panel,#16191e)}
+  .magbtn{font-size:.78rem;padding:3px 8px;margin:2px 0}
+}
 .sumbox{margin:10px 0 4px;padding:10px 14px;border:1px solid var(--gold);border-radius:8px;background:rgba(216,177,74,.07)}
 .sumbox .sh{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;color:var(--gold);margin-bottom:4px}
 .sumrow{display:grid;grid-template-columns:9.5em 1fr;gap:10px;padding:6px 0;border-top:1px solid var(--line);font-size:.92rem;line-height:1.6}
@@ -238,6 +264,7 @@ h4.stp span{flex:none;white-space:nowrap;font-size:.75rem;font-weight:700;color:
 
 <section class="verdict pick" id="pick">
   <div class="lab">いまのお薦め（方面とバンド）<span class="kd kd-pre">予測</span><span class="kd kd-phy">物理</span><span style="color:#d64545;font-size:.9em;margin-left:6px">（検証中）</span></div>
+  <p class="swh">← 横にスライドして9方面を見る →</p>
   <div class="picks" id="pickList"><span class="fn">計算しています…</span></div>
   <p class="fn" style="margin:8px 0 0">金色の札は、日本の局がこの時刻の前後1時間に受信できた割合（直近28日間の記録）からの見込み（予測）、紫の破線の札は、記録が少ないときに経路の昼夜と SFI から選んだ物理の目安です。角度は短経路の方位。押すと、その方面を3段目「DXハンティング」の相手に入れます。</p>
 </section>
@@ -809,7 +836,7 @@ function glTTRec(w){const jaHome=bearingDist(STATION.lat,STATION.lon,35.68,139.7
 async function glTTRender(){const box=$('glTT'),d=$('glTTD');if(!box||!d||!d.open)return;try{await loadCty()}catch(e){}try{await loadOps()}catch(e){}try{if(!SUMMARY)await loadSummary()}catch(e){}const t0=Math.floor(Date.now()/6e5)*6e5,L=glTTCalc(t0);
   const hm=t=>{const x=new Date(t+9*3600e3);return String(x.getUTCHours()).padStart(2,'0')+':'+String(x.getUTCMinutes()).padStart(2,'0')};
   box.innerHTML=`<p class="gfine" style="margin:0 0 6px">自局（${esc(STATION.name)}）から見て、主な相手との間で「グレイラインダクト：あり」（自局か相手局が薄明で、経路の 7割以上が夜）になる時間帯です。いまから24時間、日本時間。時間帯は太陽の位置（物理の条件）で決まり、宇宙天気では変わりません。「記録（PSK）」は、その時間帯に日本の局がその地域を 160m・80m で受信できた割合（PSK Reporter の抜き取り、直近28日間）で、物理の条件と実際の受信の両方から見られます。「地図で見る」を押すと、その相手を伝搬レーダーに描きます。</p>`+
-    (L.length?`<div class="tbl"><table class="paths-tbl"><thead><tr><th>時間帯（日本時間）</th><th>相手（グリッド）</th><th>経路</th><th>薄明</th><th>記録（PSK）<br><span class="th2">日本の受信の割合 28日間</span></th><th></th></tr></thead><tbody>`+
+    (L.length?`<p class="swh">← 横にスライド・窓の中で上下にスクロール →</p><div class="tbl win"><table class="paths-tbl"><thead><tr><th>時間帯（日本時間）</th><th>相手（グリッド）</th><th>経路</th><th>薄明</th><th>記録（PSK）<br><span class="th2">日本の受信の割合 28日間</span></th><th></th></tr></thead><tbody>`+
     L.map(w=>{const nowIn=w.wins.some(x=>x.a<=Date.now()&&Date.now()<=x.b),sides=w.wins.map(x=>x.side).filter((v,i,a)=>!i||v!==a[i-1]);return`<tr${nowIn?' style="background:rgba(90,209,255,.10)"':w.op?' style="background:rgba(224,85,85,.08)"':''}><td style="white-space:nowrap">${w.wins.map(x=>`${hm(x.a)}〜${hm(x.b+6e5)}`).join('<br>')}${nowIn?' <b style="color:#5ad1ff">いま</b>':''}</td><td>${w.op?'<span class="kd kd-dxp" style="margin:0 0 3px">DXペディション</span><br>':''}${esc(w.nm)}${w.op?ndTag(opEntName(w.op)):ndTag(GLTT_ENT[w.gq])}<br><span class="th2">${w.gq}</span></td><td>${w.r==='sp'?'短経路':'長経路'} ${Math.round(w.az)}°<br><span class="th2">${w.hemi}</span></td><td>${sides.join(' →<br>')}</td><td style="white-space:nowrap">${glTTRec(w)}</td><td><button type="button" class="glgo" data-g="${w.op?esc(w.op.call):w.gq}">地図で見る</button></td></tr>`}).join('')+
     `</tbody></table></div>`:'<p class="gfine">この24時間に「あり」になる相手はありません。</p>')}
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('.glgo');if(!b)return;$('dxIn').value=b.dataset.g;const pd=$('t3');if(pd&&!pd.open)pd.open=true;findTarget();const m=$('dxMap');if(m)m.scrollIntoView({behavior:'smooth',block:'center'})});
@@ -1597,6 +1624,6 @@ if(location.hash==='#now'){const t1=$('t1');if(t1)t1.open=true;const d=$('npRece
 load();loadIono();setInterval(load,5*60e3);setInterval(loadIono,15*60e3);setInterval(()=>{dayNight();bandGuide(lastV);targetRender()},60e3);
 })();
 </script>
-<p style="text-align:center;color:#666;font-size:.72rem;margin:18px 0 8px">版：2026-11-27</p>
+<p style="text-align:center;color:#666;font-size:.72rem;margin:18px 0 8px">版：2026-11-27b</p>
 </body>
 </html>
