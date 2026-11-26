@@ -37,10 +37,7 @@
 .hrchip.me{border-color:var(--gold);color:var(--gold);font-weight:700}
 .hrh{margin:10px 0 4px;font-weight:700;font-size:.9rem;color:var(--gold)}
 .hrme{margin:6px 0 10px;padding:9px 12px;border:1px solid var(--gold);border-radius:6px;line-height:1.6}
-#propDet>summary{cursor:pointer;list-style:none;color:var(--gold);font-size:1.1rem;font-weight:700;margin:26px 0 10px}
-#propDet>summary::-webkit-details-marker{display:none}
-#propDet>summary::before{content:'▶ ';font-size:.8em}
-#propDet[open]>summary::before{content:'▼ '}
+
 .gdet[open]>summary::before{content:'▼ '}
 
 :root{
@@ -124,6 +121,109 @@ th{color:var(--muted);font-weight:500}
 .legend i{display:inline-block;width:18px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 .note{color:var(--muted);font-size:.84rem;margin-top:24px;border-top:1px solid var(--line);padding-top:14px}
 .note a{color:var(--gold)}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:-6px 0 6px}
+.toc a{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border:1px solid var(--line);border-radius:999px;color:var(--ink);text-decoration:none;font-size:.88rem;background:var(--panel)}
+.toc a:hover{border-color:var(--gold)}
+.toc a b,.tier .tn{display:inline-flex;align-items:center;justify-content:center;width:1.45em;height:1.45em;border-radius:50%;background:var(--gold);color:#111;font-size:.8em;font-weight:700}
+.tier{margin:36px 0 12px;padding-top:14px;border-top:1px solid var(--line);scroll-margin-top:8px}
+.tier h2{display:flex;align-items:center;gap:10px;color:var(--ink);font-size:1.3rem;margin:0 0 4px}
+.tier .lead{margin:0;color:var(--muted);font-size:.9rem}
+h3.sub{color:var(--gold);font-size:1.05rem;font-weight:700;margin:22px 0 10px}
+details.tier>summary{list-style:none;cursor:pointer}
+details.tier>summary::-webkit-details-marker{display:none}
+.tier .tchev{margin-left:auto;font-size:.8rem;font-weight:400;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 10px;white-space:nowrap}
+details.tier[open] .tchev::before{content:'▼ Close'}
+details.tier:not([open]) .tchev::before{content:'▶ Open'}
+details.tier>summary:hover .tchev{border-color:var(--gold);color:var(--ink)}
+details.tier:not([open]){padding-bottom:4px}
+details.tier[open]>summary{margin-bottom:16px}
+.picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:8px}
+.pk{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.pk:hover{border-color:var(--gold)}
+.pk.rec{border-left:4px solid var(--gold)}
+.pk.phys{border-left:4px dashed #c77dff}
+.pk .pn{font-size:.82rem;color:var(--muted)}
+.pk .pb{font-size:1.25rem;font-weight:700;font-family:var(--mono);line-height:1.3}
+.pk.rec .pb{color:var(--gold)}
+.pk .ps{font-size:.76rem;color:var(--muted)}
+.pk .pw{font-size:.72rem;color:#f08a4b}
+.rgl{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.rghead,.rg>summary{display:grid;grid-template-columns:minmax(9rem,1.2fr) 6.5rem 2.6fr 6rem;gap:12px;align-items:center;padding:8px 12px}
+.rghead{font-size:.74rem;line-height:1.35;color:var(--muted);background:var(--panel2)}
+.rg{border-top:1px solid var(--line)}
+.rg>summary{list-style:none;cursor:pointer}
+.rg>summary::-webkit-details-marker{display:none}
+.rg>summary:hover{background:rgba(255,255,255,.035)}
+.rg[open]>summary{background:rgba(216,177,74,.06)}
+.rgn b::before{content:'▶ ';font-size:.7em;color:var(--muted)}
+.rg[open] .rgn b::before{content:'▼ '}
+.rgs{display:block;font-size:.74rem;color:var(--muted);padding-left:1.1em}
+.rgb{font-family:var(--mono);font-weight:700;font-size:1.1rem;line-height:1.25}
+.rgb.rec{color:var(--gold)}
+.rgb.phys small{color:#c77dff}
+.rgb.rec small{color:var(--gold)}
+.rgb small{display:block;font-family:var(--sans);font-weight:400;font-size:.72rem;color:var(--muted)}
+.rgv{font-size:.88rem;line-height:1.5}
+.rgbody{padding:6px 14px 14px 26px;font-size:.88rem;line-height:1.6}
+.rgcells{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+.rgcells>div{background:var(--panel2);border-radius:6px;padding:8px 10px}
+.rgk{display:block;font-size:.78rem;color:var(--muted);font-weight:500}
+.rgo{margin-top:10px;background:transparent;border:1px solid var(--gold);color:var(--gold);border-radius:6px;padding:4px 12px;font:inherit;font-size:.85rem;cursor:pointer}
+.rgo:hover{background:rgba(216,177,74,.12)}
+@media (max-width:640px){.rghead{display:none}.rg>summary{grid-template-columns:1fr auto;gap:4px 10px}.rgv{grid-column:1/-1}.rgd{display:none}.rgbody{padding-left:14px}.rgcells{grid-template-columns:1fr}}
+.kd{display:inline-block;font-size:.66rem;font-weight:700;line-height:1;padding:3px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;letter-spacing:.04em;font-family:var(--sans)}
+.kd+.kd{margin-left:3px}
+.sumrow .k .kd{margin:3px 3px 0 0}
+.bandsum .brow{border-top-color:var(--line)!important;border-right:0!important;border-bottom:0!important}
+.kd-obs{color:#08170e;background:#6fcf97}
+.kd-phy{color:#1a0b26;background:#c77dff}
+.kd-pre{color:#1c1606;background:#e9c46a}
+.kdleg{margin:10px 0 0;font-size:.78rem;color:var(--muted);line-height:1.9}
+.kdleg .kd{margin-left:10px}
+.kdleg .kd:first-child{margin-left:4px}
+.bandsum .brow{display:grid;grid-template-columns:8.5rem 10rem 1fr;gap:12px;align-items:start;padding:10px 0 10px 12px;border-top:1px solid var(--line);border-left:4px solid var(--line)}
+.bandsum .brow:first-of-type{margin-top:8px}
+.bandsum .bk{font-weight:700;font-size:.92rem}
+.bandsum .bk small{display:block;font-weight:400;font-size:.74rem;color:var(--muted)}
+.bandsum .state{font-size:1.15rem;font-weight:700;margin:0;line-height:1.4}
+.bandsum .bw{font-size:.88rem;line-height:1.65;color:#d6d6d6}
+.bandsum .bpath{margin-top:4px;font-size:.82rem;color:var(--muted)}
+@media (max-width:640px){.bandsum .brow{grid-template-columns:1fr auto;gap:2px 10px}.bandsum .bw{grid-column:1/-1}}
+.nd{display:inline-block;font-size:.66rem;font-weight:700;line-height:1.2;padding:1px 5px;border-radius:4px;margin-left:5px;background:#e9c46a;color:#1c1606;vertical-align:middle;white-space:nowrap}
+.nd2{background:transparent;color:#e9c46a;border:1px solid #e9c46a}
+.kd-dxp{color:#fff;background:#e05555}
+.trend .trow{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-top:6px}
+.trend .tword{font-size:1.5rem;font-weight:700;line-height:1.3}
+.trend .tmx{font-size:.85rem;color:var(--muted)}
+.trend .tnote{margin:4px 0 0;font-size:.92rem;line-height:1.6}
+.rel a{color:var(--gold);margin-right:8px}
+.swh{display:none;margin:4px 0 0;font-size:.72rem;color:var(--muted);text-align:center}
+.win{max-height:70vh;overflow:auto;border:1px solid var(--line);border-radius:8px;-webkit-overflow-scrolling:touch}
+.win thead th{position:sticky;top:0;z-index:2;background:var(--panel2,#1b1f26)}
+.win td:first-child,.win th:first-child{position:sticky;left:0;z-index:1;background:var(--bg,#0f1114)}
+.win thead th:first-child{z-index:3}
+@media (max-width:640px){
+  .swh{display:block}
+  /* 札・値のカード・推移のグラフは、横に並べてスライド */
+  .picks{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:42%;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+  .picks .pk{scroll-snap-align:start}
+  .grid{grid-template-columns:none!important;grid-auto-flow:column;grid-auto-columns:44%;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}
+  .grid>*{scroll-snap-align:start}
+  .charts{grid-template-columns:none!important;grid-auto-flow:column;grid-auto-columns:88%;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}
+  .charts>*{scroll-snap-align:start}
+  /* 表：字が縦に1字ずつ折れないよう、幅を保って横にスライド */
+  .win{font-size:.8rem}
+  .win table{min-width:640px;font-size:.8rem}
+  .win td:first-child{white-space:normal!important;min-width:6.5em;max-width:7.5em;background:var(--panel)}
+  .win td{min-width:5.5em}
+  .tbl table{min-width:600px}
+  .paths-tbl th{white-space:nowrap}
+  .gtbl::before{content:'← swipe sideways →';display:block;font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:2px}
+  .gt{min-width:640px}
+  .gt th.gb{position:sticky;left:0;z-index:1;background:var(--panel,#16191e)}
+  .magbtn{font-size:.78rem;padding:3px 8px;margin:2px 0}
+  #hrList{max-height:16rem;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:6px 8px;-webkit-overflow-scrolling:touch}
+}
 </style>
 </head>
 <body>
@@ -139,39 +239,57 @@ th{color:var(--muted);font-weight:500}
   <button id="reload" type="button">Update now</button>
   <button id="demo" type="button">Sample data</button>
   <span>Auto update every 5 min</span>
+  <button id="resetView" type="button" title="Forget the open/closed panels and map overlays and return to the standard view (your station and signal settings are kept)">Standard view</button>
   <a href="mailto:ja1bbe@jarl.com" style="margin-left:auto;color:#e9c46a;text-decoration:underline">✉ Feedback: ja1bbe@jarl.com</a><a href="https://ja1bbe.wixsite.com/mysite/%E5%AE%87%E5%AE%99%E5%A4%A9%E6%B0%97%E3%83%8A%E3%82%A6%E3%82%AD%E3%83%A3%E3%82%B9%E3%83%88" target="_blank" rel="noopener" style="color:#e9c46a;text-decoration:underline">日本語版</a>
 </div>
 <div class="msg" id="msg"></div>
+<nav class="toc" aria-label="Sections">
+  <a href="#t1"><b>1</b> Propagation now</a><a href="#t2"><b>2</b> Propagation by region</a><a href="#t3"><b>3</b> DX hunting</a><a href="#t4"><b>4</b> Evidence</a>
+</nav>
+<p class="kdleg">Labels: <span class="kd kd-obs">Observed</span> measured or actually received　<span class="kd kd-phy">Physics</span> calculated from the sun's position, the auroral oval and so on　<span class="kd kd-pre">Forecast</span> expected from past records or forecasts</p>
+
 
 <section class="verdict" id="hrSec" style="display:none">
 <div class="lab">JA1BBE is working toward the DXCC Honor Roll</div>
 <div id="hrMine"></div>
 <p class="why" style="margin:4px 0">The entities below are not yet confirmed on LoTW. If your country is on the list, I would be very grateful for your help.</p>
+<p class="swh">↕ scroll inside the box to see the whole list</p>
 <div id="hrList"></div>
 <p class="fn" id="hrUpd" style="margin-top:6px"></p>
 </section>
+
+<details class="tier" id="t1" open><summary><h2><span class="tn">1</span>Propagation now<span class="tchev"></span></h2>
+<p class="lead">Is your signal reaching Japan, and how the bands are doing on the Japanese side.</p></summary>
 <section class="verdict" id="nowpsk">
-<div class="lab">Is your signal reaching Japan? — receptions by stations in Japan (PSK Reporter)</div>
+<div class="lab">Is your signal reaching Japan? — receptions by stations in Japan (PSK Reporter)<span class="kd kd-obs">Observed</span></div>
 <div id="npMine" class="gtxt">Loading…</div>
 <details class="gdet" id="npRecentD"><summary>Entities heard in Japan in the last 3 hours (all bands)</summary><div id="npRecent" class="gtxt"></div></details>
 <p class="fn" id="npNote" style="margin:6px 0 0"></p>
 </section>
-<section class="verdict" id="verdict">
-  <div class="lab">Low bands (160 / 80 / 40m) — outlook at JA (Tokyo)</div>
-  <div class="state" id="state">―</div>
-  <p class="why" id="why"></p>
-  <div class="paths">
-    <div><b>High-latitude paths from JA (to Europe and North America)</b><span id="pHigh">―</span></div>
-    <div><b>Low-latitude paths from JA (to SE Asia and Oceania)</b><span id="pLow">―</span></div>
-  </div>
+<section class="verdict bandsum">
+  <div class="lab">Band outlook at JA (Tokyo), from space weather and day/night in Japan<span class="kd kd-phy">Physics</span></div>
+  <div class="brow" id="verdict"><span class="bk">Low bands<small>160 / 80 / 40m</small></span><span class="state" id="state">―</span>
+    <div class="bw"><span id="why"></span><div class="bpath">High-latitude paths from JA (to Europe and North America): <span id="pHigh">―</span><br>Low-latitude paths from JA (to SE Asia and Oceania): <span id="pLow">―</span></div></div></div>
+  <div class="brow" id="vMid"><span class="bk">Mid bands<small>30 / 20 / 17m</small></span><span class="state" id="sMid">―</span><div class="bw"><span id="wMid"></span></div></div>
+  <div class="brow" id="vHigh"><span class="bk">High bands<small>15 / 12 / 10m</small></span><span class="state" id="sHigh">―</span><div class="bw"><span id="wHigh"></span></div></div>
 </section>
-
-<div class="bands">
-  <div class="verdict sm" id="vMid"><div class="lab">Mid bands (30 / 20 / 17m) — outlook at JA</div><div class="state" id="sMid">―</div><p class="why" id="wMid"></p></div>
-  <div class="verdict sm" id="vHigh"><div class="lab">High bands (15 / 12 / 10m) — outlook at JA</div><div class="state" id="sHigh">―</div><p class="why" id="wHigh"></p></div>
-</div>
-
-<details id="propDet" open><summary>JA1BBE Propagation Radar (map and path)</summary>
+</details>
+<details class="tier" id="t2"><summary><h2><span class="tn">2</span>Propagation by region<span class="tchev"></span></h2>
+<p class="lead">Paths from your station to the major regions, and grey-line duct openings in the next 24 hours.</p></summary>
+<h3 class="sub">Paths from your station to major regions (with rotator bearings)<span class="kd kd-phy">Physics</span></h3>
+<div class="tbl"><table class="paths-tbl">
+  <thead><tr><th>Region</th><th>Day/night<br><span class="th2">there / you</span></th><th>Short path<br><span class="th2">bearing, distance, max. geomag. lat.<br>aurora probability, darkness</span></th><th>Long path<br><span class="th2">same</span></th><th>Assessment (mainly low bands)</th></tr></thead>
+  <tbody id="dn"></tbody>
+</table></div>
+<p class="fn" id="jaSun"></p>
+<p class="fn" id="aurInfo"></p>
+<details class="gdet"><summary>How to read this table</summary><p class="gfine">Bearings are great-circle bearings from true north, calculated from the centre of your grid locator. A 4-character grid covers about 180 km east–west and 110 km north–south, so a 6-character grid (e.g. FN31pr) is more accurate. If your rotator is referenced to magnetic north, correct for the local magnetic declination. "Darkness" is the fraction of points on the path where the sun is −6° or lower. "Maximum geomagnetic latitude along the path" uses a dipole approximation; over North America it is higher than the geographic latitude because the geomagnetic pole is nearby. Aurora probability is the NOAA OVATION estimate 30–90 minutes ahead at the highest point on the path (30% or more: "crossing", 10–30%: "edge"). This is an estimate of auroral activity, not a direct probability of signal absorption or QSO failure. In the auroral zone, precipitating electrons increase absorption in the D and E layers, and 160m and 80m signals in particular can weaken greatly.</p></details>
+<h3 class="sub">Grey-line duct timetable<span class="kd kd-phy">Physics</span><span class="kd kd-obs">Observed</span></h3>
+    <details class="gdet" id="glTTD"><summary>Open the list for the next 24 hours<span style="color:#d64545;font-size:.85em"> (under evaluation)</span></summary><div id="glTT" class="gtxt">Calculating…</div></details>
+</details>
+<details class="tier" id="t3" open><summary><h2><span class="tn">3</span>DX hunting<span class="tchev"></span></h2>
+<p class="lead">Enter the station you want to work: bearings, times and bands, on a map centred on your station.</p></summary>
+<h3 class="sub">JA1BBE Propagation Radar (map and path)</h3>
 <p class="fn" style="margin:-4px 0 10px">Shows the present propagation conditions, centred on your station, from space weather and reception records.</p>
 <section class="verdict" id="target">
   <div class="lab">Path between two stations (enter a callsign or grid locator for each station)</div>
@@ -183,51 +301,47 @@ th{color:var(--muted);font-weight:500}
   </div>
   <p class="fn" id="stInfo"></p>
   <p class="fn" id="exNote" style="display:none;color:var(--gold)"></p>
+  <p class="fn" id="dxWarn" style="display:none;color:#f08a4b"></p>
   <div class="mapwrap"><canvas id="dxMap" role="img" aria-label="Azimuthal equidistant map centred on your station, with short and long paths, day and night, and the auroral zone"></canvas>
     <div class="legend"><span><i style="background:var(--gold)"></i>Short path</span><span><i style="background:repeating-linear-gradient(90deg,#7fd3c6 0 4px,transparent 4px 7px)"></i>Long path</span><span><i style="background:repeating-linear-gradient(90deg,#c77dff 0 3px,transparent 3px 6px)"></i>Skewed path</span><span><i style="background:#163250"></i>Sea (day)</span><span><i style="background:#05080d;border:1px solid #333"></i>Night (sun −6° or lower)</span><span><i style="background:#3a3550"></i>Twilight</span><span><i style="background:rgba(80,220,140,.7)"></i>Aurora 10–30%</span><span><i style="background:rgba(240,90,80,.75)"></i>30% or more</span><span><i style="background:transparent;border:2px solid #f08a4b;border-radius:50%;width:10px"></i>Maximum geomagnetic latitude along the path</span></div>
-    <div style="margin-top:6px;text-align:center"><button id="magBtn" type="button" class="magbtn">▶ Geomagnetic latitude</button> <button id="drapBtn" type="button" class="magbtn">▶ D-layer absorption</button> <button id="stormBtn" type="button" class="magbtn">▶ Storm extent</button> <button id="ductBtn" type="button" class="magbtn">▶ Long-distance low-band propagation (possible ionospheric duct)</button> <span style="color:#d64545;font-size:.8em">(D-layer absorption, storm extent and long-distance low-band propagation are under evaluation)</span></div>
+    <div style="margin-top:6px;text-align:center"><button id="magBtn" type="button" class="magbtn">▶ Geomagnetic latitude</button> <button id="drapBtn" type="button" class="magbtn">▶ D-layer absorption</button> <button id="stormBtn" type="button" class="magbtn">▶ Storm extent</button> <button id="ductBtn" type="button" class="magbtn">▶ Long-distance low-band propagation (possible ionospheric duct)</button> <button id="dxpBtn" type="button" class="magbtn">▶ DXpeditions on the air</button> <span style="color:#d64545;font-size:.8em">(D-layer absorption, storm extent and long-distance low-band propagation are under evaluation)</span></div>
+    <p id="dxpNote" class="gfine" style="display:none;text-align:left;font-size:.8rem;max-width:760px;margin:6px auto 0"></p>
     <p id="drapNote" class="gfine" style="display:none;text-align:left;font-size:.8rem;max-width:760px;margin:6px auto 0"></p>
     <div id="ductNote" class="gfine" style="display:none;text-align:left;font-size:.8rem;max-width:760px;margin:6px auto 0"></div>
     <p id="stormNote" class="gfine" style="display:none;text-align:left;font-size:.8rem;max-width:760px;margin:6px auto 0"></p>
     <p id="magNote" class="gfine" style="display:none;text-align:center;font-size:.8rem">Dotted lines: geomagnetic latitude 0°, ±30°, ±70°; <span style="color:#f08a4b">orange: ±60°</span> (a guide to the equatorward edge of the auroral zone when quiet; it moves to lower latitudes as Kp rises). The field is approximated by a single dipole (as in the path assessment), so it differs from the real field by a few degrees in places.</p>
     <p class="fn" style="text-align:center">Azimuthal equidistant map centred on your station: the direction from the centre is the great-circle bearing (true north up) and the distance from the centre is the real distance. The rim is the antipode (about 20,000 km); the long path crosses the rim and reaches the other station from the opposite side.</p></div>
-  <details class="gdet" id="glTTD"><summary>Grey-line duct timetable (next 24 hours)<span style="color:#d64545;font-size:.85em"> (under evaluation)</span></summary><div id="glTT" class="gtxt">Calculating…</div></details>
+
 <div id="dxOut"><p class="fn">Enter a callsign (e.g. JA1BBE, ZF2AA) or a grid locator (e.g. PM95, FK89ab) and press "Show path" to see the bearing, distance, maximum geomagnetic latitude along the path, aurora probability, path darkness and an assessment for the short and long paths. For a callsign, the representative position of its DXCC entity is used. When the short path crosses the auroral zone, bearings up to 60° to either side are searched for a path that avoids it (approximated as a path that bends on the way) and shown as a purple dotted line. This is a model-based alternative path estimate, not a confirmed propagation route, and it does not guarantee a contact.</p></div>
 </section>
 </details>
-
-<h2>Current values</h2>
+<details class="tier" id="t4"><summary><h2><span class="tn">4</span>Evidence<span class="tchev"></span></h2>
+<p class="lead">The space-weather and ionospheric values behind the outlooks above.</p></summary>
+<h3 class="sub">Current values<span class="kd kd-obs">Observed</span></h3>
 <div class="grid" id="cards"></div>
 <p class="fn" id="btNote">Bt is the strength of the solar-wind magnetic field (regardless of direction) and is the upper limit of how far Bz can turn south. Bt itself does not affect radio signals directly, but a large Bt (roughly 10 nT or more) means there is plenty of "fuel" for a disturbance: if the field rotates and Bz turns south, it can approach the size of Bt. When Bt is large and Bz is south, the geomagnetic field is likely to be disturbed — watch high-latitude paths, especially on the low bands. With a large Bt but Bz staying north, a major disturbance is unlikely.</p>
-
-<h2>Trends</h2>
+<h3 class="sub">Trends<span class="kd kd-obs">Observed</span></h3>
 <div class="charts">
   <div class="chart"><div class="n">Kp index (last 48 hours, 3-hourly)</div><div id="kpChart"></div></div>
   <div class="chart"><div class="n">Bz (last 6 hours, nT) — up: north, down: south</div><div id="bzChart"></div></div>
 </div>
-<div class="chart" style="margin-top:10px"><div class="n">Kp forecast (NOAA, 3 days, 3-hourly) — filled: observed/estimated, outlined: forecast</div><div id="kpfChart"></div>
+<div class="chart" style="margin-top:10px"><div class="n">Kp forecast (NOAA, 3 days, 3-hourly) — filled: observed/estimated, outlined: forecast<span class="kd kd-pre">Forecast</span></div><div id="kpfChart"></div>
 <p class="fn" id="kpfSum" style="color:#d6d6d6"></p>
 <p class="fn">The forecast is from the NOAA Space Weather Prediction Center and is based mainly on expected CME arrivals and recurring high-speed solar wind (about 27-day period). CME arrival times are generally uncertain by about half a day, so read the forecast times with a margin. A forecast of Kp 5 or more (G1 or more) means that paths over high latitudes may weaken. <a style="color:var(--gold)" href="https://www.swpc.noaa.gov/products/3-day-forecast" target="_blank" rel="noopener">NOAA 3-day forecast</a></p></div>
-
-<h2>Paths from your station to major regions (with rotator bearings)</h2>
-<div class="tbl"><table class="paths-tbl">
-  <thead><tr><th>Region</th><th>Day/night<br><span class="th2">there / you</span></th><th>Short path<br><span class="th2">bearing, distance, max. geomag. lat.<br>aurora probability, darkness</span></th><th>Long path<br><span class="th2">same</span></th><th>Assessment (mainly low bands)</th></tr></thead>
-  <tbody id="dn"></tbody>
-</table></div>
-<p class="fn" id="jaSun"></p>
-<p class="fn" id="aurInfo"></p>
-<p class="fn">Bearings are great-circle bearings from true north, calculated from the centre of your grid locator. A 4-character grid covers about 180 km east–west and 110 km north–south, so a 6-character grid (e.g. FN31pr) is more accurate. If your rotator is referenced to magnetic north, correct for the local magnetic declination. "Darkness" is the fraction of points on the path where the sun is −6° or lower. "Maximum geomagnetic latitude along the path" uses a dipole approximation; over North America it is higher than the geographic latitude because the geomagnetic pole is nearby. Aurora probability is the NOAA OVATION estimate 30–90 minutes ahead at the highest point on the path (30% or more: "crossing", 10–30%: "edge"). This is an estimate of auroral activity, not a direct probability of signal absorption or QSO failure. In the auroral zone, precipitating electrons increase absorption in the D and E layers, and 160m and 80m signals in particular can weaken greatly.</p>
-
-<h2>Ionosphere over Japan (Kokubunji, NICT) — JA side, for reference</h2>
+<h3 class="sub">Ionosphere over Japan (Kokubunji, NICT) — JA side, for reference<span class="kd kd-obs">Observed</span></h3>
 <div class="grid" id="ionoCards"></div>
 <div class="charts" id="ionoCharts" style="margin-top:10px"><div class="chart"><div class="n">Virtual height (last 6 hours, km)</div><div id="hfChart"></div></div>
 <div class="chart"><div class="n">foF2 (last 6 hours, MHz)</div><div id="foChart"></div></div></div>
 <p class="fn" id="ionoMsg"></p>
 <p class="fn">Virtual height is the reflection height derived from the echo delay; h'F is used when h'F2 is not available (e.g. at night). A sudden rise can precede a disturbance. As a rough guide, the MUF for a 3,000 km hop is often estimated as foF2 × 3; the actual value varies with ionospheric conditions and propagation geometry. These values are for the ionosphere directly above Kokubunji, Tokyo — the Japanese end of a path to JA — not the state along your whole path. NICT publishes the data once a day (around 11:30 UTC), so during the day they may be several hours old. Values include automatic processing.</p>
 <p class="fn">Source: National Institute of Information and Communications Technology (NICT), ionospheric observation data <a style="color:var(--gold)" href="https://wdc.nict.go.jp/Ionosphere/index.html" target="_blank" rel="noopener">https://wdc.nict.go.jp/Ionosphere/index.html</a></p>
+</details>
+
+<p class="fn rel" style="margin-top:22px">Related: <a href="https://www.swpc.noaa.gov/" target="_blank" rel="noopener">NOAA Space Weather Prediction Center</a>　<a href="https://www.ng3k.com/Misc/adxo.html" target="_blank" rel="noopener">NG3K Announced DX Operations</a></p>
 
 <div class="note">
   <p>The band outlooks at the top are general tendencies for Japan (Tokyo) based on day and night, SFI and geomagnetic conditions; the path tools work for any pair of stations. None of this guarantees actual conditions. Low-band propagation also depends strongly on day and night, D-layer absorption and the noise at both stations. The final word is always actual reception and QSOs.</p>
+  <p>DXpeditions: NG3K Announced DX Operations (Bill Feidt, NG3K). Positions are entity centres (cty.dat).</p>
   <p>Data: NOAA Space Weather Prediction Center; NICT (ionosphere over Japan); PSK Reporter (records from Japan, collected by JA1BBE). Questions and comments: <a style="color:var(--gold)" href="mailto:ja1bbe@jarl.com">ja1bbe@jarl.com</a></p><p>© 2026 JA1BBE. All rights reserved.</p>
 </div>
 </div>
@@ -573,7 +687,8 @@ const GLTT=[['Japan (JA1BBE)','PM95'],['USA east (W1AW)','FN31'],['USA central',
   ['England','IO91'],['Germany','JO62'],['Moscow','KO85'],['Canary Islands','IL18'],['Morocco','IM63'],['South Africa','KG33'],['Kenya','KI88'],['UAE','LL75'],['India','MK82'],['Australia (Sydney)','QF56'],['New Zealand','RF70'],['Easter Island','DG52']];
 function glTTCalc(t0){const tw=e=>e>=-18&&e<=3,out=[],step=10*60e3,N=24*6;
   const darkF=(az,km,t)=>{let n=0,d=0;for(let x=0;x<=km;x+=300){const[la,lo]=dest(STATION.lat,STATION.lon,az,x);n++;if(sunElev(la,lo,t)<-6)d++}return d/n};
-  for(const[nm,gq]of GLTT){const la=(gq.charCodeAt(1)-65)*10-90+(+gq[3])+0.5,lo=(gq.charCodeAt(0)-65)*20-180+(+gq[2])*2+1,g=bearingDist(STATION.lat,STATION.lon,la,lo);if(g.km<1500)continue;
+  const list=[...opsActive().filter(o=>o.lat!=null).map(o=>[`${o.call} (${opEntName(o)})`,llToGrid(o.lat,o.lon),o]),...GLTT];
+  for(const[nm,gq,op]of list){const la=op?op.lat:(gq.charCodeAt(1)-65)*10-90+(+gq[3])+0.5,lo=op?op.lon:(gq.charCodeAt(0)-65)*20-180+(+gq[2])*2+1,g=bearingDist(STATION.lat,STATION.lon,la,lo);if(g.km<1500)continue;
     let cur=null;const wins=[];
     for(let k=0;k<=N;k++){const t=t0+k*step,eS=sunElev(STATION.lat,STATION.lon,t),eT=sunElev(la,lo,t);let r='';
       if(tw(eS)||tw(eT)){if(darkF(g.az,g.km,t)>=0.7)r='sp';else if(darkF((g.az+180)%360,2*Math.PI*EARTH-g.km,t)>=0.7)r='lp'}
@@ -583,28 +698,29 @@ function glTTCalc(t0){const tw=e=>e>=-18&&e<=3,out=[],step=10*60e3,N=24*6;
     // windows on the same path within 3 hours of each other are shown in one row
     const ok=wins.filter(w=>w.b-w.a>=step);let grp=null;
     for(const w of ok){if(grp&&grp.r===w.r&&w.a-grp.wins[grp.wins.length-1].b<=3*3600e3){grp.wins.push(w);continue}
-      if(grp)out.push(grp);const az=w.r==='sp'?g.az:(g.az+180)%360,km=w.r==='sp'?g.km:2*Math.PI*EARTH-g.km;grp={nm,gq,r:w.r,az,hemi:routeHemi(az,km),wins:[w],a:w.a}}
+      if(grp)out.push(grp);const az=w.r==='sp'?g.az:(g.az+180)%360,km=w.r==='sp'?g.km:2*Math.PI*EARTH-g.km;grp={nm,gq,op,r:w.r,az,hemi:routeHemi(az,km),wins:[w],a:w.a}}
     if(grp)out.push(grp)}
-  return out.sort((x,y)=>x.a-y.a)}
+  out.sort((x,y)=>x.a-y.a);const seen=new Set(),o2=out.filter(w=>{if(!w.op)return true;const k=w.op.call+'|'+w.op.ent;if(seen.has(k))return false;seen.add(k);return true});
+  return o2.sort((x,y)=>(!!y.op-!!x.op)||(x.a-y.a))}
 // "Records (PSK)" for the Japan row: how often your country (or grid area) was heard in Japan in that window (last 28 days), and in the last 3 hours
 function glTTRec(w){if(w.gq!=='PM95')return'—';if(!SUMMARY)return'loading';const hs=new Set();for(const x of w.wins)for(let t=x.a;t<=x.b+6e5;t+=36e5)hs.add(new Date(t).getUTCHours());
   const H=[...hs],nW=H.reduce((a,h)=>a+(SUMMARY.n[h]||0),0),idx=STATION.ent&&CTY?CTY.ent.findIndex(e=>e[0]===STATION.ent):-1,data=idx>=0?SUMMARY.e[String(idx)]:SUMMARY.f&&SUMMARY.f[llToGrid(STATION.lat,STATION.lon).slice(0,2)];
   let txt=(data&&nW>=10)?['160m','80m'].map(b=>{const d=data[b];return`${b} ${d&&d.r?Math.round(H.reduce((a,h)=>a+gLv(d.r[h])*10*(SUMMARY.n[h]||0),0)/nW):0}%`}).join(', '):'no records';
   if(idx>=0&&NOWJ&&NOWJ.recent){const rb=NOWJ.recent.bands||{},heard=['160m','80m'].filter(b=>rb[b]&&(rb[b].all||[]).includes(idx));if(heard.length)txt+=`<br><b style="color:#5ad1ff">heard in Japan in the last 3 hours (${heard.join(', ')})</b>`}
   return txt}
-async function glTTRender(){const box=$('glTT'),d=$('glTTD');if(!box||!d||!d.open)return;try{await loadCty()}catch(e){}try{if(!SUMMARY)await loadSummary()}catch(e){}const L=glTTCalc(Math.floor(Date.now()/6e5)*6e5);
+async function glTTRender(){const box=$('glTT'),d=$('glTTD');if(!box||!d||!d.open)return;try{await loadCty()}catch(e){}try{await loadOps()}catch(e){}try{if(!SUMMARY)await loadSummary()}catch(e){}const L=glTTCalc(Math.floor(Date.now()/6e5)*6e5);
   const hm=t=>{const x=new Date(t);return String(x.getUTCHours()).padStart(2,'0')+':'+String(x.getUTCMinutes()).padStart(2,'0')},lh=t=>{const x=new Date(t+LOC_OFF*3600e3);return String(x.getUTCHours()).padStart(2,'0')+':'+String(x.getUTCMinutes()).padStart(2,'0')};
   box.innerHTML=`<p class="gfine" style="margin:0 0 6px">Times in the next 24 hours when a grey-line duct is possible between your station (${esc(STATION.name)}) and the main stations below (either end in twilight and the path at least 70% dark). UTC and your local time. Times come from the Sun's position (physical conditions), not from space weather. For the Japan row, "Records (PSK)" shows how often your country was heard in Japan on 160m and 80m in that window (PSK Reporter samples, last 28 days), so you can check both the physics and actual reception. "Show on map" draws that station on the propagation radar.</p>`+
-    (L.length?`<div class="tbl"><table class="paths-tbl"><thead><tr><th>Time (UTC / local)</th><th>Station (grid)</th><th>Path</th><th>Twilight</th><th>Records (PSK)<br><span class="th2">your country heard in Japan, 28 days</span></th><th></th></tr></thead><tbody>`+
-    L.map(w=>{const nowIn=w.wins.some(x=>x.a<=Date.now()&&Date.now()<=x.b),sides=w.wins.map(x=>x.side).filter((v,i,a)=>!i||v!==a[i-1]);return`<tr${nowIn?' style="background:rgba(90,209,255,.10)"':''}${w.gq==='PM95'?' class="jarow"':''}><td style="white-space:nowrap">${w.wins.map(x=>`${hm(x.a)}–${hm(x.b+6e5)} UTC<br><span class="th2">${lh(x.a)}–${lh(x.b+6e5)} local</span>`).join('<br>')}${nowIn?' <b style="color:#5ad1ff">now</b>':''}</td><td>${esc(w.nm)}<br><span class="th2">${w.gq}</span></td><td>${w.r==='sp'?'Short path':'Long path'} ${Math.round(w.az)}°<br><span class="th2">${w.hemi}</span></td><td>${sides.join(' →<br>')}</td><td style="white-space:nowrap">${glTTRec(w)}</td><td><button type="button" class="glgo" data-g="${w.gq==='PM95'?'JA1BBE':w.gq}">Show on map</button></td></tr>`}).join('')+
+    (L.length?`<p class="swh">← swipe sideways · scroll up and down inside the box →</p><div class="tbl win"><table class="paths-tbl"><thead><tr><th>Time (UTC / local)</th><th>Station (grid)</th><th>Path</th><th>Twilight</th><th>Records (PSK)<br><span class="th2">your country heard in Japan, 28 days</span></th><th></th></tr></thead><tbody>`+
+    L.map(w=>{const nowIn=w.wins.some(x=>x.a<=Date.now()&&Date.now()<=x.b),sides=w.wins.map(x=>x.side).filter((v,i,a)=>!i||v!==a[i-1]);return`<tr${nowIn?' style="background:rgba(90,209,255,.10)"':''}${w.gq==='PM95'?' class="jarow"':''}${w.op&&!nowIn?' style="background:rgba(224,85,85,.08)"':''}><td style="white-space:nowrap">${w.wins.map(x=>`${hm(x.a)}–${hm(x.b+6e5)} UTC<br><span class="th2">${lh(x.a)}–${lh(x.b+6e5)} local</span>`).join('<br>')}${nowIn?' <b style="color:#5ad1ff">now</b>':''}</td><td>${w.op?'<span class="kd kd-dxp" style="margin:0 0 3px">DXpedition</span><br>':''}${esc(w.nm)}<br><span class="th2">${w.gq}</span></td><td>${w.r==='sp'?'Short path':'Long path'} ${Math.round(w.az)}°<br><span class="th2">${w.hemi}</span></td><td>${sides.join(' →<br>')}</td><td style="white-space:nowrap">${glTTRec(w)}</td><td><button type="button" class="glgo" data-g="${w.op?esc(w.op.call):w.gq==='PM95'?'JA1BBE':w.gq}">Show on map</button></td></tr>`}).join('')+
     `</tbody></table></div>`:'<p class="gfine">No grey-line duct with these stations in the next 24 hours.</p>')}
-document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('.glgo');if(!b)return;$('dxIn').value=b.dataset.g;findTarget();const m=$('dxMap');if(m)m.scrollIntoView({behavior:'smooth',block:'center'})});
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('.glgo');if(!b)return;$('dxIn').value=b.dataset.g;const pd=$('t3');if(pd&&!pd.open)pd.open=true;findTarget();const m=$('dxMap');if(m)m.scrollIntoView({behavior:'smooth',block:'center'})});
 (()=>{const d=document.getElementById('glTTD');if(!d)return;try{if(localStorage.getItem('en.glTTD')==='1')d.open=true}catch(e){}
   d.addEventListener('toggle',()=>{try{localStorage.setItem('en.glTTD',d.open?'1':'0')}catch(e){}if(d.open)setTimeout(glTTRender,30)});
   setInterval(()=>{if(!document.hidden)glTTRender()},10*60e3);if(d.open)setTimeout(glTTRender,800)})();
 async function findTarget(){
   await setStation();
-  const raw=$('dxIn').value.trim().toUpperCase();$('dxIn').value=raw;
+  const raw=$('dxIn').value.trim().toUpperCase();$('dxIn').value=raw;dxWarnSet('');
   if(!raw){TARGET=null;targetRender();return}
   const g=gridToLL(raw);
   if(KNOWN[raw]){const k=gridToLL(KNOWN[raw]);TARGET={short:raw,ent:raw==='JA1BBE'?'Japan':undefined,label:`${esc(raw)}`,loc:`registered grid ${k.grid} (lat ${k.lat.toFixed(2)}°, lon ${k.lon.toFixed(2)}°)`,lat:k.lat,lon:k.lon}}
@@ -612,9 +728,14 @@ async function findTarget(){
   else{
     if(!/^[A-Z0-9\/]{2,15}$/.test(raw)){$('dxOut').innerHTML='<p class="fn t4">Enter a callsign or a 4- or 6-character grid locator.</p>';return}
     try{await loadCty()}catch(e){$('dxOut').innerHTML='<p class="fn t4">Could not load the callsign table (cty.json). Please enter a grid locator.</p>';return}
+    try{await loadOps()}catch(e){}
+    const ops=opsFind(raw);
+    if(ops.length){TARGET=opTarget(ops[0]);if(ops.length>1)dxWarnSet(`${esc(raw)} is listed as active at more than one place (${ops.map(o=>esc(opEntName(o))).join(', ')}). ${esc(opEntName(ops[0]))} is used; click a marker (DXpeditions on the air) to switch.`)}
+    else{
     const r=lookupCall(raw);
     if(!r){$('dxOut').innerHTML=`<p class="fn t4">Could not identify the entity of ${esc(raw)}. Please enter a grid locator.</p>`;return}
-    TARGET={short:raw,label:`${esc(raw)} ${esc(r.name)}`,loc:`representative position ${llToGrid(r.lat,r.lon)} (lat ${r.lat.toFixed(1)}°, lon ${r.lon.toFixed(1)}°)`,lat:r.lat,lon:r.lon,ent:r.name};
+    TARGET={short:raw,label:`${esc(raw)} ${esc(r.name)}`,loc:`representative position ${llToGrid(r.lat,r.lon)} (lat ${r.lat.toFixed(1)}°, lon ${r.lon.toFixed(1)}°)`
+,lat:r.lat,lon:r.lon,ent:r.name};dxWarnSet(ambMsg(raw,r));}
   }
   if(!(EX_DX&&raw===EX_DX))LS('nowcast_en.dx',raw);exNoteSet();targetRender();dayNight();
 }
@@ -667,6 +788,50 @@ var MAGLINES=(()=>{try{return localStorage.getItem('en.magLines')==='1'}catch(e)
 function magBtnSet(){const b=document.getElementById('magBtn'),n=document.getElementById('magNote');if(b)b.textContent=(MAGLINES?'▼ ':'▶ ')+'Geomagnetic latitude';if(n)n.style.display=MAGLINES?'':'none'}
 document.addEventListener('click',e=>{if(e.target&&e.target.id==='magBtn'){MAGLINES=!MAGLINES;try{localStorage.setItem('en.magLines',MAGLINES?'1':'0')}catch(e2){}magBtnSet();drawMap(LASTP)}});
 document.addEventListener('DOMContentLoaded',magBtnSet);
+// ---- DXpeditions on the air (NG3K Announced DX Operations, written to ops.json by ja1bbe/dxpeditions; used with the kind permission of Bill Feidt, NG3K)
+var OPS_URL='https://ja1bbe.github.io/dxpeditions/ops.json',OPSD=null,OPS_P=null,OPS_FAIL=false,DXP_HITS=[],DXP_CYC={},DXP_W=0;
+var DXP_ON=(()=>{try{return localStorage.getItem('en.dxpOn')==='1'}catch(e){return false}})();
+function loadOps(){if(!OPS_P)OPS_P=fetch(OPS_URL,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()})
+  .then(d=>{OPSD=d;OPS_FAIL=false;dxpNoteSet();drawMap(LASTP);if(typeof glTTRender==='function')glTTRender();return d})
+  .catch(e=>{OPSD=null;OPS_FAIL=true;dxpNoteSet();return null});return OPS_P}
+setInterval(()=>{if(OPS_P&&!document.hidden){OPS_P=null;loadOps()}},3*3600e3);
+function opsActive(){if(!OPSD||!Array.isArray(OPSD.ops))return[];const d=new Date().toISOString().slice(0,10);return OPSD.ops.filter(o=>o.start<=d&&d<=o.end)}
+function opsStale(){return!!(OPSD&&OPSD.generated&&Date.now()-Date.parse(OPSD.generated)>2*864e5)}
+function opEntName(o){return o.ent!=null&&CTY&&CTY.ent[o.ent]?CTY.ent[o.ent][0]:o.entity}
+function opTarget(o){return{short:o.call,label:`${esc(o.call)} ${esc(opEntName(o))}<span class="kd kd-dxp">DXpedition on the air</span>`,
+  loc:`representative position ${llToGrid(o.lat,o.lon)} (lat ${o.lat.toFixed(1)}°, lon ${o.lon.toFixed(1)}°) · on the air ${o.start} to ${o.end} (UTC)`,lat:o.lat,lon:o.lon,ent:opEntName(o),op:o}}
+function opsFind(call){const seen=new Set();return opsActive().filter(o=>{if(o.lat==null||String(o.call).toUpperCase()!==call)return false;const k=o.ent+'|'+o.lat.toFixed(1)+','+o.lon.toFixed(1);if(seen.has(k))return false;seen.add(k);return true})}
+function dxWarnSet(msg){const n=$('dxWarn');if(!n)return;n.innerHTML=msg||'';n.style.display=msg?'':'none'}
+// a prefix that contains a call-area digit and also covers other entities (e.g. VK9 → Norfolk I. assumed)
+function ambMsg(raw,r){if(!r||!CTY||r.matched===raw||CTY.exact[raw]!=null)return'';const p=r.matched,id=v=>Array.isArray(v)?v[0]:v,me=id(CTY.prefix[p]);
+  if(!/\d/.test(p.slice(1)))return'';if(me==null)return'';const others=new Set();for(const k in CTY.prefix){if(k.length>p.length&&k.startsWith(p)){const e=id(CTY.prefix[k]);if(e!==me)others.add(e)}}
+  if(!others.size)return'';const ex=[...others].slice(0,3).map(i=>CTY.ent[i][0]).join(', ');
+  return `${esc(raw)} matched the prefix ${esc(p)}, which also covers other entities (${esc(ex)}${others.size>3?', …':''}). ${esc(r.name)} is assumed. If the station is elsewhere, please enter its grid locator.`}
+function dxpNoteSet(){const b=$('dxpBtn'),n=$('dxpNote');if(b)b.textContent=(DXP_ON?'▼ ':'▶ ')+'DXpeditions on the air';if(!n)return;n.style.display=DXP_ON?'':'none';if(!DXP_ON)return;
+  if(!OPSD){n.innerHTML=OPS_FAIL?'Could not load the list of operations (ops.json). Please try again later.':'Loading the list of operations…';return}
+  const a=opsActive(),on=a.filter(o=>o.lat!=null),nl=a.length-on.length,g=new Date(Date.parse(OPSD.generated)),gs=isNaN(g)?'—':g.toISOString().slice(0,16).replace('T',' ')+' UTC';
+  n.innerHTML=(on.length?`<span style="color:#e05555">●</span> ${on.length} DXpedition${on.length>1?'s':''} on the air${nl?` (${nl} without a known position are not shown)`:''}. Click a marker to make it the other station; click again to step through operations at the same place. Positions are entity centres and may be a few hundred km from the actual site. `:'No DXpeditions are on the air now. ')+
+    `List generated ${gs}${opsStale()?' <span style="color:#f08a4b">(old data: not updated for 2 days or more)</span>':''}. Source: NG3K Announced DX Operations (Bill Feidt, NG3K).`}
+document.addEventListener('click',e=>{if(e.target&&e.target.id==='dxpBtn'){DXP_ON=!DXP_ON;try{localStorage.setItem('en.dxpOn',DXP_ON?'1':'0')}catch(e2){}if(DXP_ON)loadOps();dxpNoteSet();drawMap(LASTP)}});
+document.addEventListener('DOMContentLoaded',()=>{dxpNoteSet();if(DXP_ON)loadOps()});
+document.addEventListener('click',async e=>{if(!e.target||e.target.id!=='dxMap'||!DXP_ON||!DXP_HITS.length)return;
+  const r=e.target.getBoundingClientRect(),sc=DXP_W&&r.width?DXP_W/r.width:1,x=(e.clientX-r.left)*sc,y=(e.clientY-r.top)*sc;
+  let best=null;for(const h of DXP_HITS){const d=Math.hypot(h.x-x,h.y-y);if(d<=16&&(!best||d<best.d))best={...h,d}}if(!best)return;
+  const i=DXP_CYC[best.key]=((DXP_CYC[best.key]??-1)+1)%best.ops.length,o=best.ops[i];
+  try{await loadCty()}catch(e2){}
+  $('dxIn').value=o.call;try{localStorage.setItem('nowcast_en.dx',o.call)}catch(e2){}
+  TARGET=opTarget(o);dxWarnSet('');exNoteSet();targetRender();dayNight()});
+// ---- Standard view: forget panels, overlays and the other station, then reload (your station and the signal settings are kept)
+document.addEventListener('click',e=>{if(!e.target||e.target.id!=='resetView')return;
+  const KEEP=new Set(['nowcast_en.myGrid','en.lb']);
+  try{const ks=[];for(let i=0;i<localStorage.length;i++)ks.push(localStorage.key(i));
+    for(const k of ks){if(KEEP.has(k))continue;if(/^en\./.test(k)||/^nowcast_en\./.test(k))localStorage.removeItem(k)}}catch(e2){}
+  location.href=location.pathname+location.search});
+// ---- the four sections: remember open/closed (defaults: 1 and 3 open, 2 and 4 closed); section 3 uses nowcast_en.propOpen
+['t1','t2','t4'].forEach(id=>{const d=document.getElementById(id);if(!d)return;let v=null;try{v=localStorage.getItem('nowcast_en.'+id)}catch(e){}if(v==='0')d.open=false;else if(v==='1')d.open=true;
+  d.addEventListener('toggle',()=>{try{localStorage.setItem('nowcast_en.'+id,d.open?'1':'0')}catch(e){}})});
+document.querySelectorAll('.toc a').forEach(a=>a.addEventListener('click',()=>{const d=document.getElementById(a.getAttribute('href').slice(1));if(d&&!d.open)d.open=true}));
+
 // ---- ローバンドの遠距離（電離圏ダクトの可能性）を重ねる。検証中
 // 記録（11月6〜18日の抜き取り）で 160m・80m の遠距離の強い受信が多かった方面と、その時刻の条件（経路の大部分が夜で、どちらかの端が薄明）を使う。
 // 仕組みが電離圏ダクトか、境目で D層の吸収が小さくなるためかは、この記録からは見分けられない。
@@ -797,9 +962,31 @@ function drawMap(P){
   c.setLineDash([3,4]);c.strokeStyle='#33404e';c.lineWidth=1;c.fillStyle='#7d8896';c.font='10px sans-serif';c.textAlign='left';
   for(const km of[5000,10000,15000]){const r=km/HALF*S.R;c.beginPath();c.arc(S.cx,S.cy,r,0,2*Math.PI);c.stroke();c.fillText((km/1000)+',000km',S.cx+3,S.cy-r-3)}
   c.setLineDash([]);
-  // 9方面の目印
-  c.font='11px sans-serif';
+  // region markers (faded while DXpeditions are shown)
+  c.font='11px sans-serif';c.globalAlpha=DXP_ON&&OPSD?.35:1;
   for(const[n,la,lo]of DIRS){const[x,y]=pr(la,lo);c.fillStyle='#9aa6b4';c.beginPath();c.arc(x,y,2.5,0,2*Math.PI);c.fill();c.fillText(n,x+5,y+4)}
+  c.globalAlpha=1;
+  const drawDxp=tp=>{DXP_HITS=[];DXP_W=W;if(!DXP_ON||!OPSD)return;const act=opsActive().filter(o=>o.lat!=null&&o.lon!=null);if(!act.length)return;
+    const fs=S.R<200?10:11,G={};for(const o of act){const k=o.lat.toFixed(1)+','+o.lon.toFixed(1);(G[k]=G[k]||{key:k,lat:o.lat,lon:o.lon,ops:[]}).ops.push(o)}
+    const boxes=[],hit=b=>boxes.some(x=>b.x<x.x+x.w&&b.x+b.w>x.x&&b.y<x.y+x.h&&b.y+b.h>x.y),sel=TARGET&&TARGET.op?TARGET.op:null;
+    const L=Object.values(G).map(x=>({...x,p:pr(x.lat,x.lon)}));
+    for(const x of L)boxes.push({x:x.p[0]-5,y:x.p[1]-5,w:10,h:10});
+    boxes.push({x:S.cx-6,y:S.cy-6,w:80,h:22});if(tp)boxes.push({x:tp[0]-10,y:tp[1]-10,w:20,h:20});
+    L.sort((a,b)=>(b.ops.includes(sel)-a.ops.includes(sel)));c.globalAlpha=opsStale()?.55:1;
+    for(const x of L){const[px,py]=x.p,on=x.ops.includes(sel);
+      c.beginPath();c.arc(px,py,on?6.5:5,0,2*Math.PI);c.fillStyle='#e05555';c.fill();c.strokeStyle='#fff';c.lineWidth=on?2.2:1.3;c.stroke();
+      DXP_HITS.push({x:px,y:py,key:x.key,ops:x.ops});
+      if(on&&tp)continue;
+      const calls=[...new Set(x.ops.map(o=>o.call))],txt=calls.length>2?calls.slice(0,2).join('·')+'…':calls.join('·');
+      c.font='bold '+fs+'px sans-serif';const w=c.measureText(txt).width+6,h=fs+4;
+      const cand=[[8,-h/2],[-8-w,-h/2],[-w/2,-h-7],[-w/2,7],[8,-h-4],[-8-w,-h-4],[8,4],[-8-w,4]];
+      for(const rr of[26,40])for(let a=0;a<360;a+=30){const ox=rr*Math.cos(a*Math.PI/180),oy=rr*Math.sin(a*Math.PI/180);cand.push([ox>=0?ox:ox-w,oy-h/2])}
+      for(const[ox,oy]of cand){const b={x:px+ox,y:py+oy,w,h};if(hit(b))continue;
+        if(Math.hypot(Math.max(Math.abs(b.x-S.cx),Math.abs(b.x+w-S.cx)),Math.max(Math.abs(b.y-S.cy),Math.abs(b.y+h-S.cy)))>S.R-2)continue;
+        boxes.push(b);
+        if(Math.hypot(ox,oy)>22){const lx=Math.max(b.x,Math.min(px,b.x+w)),ly=Math.max(b.y,Math.min(py,b.y+h));c.strokeStyle='rgba(230,235,240,.7)';c.lineWidth=1;c.beginPath();c.moveTo(px,py);c.lineTo(lx,ly);c.stroke()}
+        c.fillStyle=on?'rgba(120,20,20,.9)':'rgba(10,14,20,.78)';c.fillRect(b.x,b.y,w,h);c.fillStyle='#fff';c.textAlign='left';c.fillText(txt,b.x+3,b.y+h-4);break}}
+    c.globalAlpha=1};
   // ローバンドの遠距離（電離圏ダクトの可能性）：条件に当たる方面への短経路を白い線で
   const mapLabel=(txt,x,y,a,b)=>{c.font='bold 11px sans-serif';const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1;let px=-dy/L,py=dx/L;
     if(px*(x-S.cx)+py*(y-S.cy)<0){px=-px;py=-py}const w=c.measureText(txt).width,h=15,ox=x+px*16,oy=y+py*16;let lx=px>=0?ox:ox-w;
@@ -854,8 +1041,10 @@ function drawMap(P){
     let best=0,bx=0;for(let x=0;x<=km;x+=100){const[la,lo]=dest(STATION.lat,STATION.lon,az,x),m=Math.abs(magLat(la,lo));if(m>best){best=m;bx=x}}
     const mp=pa(az,bx);c.strokeStyle='#f08a4b';c.lineWidth=2;c.beginPath();c.arc(mp[0],mp[1],6,0,2*Math.PI);c.stroke();
     c.fillStyle='#f08a4b';c.font='bold 11px sans-serif';c.fillText(`${sp.mag>=0?'N':'S'}${Math.abs(sp.mag).toFixed(0)}°`,mp[0]+8,mp[1]-6);
+    drawDxp(t);
     c.fillStyle='#e05555';c.beginPath();c.arc(t[0],t[1],6,0,2*Math.PI);c.fill();c.strokeStyle='#fff';c.lineWidth=1.5;c.stroke();
     c.fillStyle='#fff';c.font='bold 12px sans-serif';{const right=t[0]>S.cx+S.R*0.55;c.textAlign=right?'right':'left';c.fillText(label,t[0]+(right?-10:9),t[1]+(right?-8:4));c.textAlign='left'}}
+  if(!P)drawDxp(null);
   c.restore();
   // 外周と方位の目盛り
   c.strokeStyle='#5a6573';c.lineWidth=1.2;c.beginPath();c.arc(S.cx,S.cy,S.R,0,2*Math.PI);c.stroke();
@@ -1265,11 +1454,11 @@ loadLand();window.addEventListener('resize',()=>drawMap(LASTP));
 (async()=>{const g=LS('nowcast_en.myGrid');if(g)$('myGrid').value=g;else{EX_ST=exampleSt();$('myGrid').value=EX_ST}await setStation();dayNight();const d=LS('nowcast_en.dx');
   if(d){$('dxIn').value=d;findTarget()}else{EX_DX='JA1BBE';$('dxIn').value=EX_DX;findTarget()}loadNeeded()})();
 // 伝搬の見込み（地図と経路）の開閉。最初は開いた状態。開いたときに地図を描き直す
-(()=>{const det=$('propDet');if(!det)return;if(LS('nowcast_en.propOpen')==='0')det.open=false;
+(()=>{const det=$('t3');if(!det)return;if(LS('nowcast_en.propOpen')==='0')det.open=false;
   det.addEventListener('toggle',()=>{LS('nowcast_en.propOpen',det.open?'1':'0');if(det.open){targetRender();drawMap(LASTP)}})})();
 load();loadIono();setInterval(load,5*60e3);setInterval(loadIono,15*60e3);setInterval(()=>{dayNight();bandGuide(lastV);targetRender()},60e3);
 })();
 </script>
-<p style="text-align:center;color:#666;font-size:.72rem;margin:18px 0 8px">Version: 2026-11-26</p>
+<p style="text-align:center;color:#666;font-size:.72rem;margin:18px 0 8px">Version: 2026-11-27</p>
 </body>
 </html>
