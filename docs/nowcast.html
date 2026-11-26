@@ -122,6 +122,84 @@ th{color:var(--muted);font-weight:500}
 .legend i{display:inline-block;width:18px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 .note{color:var(--muted);font-size:.84rem;margin-top:24px;border-top:1px solid var(--line);padding-top:14px}
 .note a{color:var(--gold)}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:-6px 0 6px}
+.toc a{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border:1px solid var(--line);border-radius:999px;color:var(--ink);text-decoration:none;font-size:.88rem;background:var(--panel)}
+.toc a:hover{border-color:var(--gold)}
+.toc a b,.tier .tn{display:inline-flex;align-items:center;justify-content:center;width:1.45em;height:1.45em;border-radius:50%;background:var(--gold);color:#111;font-size:.8em;font-weight:700}
+.tier{margin:36px 0 12px;padding-top:14px;border-top:1px solid var(--line);scroll-margin-top:8px}
+.tier h2{display:flex;align-items:center;gap:10px;color:var(--ink);font-size:1.3rem;margin:0 0 4px}
+.tier .lead{margin:0;color:var(--muted);font-size:.9rem}
+h3.sub{color:var(--gold);font-size:1.05rem;font-weight:700;margin:22px 0 10px}
+details.tier>summary{list-style:none;cursor:pointer}
+details.tier>summary::-webkit-details-marker{display:none}
+.tier .tchev{margin-left:auto;font-size:.8rem;font-weight:400;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 10px;white-space:nowrap}
+details.tier[open] .tchev::before{content:'▼ 閉じる'}
+details.tier:not([open]) .tchev::before{content:'▶ 開く'}
+details.tier>summary:hover .tchev{border-color:var(--gold);color:var(--ink)}
+details.tier:not([open]){padding-bottom:4px}
+details.tier[open]>summary{margin-bottom:16px}
+.picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:8px}
+.pk{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.pk:hover{border-color:var(--gold)}
+.pk.rec{border-left:4px solid var(--gold)}
+.pk.phys{border-left:4px dashed #c77dff}
+.pk .pn{font-size:.82rem;color:var(--muted)}
+.pk .pb{font-size:1.25rem;font-weight:700;font-family:var(--mono);line-height:1.3}
+.pk.rec .pb{color:var(--gold)}
+.pk .ps{font-size:.76rem;color:var(--muted)}
+.pk .pw{font-size:.72rem;color:#f08a4b}
+.rgl{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.rghead,.rg>summary{display:grid;grid-template-columns:minmax(9rem,1.2fr) 6.5rem 2.6fr 6rem;gap:12px;align-items:center;padding:8px 12px}
+.rghead{font-size:.74rem;line-height:1.35;color:var(--muted);background:var(--panel2)}
+.rg{border-top:1px solid var(--line)}
+.rg>summary{list-style:none;cursor:pointer}
+.rg>summary::-webkit-details-marker{display:none}
+.rg>summary:hover{background:rgba(255,255,255,.035)}
+.rg[open]>summary{background:rgba(216,177,74,.06)}
+.rgn b::before{content:'▶ ';font-size:.7em;color:var(--muted)}
+.rg[open] .rgn b::before{content:'▼ '}
+.rgs{display:block;font-size:.74rem;color:var(--muted);padding-left:1.1em}
+.rgb{font-family:var(--mono);font-weight:700;font-size:1.1rem;line-height:1.25}
+.rgb.rec{color:var(--gold)}
+.rgb.phys small{color:#c77dff}
+.rgb.rec small{color:var(--gold)}
+.rgb small{display:block;font-family:var(--sans);font-weight:400;font-size:.72rem;color:var(--muted)}
+.rgv{font-size:.88rem;line-height:1.5}
+.rgbody{padding:6px 14px 14px 26px;font-size:.88rem;line-height:1.6}
+.rgcells{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+.rgcells>div{background:var(--panel2);border-radius:6px;padding:8px 10px}
+.rgk{display:block;font-size:.78rem;color:var(--muted);font-weight:500}
+.rgo{margin-top:10px;background:transparent;border:1px solid var(--gold);color:var(--gold);border-radius:6px;padding:4px 12px;font:inherit;font-size:.85rem;cursor:pointer}
+.rgo:hover{background:rgba(216,177,74,.12)}
+@media (max-width:640px){.rghead{display:none}.rg>summary{grid-template-columns:1fr auto;gap:4px 10px}.rgv{grid-column:1/-1}.rgd{display:none}.rgbody{padding-left:14px}.rgcells{grid-template-columns:1fr}}
+.kd{display:inline-block;font-size:.66rem;font-weight:700;line-height:1;padding:3px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;letter-spacing:.04em;font-family:var(--sans)}
+.kd+.kd{margin-left:3px}
+.sumrow .k .kd{margin:3px 3px 0 0}
+.bandsum .brow{border-top-color:var(--line)!important;border-right:0!important;border-bottom:0!important}
+.kd-obs{color:#08170e;background:#6fcf97}
+.kd-phy{color:#1a0b26;background:#c77dff}
+.kd-pre{color:#1c1606;background:#e9c46a}
+.kdleg{margin:10px 0 0;font-size:.78rem;color:var(--muted);line-height:1.9}
+.kdleg .kd{margin-left:10px}
+.kdleg .kd:first-child{margin-left:4px}
+.bandsum .brow{display:grid;grid-template-columns:8.5rem 10rem 1fr;gap:12px;align-items:start;padding:10px 0 10px 12px;border-top:1px solid var(--line);border-left:4px solid var(--line)}
+.bandsum .brow:first-of-type{margin-top:8px}
+.bandsum .bk{font-weight:700;font-size:.92rem}
+.bandsum .bk small{display:block;font-weight:400;font-size:.74rem;color:var(--muted)}
+.bandsum .state{font-size:1.15rem;font-weight:700;margin:0;line-height:1.4}
+.bandsum .bw{font-size:.88rem;line-height:1.65;color:#d6d6d6}
+.bandsum .bpath{margin-top:4px;font-size:.82rem;color:var(--muted)}
+@media (max-width:640px){.bandsum .brow{grid-template-columns:1fr auto;gap:2px 10px}.bandsum .bw{grid-column:1/-1}}
+.nd{display:inline-block;font-size:.66rem;font-weight:700;line-height:1.2;padding:1px 5px;border-radius:4px;margin-left:5px;background:#e9c46a;color:#1c1606;vertical-align:middle;white-space:nowrap}
+.nd2{background:transparent;color:#e9c46a;border:1px solid #e9c46a}
+.kd-dxp{color:#fff;background:#e05555}
+.sumbox{margin:10px 0 4px;padding:10px 14px;border:1px solid var(--gold);border-radius:8px;background:rgba(216,177,74,.07)}
+.sumbox .sh{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;color:var(--gold);margin-bottom:4px}
+.sumrow{display:grid;grid-template-columns:9.5em 1fr;gap:10px;padding:6px 0;border-top:1px solid var(--line);font-size:.92rem;line-height:1.6}
+.sumrow .k{color:var(--muted);font-size:.85rem;padding-top:1px}
+@media (max-width:560px){.sumrow{grid-template-columns:1fr;gap:0}}
+h4.stp{display:flex;align-items:center;gap:8px;margin:22px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--line);font-size:.98rem;color:var(--ink)}
+h4.stp span{flex:none;white-space:nowrap;font-size:.75rem;font-weight:700;color:#111;background:var(--gold);border-radius:4px;padding:1px 8px}
 </style>
 </head>
 <body>
@@ -138,29 +216,52 @@ th{color:var(--muted);font-weight:500}
   <a href="https://ja1bbe.wixsite.com/mysite/contact" target="_blank" rel="noopener" style="margin-left:auto;color:#e9c46a;text-decoration:underline">✉ ご意見・ご感想はこちら</a>
 </div>
 <div class="msg" id="msg"></div>
+<nav class="toc" aria-label="ページ内の段">
+  <a href="#t1"><b>1</b> 電波伝搬の現状</a><a href="#t2"><b>2</b> プロパゲーション</a><a href="#t3"><b>3</b> DXハンティング</a><a href="#t4"><b>4</b> エビデンス</a>
+</nav>
+<p class="kdleg">表示の区別：<span class="kd kd-obs">実測</span> 実際に観測・受信されたもの　<span class="kd kd-phy">物理</span> 太陽の高さ・オーロラ帯などからの計算　<span class="kd kd-pre">予測</span> 過去の記録や予報からの見込み</p>
 
-<section class="verdict" id="verdict">
-  <div class="lab">ローバンド（160 / 80 / 40m）の目安</div>
-  <div class="state" id="state">―</div>
-  <p class="why" id="why"></p>
-  <div class="paths">
-    <div><b>高緯度を通るパス（欧州・北米方面）</b><span id="pHigh">―</span></div>
-    <div><b>低緯度のパス（東南アジア・オセアニア方面）</b><span id="pLow">―</span></div>
-  </div>
+<details class="tier" id="t1" open><summary><h2><span class="tn">1</span>電波伝搬の現状<span class="tchev"></span></h2>
+<p class="lead">いまどの方面を何mで狙えそうか、バンドの区分ごとの傾向、日本の局が実際に受信している相手です。</p></summary>
+<section class="verdict pick" id="pick">
+  <div class="lab">いまのお薦め（方面とバンド）<span class="kd kd-pre">予測</span><span class="kd kd-phy">物理</span><span style="color:#d64545;font-size:.9em;margin-left:6px">（検証中）</span></div>
+  <div class="picks" id="pickList"><span class="fn">計算しています…</span></div>
+  <p class="fn" style="margin:8px 0 0">金色の札は、日本の局がこの時刻の前後1時間に受信できた割合（直近28日間の記録）からの見込み（予測）、紫の破線の札は、記録が少ないときに経路の昼夜と SFI から選んだ物理の目安です。角度は短経路の方位。押すと、その方面を3段目「DXハンティング」の相手に入れます。</p>
 </section>
 
-<div class="bands">
-  <div class="verdict sm" id="vMid"><div class="lab">ミドルバンド（30 / 20 / 17m）の目安</div><div class="state" id="sMid">―</div><p class="why" id="wMid"></p></div>
-  <div class="verdict sm" id="vHigh"><div class="lab">ハイバンド（15 / 12 / 10m）の目安</div><div class="state" id="sHigh">―</div><p class="why" id="wHigh"></p></div>
-</div>
+<section class="verdict bandsum">
+  <div class="lab">バンドの区分ごとの傾向（宇宙天気と日本の昼夜から）<span class="kd kd-phy">物理</span></div>
+  <div class="brow" id="verdict"><span class="bk">ローバンド<small>160 / 80 / 40m</small></span><span class="state" id="state">―</span>
+    <div class="bw"><span id="why"></span><div class="bpath">高緯度を通るパス（欧州・北米方面）：<span id="pHigh">―</span><br>低緯度のパス（東南アジア・オセアニア方面）：<span id="pLow">―</span></div></div></div>
+  <div class="brow" id="vMid"><span class="bk">ミドルバンド<small>30 / 20 / 17m</small></span><span class="state" id="sMid">―</span><div class="bw"><span id="wMid"></span></div></div>
+  <div class="brow" id="vHigh"><span class="bk">ハイバンド<small>15 / 12 / 10m</small></span><span class="state" id="sHigh">―</span><div class="bw"><span id="wHigh"></span></div></div>
+</section>
 
 <section class="verdict" id="nowpsk">
 <div class="lab">いま開いている相手と、これから3時間（日本の局の受信の記録から）</div>
-<details class="gdet" id="npRecentD"><summary>直近3時間に開いていたエンティティ（日本の局の受信）</summary><div id="npRecent" class="gtxt">読み込み中…</div></details>
-<details class="gdet" id="npOutD"><summary>これから3時間の見通し（過去の記録）<span style="color:#d64545;font-size:.85em">（検証中）</span></summary><div id="npOut" class="gtxt"></div></details>
+<details class="gdet" id="npRecentD"><summary>直近3時間に開いていたエンティティ（日本の局の受信）<span class="kd kd-obs">実測</span></summary><div id="npRecent" class="gtxt">読み込み中…</div></details>
+<details class="gdet" id="npOutD"><summary>これから3時間の見通し（過去の記録）<span class="kd kd-pre">予測</span><span style="color:#d64545;font-size:.85em">（検証中）</span></summary><div id="npOut" class="gtxt"></div></details>
 <p class="fn" id="npNote" style="margin:6px 0 0"></p>
 </section>
-<details id="propDet" open><summary>JA1BBE 伝搬レーダー（地図と経路）</summary>
+
+</details>
+<details class="tier" id="t2"><summary><h2><span class="tn">2</span>プロパゲーション<span class="tchev"></span></h2>
+<p class="lead">主な方面ごとの経路の状態と、これから24時間にグレイラインダクトが開く相手です。</p></summary>
+<h3 class="sub">方面別の経路判定（ローテーター方位つき）</h3>
+<div class="rgl">
+  <div class="rghead"><span>方面</span><span>お薦めバンド<br><span class="kd kd-pre">予測</span><span class="kd kd-phy">物理</span></span><span>いまの見通し（主にローバンド）<span class="kd kd-phy">物理</span></span><span>昼夜<br>相手／自局</span></div>
+  <div id="dn"></div>
+</div>
+<p class="fn" id="jaSun" style="margin-top:8px"></p>
+<p class="fn" id="aurInfo"></p>
+<details class="gdet"><summary>この一覧の見方</summary><p class="gfine">方位は真北を0°とした大圏方位で、自局のグリッドロケータ（既定はPM95）の中心を基準に計算しています。4桁のグリッドは東西約180km・南北約110kmの範囲なので、6桁（例：PM95ve）で入れると、より正確になります。ローテーターが磁北基準の場合は、日本付近の磁気偏角（西へ約7〜9°）の分だけ補正してください。「経路の暗さ」は、経路上の地点のうち太陽高度が-6°以下の割合です。「最高地磁気緯度」は地磁気を双極子で近似した計算値で、北米上空は地磁気の極に近いため、地理的な緯度より高くなります。オーロラ確率は、NOAAのOVATIONモデルによる30〜90分先の推定値を、経路上で最も高い地点で示しています（30%以上を「通過」、10〜30%を「縁」としています）。オーロラ帯ではD層・E層への電子の降り込みにより吸収が強まり、特に160m・80mで信号が大きく弱まることがあります。</p></details>
+<h3 class="sub">グレイラインダクトの時刻表<span class="kd kd-phy">物理</span><span class="kd kd-obs">実測</span></h3>
+  <details class="gdet" id="glTTD"><summary>いまから24時間の一覧を開く<span style="color:#d64545;font-size:.85em">（検証中）</span></summary><div id="glTT" class="gtxt">計算中…</div></details>
+
+</details>
+<details class="tier" id="t3" open><summary><h2><span class="tn">3</span>DXハンティング<span class="tchev"></span></h2>
+<p class="lead">交信したい相手を入れると、方位・時間帯・バンドの目安を、自局を中心にした地図とともに示します。</p></summary>
+<h3 class="sub">JA1BBE 伝搬レーダー（地図と経路）</h3>
 <p class="fn" style="margin:-4px 0 10px">宇宙天気と受信の記録から見た、いまの伝搬の条件を、自局を中心に映します。</p>
 <section class="verdict" id="target">
   <div class="lab">交信したい相手までの経路（自局と相手を、それぞれグリッドロケータまたはコールサインで入力）</div>
@@ -171,43 +272,38 @@ th{color:var(--muted);font-weight:500}
     <button id="dxClr" class="sub" type="button">消す</button>
   </div>
   <p class="fn" id="stInfo"></p>
+  <p class="fn" id="ndNote" style="display:none"></p>
   <p class="fn" id="exNote" style="display:none;color:var(--gold)"></p>
+  <p class="fn" id="dxWarn" style="display:none;color:#f08a4b"></p>
   <div class="mapwrap"><canvas id="dxMap" role="img" aria-label="自局を中心にした正距方位図。短経路と長経路、昼夜、オーロラ帯を表示"></canvas>
     <div class="legend"><span><i style="background:var(--gold)"></i>短経路</span><span><i style="background:repeating-linear-gradient(90deg,#7fd3c6 0 4px,transparent 4px 7px)"></i>長経路</span><span><i style="background:repeating-linear-gradient(90deg,#c77dff 0 3px,transparent 3px 6px)"></i>ずらした方位</span><span><i style="background:#163250"></i>昼の海</span><span><i style="background:#05080d;border:1px solid #333"></i>夜（太陽高度−6°以下）</span><span><i style="background:#3a3550"></i>薄明</span><span><i style="background:rgba(80,220,140,.7)"></i>オーロラ 10〜30%</span><span><i style="background:rgba(240,90,80,.75)"></i>30%以上</span><span><i style="background:transparent;border:2px solid #f08a4b;border-radius:50%;width:10px"></i>最高地磁気緯度の地点</span></div>
-    <div style="margin-top:6px;text-align:center"><button id="magBtn" type="button" class="magbtn">▶ 地磁気緯度線を重ねる</button> <button id="drapBtn" type="button" class="magbtn">▶ D層の吸収を重ねる</button> <button id="stormBtn" type="button" class="magbtn">▶ 嵐の広がりを重ねる</button> <button id="ductBtn" type="button" class="magbtn">▶ ローバンドの遠距離（電離圏ダクトの可能性）を重ねる</button> <span style="display:block;margin-top:4px;color:#d64545;font-size:.8em">（D層の吸収、嵐の広がり、ローバンドの遠距離は検証中）</span></div>
+    <div style="margin-top:6px;text-align:center"><button id="magBtn" type="button" class="magbtn">▶ 地磁気緯度線を重ねる</button> <button id="drapBtn" type="button" class="magbtn">▶ D層の吸収を重ねる</button> <button id="stormBtn" type="button" class="magbtn">▶ 嵐の広がりを重ねる</button> <button id="ductBtn" type="button" class="magbtn">▶ ローバンドの遠距離（電離圏ダクトの可能性）を重ねる</button> <button id="dxpBtn" type="button" class="magbtn">▶ 運用中のDXペディションを重ねる</button> <span style="display:block;margin-top:4px;color:#d64545;font-size:.8em">（D層の吸収、嵐の広がり、ローバンドの遠距離は検証中）</span></div>
     <p id="drapNote" class="gfine" style="display:none;text-align:left;font-size:.8rem;max-width:760px;margin:6px auto 0"></p>
     <div id="ductNote" class="gfine" style="display:none;text-align:left;font-size:.8rem;max-width:760px;margin:6px auto 0"></div>
     <p id="stormNote" class="gfine" style="display:none;text-align:left;font-size:.8rem;max-width:760px;margin:6px auto 0"></p>
+    <p id="dxpNote" class="gfine" style="display:none;text-align:left;font-size:.8rem;max-width:760px;margin:6px auto 0"></p>
     <p id="magNote" class="gfine" style="display:none;text-align:center;font-size:.8rem">点線は地磁気緯度 0°・±30°・±70°、<span style="color:#f08a4b">橙は ±60°</span>（静穏時のオーロラ帯の赤道側の縁の目安。Kp が上がるとこれより低緯度まで広がります）。地球の磁場を一つの棒磁石とみなす近似（経路の判定と同じ計算）で、実際の地磁気とは場所によって数度ずれます。</p>
     <p class="fn" style="text-align:center">自局を中心にした正距方位図です。中心から見た方向がそのまま大圏方位（上が真北）、中心からの距離が実際の距離を表します。外周は地球の裏側（約20,000km）で、長経路は外周を越えて反対側から相手に届きます。</p></div>
-  <details class="gdet" id="glTTD"><summary>グレイラインダクトの時刻表（いまから24時間）<span style="color:#d64545;font-size:.85em">（検証中）</span></summary><div id="glTT" class="gtxt">計算中…</div></details>
 <div id="dxOut"><p class="fn">相手のコールサイン（例：ZF2AA、VP2V/JA1XXX）か、グリッドロケータ（例：FK89、FK89ab）を入れて「経路を調べる」を押すと、自局からの短経路・長経路の方位、距離、最高地磁気緯度、オーロラ確率、経路の暗さと判定を表示します。コールサインの場合は、そのエンティティの代表位置で計算します。短経路がオーロラ帯にかかるときは、左右60°までずらした方位の中から、オーロラ帯を避けて相手に届く経路（途中で曲がる経路として近似）を探し、紫の点線で示します。電離層の傾きや散乱で電波が曲がる経路の目安で、届くことを保証するものではありません。</p></div>
 </section>
-</details>
 
-<h2>現在の値</h2>
+</details>
+<details class="tier" id="t4"><summary><h2><span class="tn">4</span>エビデンス<span class="tchev"></span></h2>
+<p class="lead">上の目安と判定のもとになっている、宇宙天気と電離層の値です。</p></summary>
+<h3 class="sub">現在の値<span class="kd kd-obs">実測</span></h3>
 <div class="grid" id="cards"></div>
 <p class="fn" id="btNote">Bt は太陽風の磁場の強さ（向きを問わない大きさ）で、Bz が南を向いたときに取り得る大きさの上限です。Bt そのものは電波に直接は効きませんが、Bt が大きい（目安 10nT 以上）ときは「乱れの燃料が多い」状態で、磁場の向きが変わって Bz が南を向くと、Bt に近い大きさまで南向きになることがあります。Bt が大きく Bz が南向きのときは地磁気が乱れやすいので、欧州・北米など北回りの経路、特にローバンドに警戒してください。Bt が大きくても Bz が北向きのままなら、大きな乱れにはなりにくいです。</p>
 
-<h2>推移</h2>
+<h3 class="sub">推移<span class="kd kd-obs">実測</span></h3>
 <div class="charts">
   <div class="chart"><div class="n">Kp指数（直近48時間・3時間ごと）</div><div id="kpChart"></div></div>
   <div class="chart"><div class="n">Bz（直近6時間・nT）上が北向き、下が南向き</div><div id="bzChart"></div></div>
 </div>
-<div class="chart" style="margin-top:10px"><div class="n">Kpの予報（NOAA・3日間・3時間ごと）　塗りつぶしは実測・速報値、枠だけの棒は予報値</div><div id="kpfChart"></div>
+<div class="chart" style="margin-top:10px"><div class="n">Kpの予報（NOAA・3日間・3時間ごと）<span class="kd kd-pre">予測</span>　塗りつぶしは実測・速報値、枠だけの棒は予報値</div><div id="kpfChart"></div>
 <p class="fn" id="kpfSum" style="color:#d6d6d6"></p>
 <p class="fn">予報はNOAA宇宙天気予報センターによるもので、主にCME（コロナ質量放出）の到来予想や、約27日周期で繰り返す高速太陽風にもとづきます。CMEの到着時刻の予測には一般に半日程度の誤差があるため、予報の時刻は幅を持って見てください。Kpが5以上（G1以上）の予報は、欧州・北米・カリブなど北回りのパスが弱まる可能性を示します。<a style="color:var(--gold)" href="https://www.swpc.noaa.gov/products/3-day-forecast" target="_blank" rel="noopener">NOAAの3日間予報</a></p></div>
 
-<h2>方面別の経路判定（ローテーター方位つき）</h2>
-<div class="tbl"><table class="paths-tbl">
-  <thead><tr><th>方面<br><span class="th2">いまのお薦めバンド<span style="color:#d64545">（検証中）</span></span></th><th>昼夜<br><span class="th2">相手／自局</span></th><th>短経路<br><span class="th2">方位・距離・最高地磁気緯度<br>オーロラ確率・経路の暗さ</span></th><th>長経路<br><span class="th2">同左</span></th><th>判定（主にローバンド）</th></tr></thead>
-  <tbody id="dn"></tbody>
-</table></div>
-<p class="fn" id="jaSun"></p>
-<p class="fn" id="aurInfo"></p>
-<p class="fn">方位は真北を0°とした大圏方位で、自局のグリッドロケータ（既定はPM95）の中心を基準に計算しています。4桁のグリッドは東西約180km・南北約110kmの範囲なので、6桁（例：PM95ve）で入れると、より正確になります。ローテーターが磁北基準の場合は、日本付近の磁気偏角（西へ約7〜9°）の分だけ補正してください。「経路の暗さ」は、経路上の地点のうち太陽高度が-6°以下の割合です。「最高地磁気緯度」は地磁気を双極子で近似した計算値で、北米上空は地磁気の極に近いため、地理的な緯度より高くなります。オーロラ確率は、NOAAのOVATIONモデルによる30〜90分先の推定値を、経路上で最も高い地点で示しています（30%以上を「通過」、10〜30%を「縁」としています）。オーロラ帯ではD層・E層への電子の降り込みにより吸収が強まり、特に160m・80mで信号が大きく弱まることがあります。</p>
-
-<h2>電離層（国分寺）</h2>
+<h3 class="sub">電離層（国分寺）<span class="kd kd-obs">実測</span></h3>
 <div class="grid" id="ionoCards"></div>
 <div class="charts" id="ionoCharts" style="margin-top:10px"><div class="chart"><div class="n">見かけの高さ（直近6時間・km）</div><div id="hfChart"></div></div>
 <div class="chart"><div class="n">foF2（直近6時間・MHz）</div><div id="foChart"></div></div></div>
@@ -215,12 +311,14 @@ th{color:var(--muted);font-weight:500}
 <p class="fn">見かけの高さは、電波が反射して戻るまでの時間から求めた反射点の高さで、h'F2が求まらない夜間などはh'Fで代用しています。急な上昇は擾乱の前触れのことがあります。MUFの目安は、foF2の約3倍（1ホップ約3,000kmの場合のおおよその値）として計算しています。いずれも国分寺の真上の値で、交信したい方向の経路上の状態そのものではありません。観測値は自動処理の結果を含みます。</p>
 <p class="fn">出典：情報通信研究機構（NICT） 電離圏観測データ　<a style="color:var(--gold)" href="https://wdc.nict.go.jp/Ionosphere/index.html" target="_blank" rel="noopener">https://wdc.nict.go.jp/Ionosphere/index.html</a></p>
 
+</details>
+
 <div class="note">
   <p>この表示は、日本（東京）の昼夜・SFI・地磁気の状態から一般的な傾向をまとめた目安で、実際のコンディションを保証するものではありません。ローバンドの伝搬は、昼夜、D層の吸収、自局と相手局の雑音にも大きく左右されます。最終的な判断材料は、実際の受信と交信です。</p>
+  <p>DXペディション：NG3K Announced DX Operations（Bill Feidt, NG3K）。位置はエンティティの代表位置（cty.dat）。</p>
   <p>データ：NOAA Space Weather Prediction Center（米国海洋大気庁 宇宙天気予報センター）。値の見方は「宇宙天気・電離層 通知の見方ガイド」と同じ区分です。</p>
 </div>
 </div>
-
 <script>
 (function(){
 const SWPC='https://services.swpc.noaa.gov';
@@ -532,7 +630,7 @@ const dnState=e=>e>6?['昼','day']:e>-6?['薄明','gl']:['夜','night'];
 // 方面の代表地点のグリッド大区画について、日本の局が受信できた記録（直近28日間、いまの前後1時間）から、
 // 受信の割合が2割以上のバンドのうち最も割合の高いものを選ぶ。いまの経路と宇宙天気で一段下げる条件は、
 // 相手を入れたときの「いまお勧めのバンド」と同じ。記録で選べないときは、経路の昼夜と SFI から物理の目安を出す。
-function regionRec(la,lo,g,sp,lp,now){
+function regionPick(la,lo,g,sp,lp,now){
   const h=new Date(now).getUTCHours(),sfi=SFI_NOW??100,bz=gBzActive(),near=Math.abs(sp.mag)>=55||(sp.aur!=null&&sp.aur>=10);
   const adj=(b,gr)=>{const grp=G_GROUP[b];
     if(grp==='low'&&!(sp.dark>=0.6||lp.dark>=0.8))gr--;
@@ -548,20 +646,41 @@ function regionRec(la,lo,g,sp,lp,now){
         const rate=Math.round(win.reduce((a,w)=>a+gLv(d.r[w])*10*(SUMMARY.n[w]||0),0)/nWin);
         const gr=adj(b,rate>=20?1:rate>=10?0:-1);
         if(gr>=1&&(!best||rate>best.rate))best={b,rate}}
-      if(best)return `お薦め ${best.b}（記録 ${best.rate}%）`}}
+      if(best)return{b:best.b,rate:best.rate,src:'rec'}}}
   let b;
   if(sp.dark>=0.7||lp.dark>=0.8)b=(sp.aur!=null&&sp.aur>=30)?'30m':'40m';
   else if(sp.dark>=0.3)b='20m';
   else b=sfi>=120?'15m':sfi>=95?'17m':'20m';
-  return `お薦め ${b}（物理の目安）`}
+  return{b,rate:null,src:'phys'}}
+function regionRec(la,lo,g,sp,lp,now){const r=regionPick(la,lo,g,sp,lp,now);return r.src==='rec'?`お薦め ${r.b}（記録 ${r.rate}%）`:`お薦め ${r.b}（物理の目安）`}
+// ---- 1段目「いまのお薦め（方面とバンド）」：方面別の経路判定のお薦めを短い一覧に。押すとその方面を3段目の相手に
+var PICKS=[];
+function pickRender(picks){PICKS=picks;const el=$('pickList');if(!el)return;
+  el.innerHTML=picks.map((x,i)=>{const nm=x.n.replace(/（.*/,''),sub=x.src==='rec'?`記録 ${x.rate}%`:'物理の目安';
+    const warn=x.aur!=null&&x.aur>=30?'<span class="pw">オーロラ帯を通過</span>':'';
+    return `<button type="button" class="pk ${x.src}" data-i="${i}" title="${esc(x.n)}を3段目の相手に入れる"><span class="pn">${esc(nm)}</span><span class="pb">${x.b}</span><span class="ps">${sub}・${Math.round(x.az)}°</span>${warn}</button>`}).join('')}
+document.addEventListener('click',async e=>{const b=e.target&&e.target.closest&&e.target.closest('.pk,.rgo');if(!b)return;const x=PICKS[+b.dataset.i];if(!x)return;
+  const t3=$('t3');if(t3&&!t3.open)t3.open=true;$('dxIn').value=llToGrid(x.la,x.lo).slice(0,4);await findTarget();
+  if(TARGET){TARGET.label=esc(x.n);TARGET.short=x.n.replace(/（.*/,'');targetRender()}
+  const m=$('dxMap');if(m)m.scrollIntoView({behavior:'smooth',block:'center'})});
 function dayNight(){
   const now=Date.now(),JA=[STATION.lat,STATION.lon];
   const P=[['欧州（ロンドン）',51.5,-0.13],['北米東部（ニューヨーク）',40.7,-74.0],['北米西部（ロサンゼルス）',34.05,-118.24],['カリブ（プエルトリコ）',18.47,-66.11],['アフリカ西海岸（セネガル・ダカール）',14.69,-17.45],['南米（ブラジル・サンパウロ）',-23.55,-46.63],['南部アフリカ（ヨハネスブルグ）',-26.2,28.05],['オセアニア（シドニー）',-33.87,151.21],['東南アジア（シンガポール）',1.35,103.82]];
-  const ej=sunElev(JA[0],JA[1],now),[jl,jc]=dnState(ej);let northBad=[];
-  $('dn').innerHTML=P.map(([n,la,lo])=>{const e=sunElev(la,lo,now),[l,c]=dnState(e);
+  const ej=sunElev(JA[0],JA[1],now),[jl,jc]=dnState(ej);let northBad=[];const picks=[];
+  const dnEl=$('dn'),wasOpen=new Set([...dnEl.querySelectorAll('details[open]')].map(d=>d.dataset.k));
+  dnEl.innerHTML=P.map(([n,la,lo],i)=>{const e=sunElev(la,lo,now),[l,c]=dnState(e);
     const g=bearingDist(JA[0],JA[1],la,lo),sp=pathStats(g.az,g.km,now),lp=pathStats((g.az+180)%360,2*Math.PI*EARTH-g.km,now);
+    const pk=regionPick(la,lo,g,sp,lp,now);picks.push({n,la,lo,az:g.az,aur:sp.aur,...pk});
     if(sp.aur!=null&&sp.aur>=30)northBad.push(n.replace(/（.*/,''));
-    return `<tr><td><b>${n}</b><br><span class="rec1">${regionRec(la,lo,g,sp,lp,now)}</span></td><td><span class="tag ${c}">${l}</span><br><span class="tag ${jc}">${jl}</span></td><td>${pathCell(sp)}</td><td>${pathCell(lp)}</td><td>${advise(sp,lp)}${needSkew(sp)?skewNote(g,sp,skewSearch(g,la,lo),false):''}</td></tr>`}).join('');
+    const adv=advise(sp,lp),m=adv.match(/^<span class="adv t\d">.*?<\/span>/),head=m?m[0]:adv,nm=n.replace(/（.*/,''),city=(n.match(/（(.*)）/)||[])[1]||'';
+    return `<details class="rg" data-k="${i}"${wasOpen.has(String(i))?' open':''}><summary><span class="rgn"><b>${nm}</b><span class="rgs">${city}</span></span>`+
+      `<span class="rgb ${pk.src}">${pk.b}<small>${pk.src==='rec'?`記録 ${pk.rate}%`:'物理の目安'}</small></span><span class="rgv">${head}</span>`+
+      `<span class="rgd"><span class="tag ${c}">${l}</span> <span class="tag ${jc}">${jl}</span></span></summary>`+
+      `<div class="rgbody"><div class="rgcells"><div><b class="rgk">短経路</b>${pathCell(sp)}</div><div><b class="rgk">長経路</b>${pathCell(lp)}</div></div>`+
+      `<div>昼夜：相手 <span class="tag ${c}">${l}</span>　自局 <span class="tag ${jc}">${jl}</span></div>`+
+      `<div style="margin-top:6px">${adv}${needSkew(sp)?skewNote(g,sp,skewSearch(g,la,lo),false):''}</div>`+
+      `<button type="button" class="rgo" data-i="${i}">この方面を狙う（3段目 DXハンティングへ）</button></div></details>`}).join('');
+  pickRender(picks);
   const base=$('pHigh').dataset.base;if(base!==undefined)$('pHigh').textContent=base+(northBad.length?` 現在、${northBad.join('・')}方面の短経路にオーロラ帯がかかっています。`:'');
   if(AUR)$('aurInfo').textContent=`オーロラ（OVATION）：観測 ${fmtUTC(AUR.obs)}、予測対象 ${fmtUTC(AUR.fc)}。北半球の最大確率 ${AUR.nmax.toFixed(0)}%。`;
   else $('aurInfo').textContent='オーロラのデータを取得できていないため、オーロラ確率は表示していません。';
@@ -603,7 +722,18 @@ function lookupCall(call){
   return null;
 }
 function ent(v,matched){const i=Array.isArray(v)?v[0]:v,e=CTY.ent[i];const lat=Array.isArray(v)?v[1]:e[1],lon=Array.isArray(v)?v[2]:e[2];return{name:e[0],lat,lon,matched}}
-async function setStation(){
+// ---- JA1BBE の未交信の一覧（needed.json。自局の欄が JA1BBE のときだけ印を出す）
+var NEEDED_URL='https://ja1bbe.github.io/ja1bbe-iono/needed.json',NEEDED=null,NEEDED_P=null,NEEDED_UPD='';
+function isMe(){return!!(STATION&&/^JA1BBE(\/|$)/.test(String(STATION.name||'')))}
+function loadNeeded(){if(!NEEDED_P)NEEDED_P=getJSON(NEEDED_URL).then(d=>{NEEDED={};for(const x of d.entities||[])NEEDED[x.name]=x.status;NEEDED_UPD=d.updated||'';ndRefresh()}).catch(()=>{NEEDED=null;NEEDED_P=null});return NEEDED_P}
+function ndStatus(name){return isMe()&&NEEDED&&name?NEEDED[name]||null:null}
+function ndTag(name){const s=ndStatus(name);return s==='needed'?'<span class="nd" title="JA1BBE の DXCC で未交信">未交信</span>':s==='worked'?'<span class="nd nd2" title="交信済みで LoTW 未確認">未確認</span>':''}
+function ndIdx(i){return CTY&&i!=null&&i>=0&&CTY.ent[i]?ndTag(CTY.ent[i][0]):''}
+function ndNoteSet(){const n=$('ndNote');if(!n)return;if(!isMe()||!NEEDED){n.style.display='none';return}
+  n.innerHTML=`<span class="nd">未交信</span> JA1BBE の DXCC で未交信、<span class="nd nd2">未確認</span> 交信済みで LoTW 未確認（${esc(NEEDED_UPD)} 時点の一覧）。運用中のDXペディションの印、時刻表、直近3時間の一覧、相手の見出しに付けます。`;n.style.display=''}
+function ndRefresh(){ndNoteSet();try{nowRender()}catch(e){}try{targetRender()}catch(e){}try{glTTRender()}catch(e){}try{dxpNoteSet()}catch(e){}}
+async function setStation(){const ok=await setStation0();if(isMe())loadNeeded();ndNoteSet();return ok}
+async function setStation0(){
   const raw=$('myGrid').value.trim().toUpperCase(),g=gridToLL(raw);
   if(KNOWN[raw]){const k=gridToLL(KNOWN[raw]);STATION={name:raw,lat:k.lat,lon:k.lon};$('myGrid').value=raw;LS('nowcast.myGrid',raw);
     $('stInfo').textContent=`自局：${raw}（登録済みのグリッド ${k.grid}、緯度 ${k.lat.toFixed(2)}°・経度 ${k.lon.toFixed(2)}°）を基準に計算しています。`;return true}
@@ -635,7 +765,8 @@ const GLTT=[['米国東部（W1AW）','FN31'],['米国中部','EM15'],['米国�
   ['英国','IO91'],['ドイツ','JO62'],['モスクワ','KO85'],['カナリア諸島','IL18'],['モロッコ','IM63'],['南アフリカ','KG33'],['ケニア','KI88'],['アラブ首長国連邦','LL75'],['インド','MK82'],['オーストラリア（シドニー）','QF56'],['ニュージーランド','RF70'],['イースター島','DG52']];
 function glTTCalc(t0){const tw=e=>e>=-18&&e<=3,out=[],step=10*60e3,N=24*6;
   const darkF=(az,km,t)=>{let n=0,d=0;for(let x=0;x<=km;x+=300){const[la,lo]=dest(STATION.lat,STATION.lon,az,x);n++;if(sunElev(la,lo,t)<-6)d++}return d/n};
-  for(const[nm,gq]of GLTT){const la=(gq.charCodeAt(1)-65)*10-90+(+gq[3])+0.5,lo=(gq.charCodeAt(0)-65)*20-180+(+gq[2])*2+1,g=bearingDist(STATION.lat,STATION.lon,la,lo);if(g.km<1500)continue;
+  const list=[...opsActive().filter(o=>o.lat!=null).map(o=>[`${o.call}（${opEntName(o)}）`,llToGrid(o.lat,o.lon),o]),...GLTT];
+  for(const[nm,gq,op]of list){const la=op?op.lat:(gq.charCodeAt(1)-65)*10-90+(+gq[3])+0.5,lo=op?op.lon:(gq.charCodeAt(0)-65)*20-180+(+gq[2])*2+1,g=bearingDist(STATION.lat,STATION.lon,la,lo);if(g.km<1500)continue;
     let cur=null;const wins=[];
     for(let k=0;k<=N;k++){const t=t0+k*step,eS=sunElev(STATION.lat,STATION.lon,t),eT=sunElev(la,lo,t);let r='';
       if(tw(eS)||tw(eT)){if(darkF(g.az,g.km,t)>=0.7)r='sp';else if(darkF((g.az+180)%360,2*Math.PI*EARTH-g.km,t)>=0.7)r='lp'}
@@ -646,30 +777,32 @@ function glTTCalc(t0){const tw=e=>e>=-18&&e<=3,out=[],step=10*60e3,N=24*6;
     // 同じ経路の窓が 3時間以内に続くときは、一つの行にまとめる（例：自局側の夜明け → 相手側の夕暮れ）
     const ok=wins.filter(w=>w.b-w.a>=step);let grp=null;
     for(const w of ok){if(grp&&grp.r===w.r&&w.a-grp.wins[grp.wins.length-1].b<=3*3600e3){grp.wins.push(w);continue}
-      if(grp)out.push(grp);const az=w.r==='sp'?g.az:(g.az+180)%360,km=w.r==='sp'?g.km:2*Math.PI*EARTH-g.km;grp={nm,gq,r:w.r,az,hemi:routeHemi(az,km),wins:[w],a:w.a}}
+      if(grp)out.push(grp);const az=w.r==='sp'?g.az:(g.az+180)%360,km=w.r==='sp'?g.km:2*Math.PI*EARTH-g.km;grp={nm,gq,op,r:w.r,az,hemi:routeHemi(az,km),wins:[w],a:w.a}}
     if(grp)out.push(grp)}
-  return out.sort((x,y)=>x.a-y.a)}
+  // ペディションは、いちばん近い窓の1行だけ（行が多くなりすぎないように）
+  out.sort((x,y)=>x.a-y.a);const seen=new Set(),o2=out.filter(w=>{if(!w.op)return true;const k=w.op.call+'|'+w.op.ent;if(seen.has(k))return false;seen.add(k);return true});
+  return o2.sort((x,y)=>(!!y.op-!!x.op)||(x.a-y.a))}
 const GLTT_ENT={'FN31':'United States','EM15':'United States','DM79':'United States','CN87':'United States','BP51':'Alaska','BL01':'Hawaii','FK97':'Antigua & Barbuda','FK68':'Puerto Rico','FJ24':'Colombia','GF05':'Argentina','GF15':'Uruguay','GG66':'Brazil','IO91':'England','JO62':'Fed. Rep. of Germany','KO85':'European Russia','IL18':'Canary Islands','IM63':'Morocco','KG33':'South Africa','KI88':'Kenya','LL75':'United Arab Emirates','MK82':'India','QF56':'Australia','RF70':'New Zealand','DG52':'Easter Island','PM95':'Japan'};
 // 時刻表の行の「記録（PSK）」：窓の時間帯に日本の局がその地域（グリッドの大区画）を受信できた割合（直近28日間）と、直近3時間の受信
 function glTTRec(w){const jaHome=bearingDist(STATION.lat,STATION.lon,35.68,139.76).km<1500;if(!jaHome)return'—（自局が日本のときだけ）';if(!SUMMARY)return'記録を読み込み中';
-  const hs=new Set();for(const x of w.wins)for(let t=x.a;t<=x.b+6e5;t+=36e5)hs.add(new Date(t).getUTCHours());const H=[...hs],nW=H.reduce((a,h)=>a+(SUMMARY.n[h]||0),0),data=SUMMARY.f&&SUMMARY.f[w.gq.slice(0,2)];
+  const hs=new Set();for(const x of w.wins)for(let t=x.a;t<=x.b+6e5;t+=36e5)hs.add(new Date(t).getUTCHours());const H=[...hs],nW=H.reduce((a,h)=>a+(SUMMARY.n[h]||0),0),data=(w.op&&w.op.ent!=null&&SUMMARY.e&&SUMMARY.e[String(w.op.ent)])||(SUMMARY.f&&SUMMARY.f[w.gq.slice(0,2)]);
   let txt=(data&&nW>=10)?['160m','80m'].map(b=>{const d=data[b];return`${b} ${d&&d.r?Math.round(H.reduce((a,h)=>a+gLv(d.r[h])*10*(SUMMARY.n[h]||0),0)/nW):0}%`}).join('・'):'記録なし';
-  const nm=GLTT_ENT[w.gq],idx=nm&&CTY?CTY.ent.findIndex(e=>e[0]===nm):-1;
+  const nm=GLTT_ENT[w.gq],idx=w.op&&w.op.ent!=null?w.op.ent:nm&&CTY?CTY.ent.findIndex(e=>e[0]===nm):-1;
   if(idx>=0&&NOWJ&&NOWJ.recent){const rb=NOWJ.recent.bands||{},heard=['160m','80m'].filter(b=>rb[b]&&(rb[b].all||[]).includes(idx));if(heard.length)txt+=`<br><b style="color:#5ad1ff">直近3時間に受信あり（${heard.join('・')}）</b>`}
   return txt}
-async function glTTRender(){const box=$('glTT'),d=$('glTTD');if(!box||!d||!d.open)return;try{await loadCty()}catch(e){}try{if(!SUMMARY)await loadSummary()}catch(e){}const t0=Math.floor(Date.now()/6e5)*6e5,L=glTTCalc(t0);
+async function glTTRender(){const box=$('glTT'),d=$('glTTD');if(!box||!d||!d.open)return;try{await loadCty()}catch(e){}try{await loadOps()}catch(e){}try{if(!SUMMARY)await loadSummary()}catch(e){}const t0=Math.floor(Date.now()/6e5)*6e5,L=glTTCalc(t0);
   const hm=t=>{const x=new Date(t+9*3600e3);return String(x.getUTCHours()).padStart(2,'0')+':'+String(x.getUTCMinutes()).padStart(2,'0')};
   box.innerHTML=`<p class="gfine" style="margin:0 0 6px">自局（${esc(STATION.name)}）から見て、主な相手との間で「グレイラインダクト：あり」（自局か相手局が薄明で、経路の 7割以上が夜）になる時間帯です。いまから24時間、日本時間。時間帯は太陽の位置（物理の条件）で決まり、宇宙天気では変わりません。「記録（PSK）」は、その時間帯に日本の局がその地域を 160m・80m で受信できた割合（PSK Reporter の抜き取り、直近28日間）で、物理の条件と実際の受信の両方から見られます。「地図で見る」を押すと、その相手を伝搬レーダーに描きます。</p>`+
     (L.length?`<div class="tbl"><table class="paths-tbl"><thead><tr><th>時間帯（日本時間）</th><th>相手（グリッド）</th><th>経路</th><th>薄明</th><th>記録（PSK）<br><span class="th2">日本の受信の割合 28日間</span></th><th></th></tr></thead><tbody>`+
-    L.map(w=>{const nowIn=w.wins.some(x=>x.a<=Date.now()&&Date.now()<=x.b),sides=w.wins.map(x=>x.side).filter((v,i,a)=>!i||v!==a[i-1]);return`<tr${nowIn?' style="background:rgba(90,209,255,.10)"':''}><td style="white-space:nowrap">${w.wins.map(x=>`${hm(x.a)}〜${hm(x.b+6e5)}`).join('<br>')}${nowIn?' <b style="color:#5ad1ff">いま</b>':''}</td><td>${esc(w.nm)}<br><span class="th2">${w.gq}</span></td><td>${w.r==='sp'?'短経路':'長経路'} ${Math.round(w.az)}°<br><span class="th2">${w.hemi}</span></td><td>${sides.join(' →<br>')}</td><td style="white-space:nowrap">${glTTRec(w)}</td><td><button type="button" class="glgo" data-g="${w.gq}">地図で見る</button></td></tr>`}).join('')+
+    L.map(w=>{const nowIn=w.wins.some(x=>x.a<=Date.now()&&Date.now()<=x.b),sides=w.wins.map(x=>x.side).filter((v,i,a)=>!i||v!==a[i-1]);return`<tr${nowIn?' style="background:rgba(90,209,255,.10)"':w.op?' style="background:rgba(224,85,85,.08)"':''}><td style="white-space:nowrap">${w.wins.map(x=>`${hm(x.a)}〜${hm(x.b+6e5)}`).join('<br>')}${nowIn?' <b style="color:#5ad1ff">いま</b>':''}</td><td>${w.op?'<span class="kd kd-dxp" style="margin:0 0 3px">DXペディション</span><br>':''}${esc(w.nm)}${w.op?ndTag(opEntName(w.op)):ndTag(GLTT_ENT[w.gq])}<br><span class="th2">${w.gq}</span></td><td>${w.r==='sp'?'短経路':'長経路'} ${Math.round(w.az)}°<br><span class="th2">${w.hemi}</span></td><td>${sides.join(' →<br>')}</td><td style="white-space:nowrap">${glTTRec(w)}</td><td><button type="button" class="glgo" data-g="${w.op?esc(w.op.call):w.gq}">地図で見る</button></td></tr>`}).join('')+
     `</tbody></table></div>`:'<p class="gfine">この24時間に「あり」になる相手はありません。</p>')}
-document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('.glgo');if(!b)return;$('dxIn').value=b.dataset.g;findTarget();const m=$('dxMap');if(m)m.scrollIntoView({behavior:'smooth',block:'center'})});
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('.glgo');if(!b)return;$('dxIn').value=b.dataset.g;const pd=$('t3');if(pd&&!pd.open)pd.open=true;findTarget();const m=$('dxMap');if(m)m.scrollIntoView({behavior:'smooth',block:'center'})});
 (()=>{const d=document.getElementById('glTTD');if(!d)return;try{if(localStorage.getItem('pc.glTTD')==='1')d.open=true}catch(e){}
   d.addEventListener('toggle',()=>{try{localStorage.setItem('pc.glTTD',d.open?'1':'0')}catch(e){}if(d.open)setTimeout(glTTRender,30)});
   setInterval(()=>{if(!document.hidden)glTTRender()},10*60e3);if(d.open)setTimeout(glTTRender,800)})();
 async function findTarget(){
   await setStation();
-  const raw=$('dxIn').value.trim().toUpperCase();$('dxIn').value=raw;
+  const raw=$('dxIn').value.trim().toUpperCase();$('dxIn').value=raw;dxWarnSet('');
   if(!raw){TARGET=null;targetRender();return}
   const g=gridToLL(raw);
   if(KNOWN[raw]){const k=gridToLL(KNOWN[raw]);TARGET={short:raw,label:`${esc(raw)}`,loc:`登録済みのグリッド ${k.grid}（緯度 ${k.lat.toFixed(2)}°・経度 ${k.lon.toFixed(2)}°）`,lat:k.lat,lon:k.lon}}
@@ -677,9 +810,14 @@ async function findTarget(){
   else{
     if(!/^[A-Z0-9\/]{2,15}$/.test(raw)){dxFail('コールサインかグリッドロケータ（4桁または6桁）を入れてください。');return}
     try{await loadCty()}catch(e){dxFail('コールサインの表（cty.json）を読み込めませんでした。グリッドロケータで入力してください。');return}
+    try{await loadOps()}catch(e){}
+    const ops=opsFind(raw);
+    if(ops.length){TARGET=opTarget(ops[0]);if(ops.length>1)dxWarnSet(`${esc(raw)} は、いま複数の場所で運用中として載っています（${ops.map(o=>esc(opEntName(o))).join('・')}）。${esc(opEntName(ops[0]))} で計算しています。地図の印（運用中のDXペディションを重ねる）を押すと切り替えられます。`)}
+    else{
     const r=lookupCall(raw);
     if(!r){dxFail(`「${esc(raw)}」のエンティティを判別できませんでした。コールサインを確かめるか、グリッドロケータで入力してください。`);return}
-    TARGET={short:raw,label:`${esc(raw)}　${esc(r.name)}`,loc:`代表位置 ${llToGrid(r.lat,r.lon)}（緯度 ${r.lat.toFixed(1)}°・経度 ${r.lon.toFixed(1)}°）`,lat:r.lat,lon:r.lon,ent:r.name};
+    TARGET={short:raw,label:`${esc(raw)}　${esc(r.name)}`,loc:`代表位置 ${llToGrid(r.lat,r.lon)}（緯度 ${r.lat.toFixed(1)}°・経度 ${r.lon.toFixed(1)}°）`
+,lat:r.lat,lon:r.lon,ent:r.name};dxWarnSet(ambMsg(raw,r));}
   }
   if(!(EX_DX&&raw===EX_DX))LS('nowcast.dx',raw);exNoteSet();targetRender();dayNight();
 }
@@ -732,6 +870,43 @@ var MAGLINES=(()=>{try{return localStorage.getItem('magLines')==='1'}catch(e){re
 function magBtnSet(){const b=document.getElementById('magBtn'),n=document.getElementById('magNote');if(b)b.textContent=(MAGLINES?'▼ ':'▶ ')+'地磁気緯度線を重ねる';if(n)n.style.display=MAGLINES?'':'none'}
 document.addEventListener('click',e=>{if(e.target&&e.target.id==='magBtn'){MAGLINES=!MAGLINES;try{localStorage.setItem('magLines',MAGLINES?'1':'0')}catch(e2){}magBtnSet();drawMap(LASTP)}});
 document.addEventListener('DOMContentLoaded',magBtnSet);
+// ---- 運用中のDXペディション（NG3K Announced DX Operations を ja1bbe/dxpeditions が ops.json に書き出したもの。Bill Feidt, NG3K の了承済み）
+var OPS_URL='https://ja1bbe.github.io/dxpeditions/ops.json',OPSD=null,OPS_P=null,OPS_FAIL=false,DXP_HITS=[],DXP_CYC={},DXP_W=0;
+var DXP_ON=(()=>{try{return localStorage.getItem('dxpOn')==='1'}catch(e){return false}})();
+function loadOps(){if(!OPS_P)OPS_P=fetch(OPS_URL,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()})
+  .then(d=>{OPSD=d;OPS_FAIL=false;dxpNoteSet();drawMap(LASTP);if(typeof glTTRender==='function')glTTRender();return d})
+  .catch(e=>{OPSD=null;OPS_FAIL=true;dxpNoteSet();return null});return OPS_P}
+setInterval(()=>{if(OPS_P&&!document.hidden){OPS_P=null;loadOps()}},3*3600e3);
+// 運用中かは、いまの UTC の日付で判定し直す（start ≤ 今日 ≤ end）
+function opsActive(){if(!OPSD||!Array.isArray(OPSD.ops))return[];const d=new Date().toISOString().slice(0,10);return OPSD.ops.filter(o=>o.start<=d&&d<=o.end)}
+function opsStale(){return!!(OPSD&&OPSD.generated&&Date.now()-Date.parse(OPSD.generated)>2*864e5)}
+function opEntName(o){return o.ent!=null&&CTY&&CTY.ent[o.ent]?CTY.ent[o.ent][0]:o.entity}
+function opTarget(o){return{short:o.call,label:`${esc(o.call)}　${esc(opEntName(o))}<span class="kd kd-dxp">運用中のDXペディション</span>`,
+  loc:`代表位置 ${llToGrid(o.lat,o.lon)}（緯度 ${o.lat.toFixed(1)}°・経度 ${o.lon.toFixed(1)}°）・運用 ${o.start}〜${o.end}（UTC）`,lat:o.lat,lon:o.lon,ent:opEntName(o),op:o}}
+function opsFind(call){const seen=new Set();return opsActive().filter(o=>{if(o.lat==null||String(o.call).toUpperCase()!==call)return false;const k=o.ent+'|'+o.lat.toFixed(1)+','+o.lon.toFixed(1);if(seen.has(k))return false;seen.add(k);return true})}
+function dxWarnSet(msg){const n=$('dxWarn');if(!n)return;n.innerHTML=msg||'';n.style.display=msg?'':'none'}
+// プリフィックスだけで決めたとき、その区分に別のエンティティの区分が含まれていれば知らせる（例：VK9 → ノーフォーク島と仮定）
+function ambMsg(raw,r){if(!r||!CTY||r.matched===raw||CTY.exact[raw]!=null)return'';const p=r.matched,id=v=>Array.isArray(v)?v[0]:v,me=id(CTY.prefix[p]);
+  if(!/\d/.test(p.slice(1)))return'';   // 地域の数字を含む区分（VK9・HK0 など）だけ。K・JA のような国の区分では知らせない
+  if(me==null)return'';const others=new Set();for(const k in CTY.prefix){if(k.length>p.length&&k.startsWith(p)){const e=id(CTY.prefix[k]);if(e!==me)others.add(e)}}
+  if(!others.size)return'';const ex=[...others].slice(0,3).map(i=>CTY.ent[i][0]).join('・');
+  return `${esc(raw)} は、プリフィックス ${esc(p)} の区分に当たりました。${esc(p)} で始まる区分には別のエンティティ（${esc(ex)}${others.size>3?' など':''}）もあり、ここでは代表の ${esc(r.name)} と仮定しています。運用地が違うときは、グリッドロケータで入れてください。`}
+function dxpNoteSet(){const b=$('dxpBtn'),n=$('dxpNote');if(b)b.textContent=(DXP_ON?'▼ ':'▶ ')+'運用中のDXペディションを重ねる';if(!n)return;n.style.display=DXP_ON?'':'none';if(!DXP_ON)return;
+  if(!OPSD){n.innerHTML=OPS_FAIL?'運用の一覧（ops.json）を読み込めませんでした。しばらくしてから読み直してください。':'運用の一覧を読み込んでいます…';return}
+  const a=opsActive(),on=a.filter(o=>o.lat!=null),nl=a.length-on.length,g=new Date(Date.parse(OPSD.generated)),gs=isNaN(g)?'―':g.toISOString().slice(0,16).replace('T',' ')+' UTC';
+  n.innerHTML=(on.length?`<span style="color:#e05555">●</span> いま運用中のDXペディション ${on.length}件${nl?`（位置の分からない ${nl}件は地図に載せていません）`:''}。印を押すと、その局を相手にします。同じ場所に複数あるときは、押すたびに次の局へ切り替わります。位置はエンティティの代表位置で、実際の運用地と数百km違うことがあります。`:'いま運用中のDXペディションはありません。')+
+    (isMe()&&NEEDED?'金の輪と金の下地は JA1BBE の未交信、金の破線の輪は LoTW 未確認のエンティティです。':'')+`一覧の作成 ${gs}${opsStale()?'<span style="color:#f08a4b">（古いデータ：2日以上更新されていません）</span>':''}。出典：NG3K Announced DX Operations（Bill Feidt, NG3K）。`}
+document.addEventListener('click',e=>{if(e.target&&e.target.id==='dxpBtn'){DXP_ON=!DXP_ON;try{localStorage.setItem('dxpOn',DXP_ON?'1':'0')}catch(e2){}if(DXP_ON)loadOps();dxpNoteSet();drawMap(LASTP)}});
+document.addEventListener('DOMContentLoaded',()=>{dxpNoteSet();if(DXP_ON)loadOps()});
+// 地図の印を押す：半径16px以内で最も近い印。同じ位置に複数あれば、押すたびに次へ
+document.addEventListener('click',async e=>{if(!e.target||e.target.id!=='dxMap'||!DXP_ON||!DXP_HITS.length)return;
+  const r=e.target.getBoundingClientRect(),sc=DXP_W&&r.width?DXP_W/r.width:1,x=(e.clientX-r.left)*sc,y=(e.clientY-r.top)*sc;
+  let best=null;for(const h of DXP_HITS){const d=Math.hypot(h.x-x,h.y-y);if(d<=16&&(!best||d<best.d))best={...h,d}}if(!best)return;
+  const i=DXP_CYC[best.key]=((DXP_CYC[best.key]??-1)+1)%best.ops.length,o=best.ops[i];
+  try{await loadCty()}catch(e2){}
+  $('dxIn').value=o.call;try{localStorage.setItem('nowcast.dx',o.call)}catch(e2){}
+  TARGET=opTarget(o);dxWarnSet('');exNoteSet();targetRender();dayNight()});
+
 // ---- ローバンドの遠距離（電離圏ダクトの可能性）を重ねる。検証中
 // 記録（11月6〜18日の抜き取り）で 160m・80m の遠距離の強い受信が多かった方面と、その時刻の条件（経路の大部分が夜で、どちらかの端が薄明）を使う。
 // 仕組みが電離圏ダクトか、境目で D層の吸収が小さくなるためかは、この記録からは見分けられない。
@@ -834,9 +1009,33 @@ function drawMap(P){
   c.setLineDash([3,4]);c.strokeStyle='#33404e';c.lineWidth=1;c.fillStyle='#7d8896';c.font='10px sans-serif';c.textAlign='left';
   for(const km of[5000,10000,15000]){const r=km/HALF*S.R;c.beginPath();c.arc(S.cx,S.cy,r,0,2*Math.PI);c.stroke();c.fillText((km/1000)+',000km',S.cx+3,S.cy-r-3)}
   c.setLineDash([]);
-  // 9方面の目印
-  c.font='11px sans-serif';
+  // 9方面の目印（ペディションを重ねているときは薄く）
+  c.font='11px sans-serif';c.globalAlpha=DXP_ON&&OPSD?.35:1;
   for(const[n,la,lo]of DIRS){const[x,y]=pr(la,lo);c.fillStyle='#9aa6b4';c.beginPath();c.arc(x,y,2.5,0,2*Math.PI);c.fill();c.fillText(n,x+5,y+4)}
+  c.globalAlpha=1;
+  // 運用中のDXペディション（赤い印とコールサイン。近くに置けなければ少し離して引き出し線でつなぐ）
+  const drawDxp=tp=>{DXP_HITS=[];DXP_W=W;if(!DXP_ON||!OPSD)return;const act=opsActive().filter(o=>o.lat!=null&&o.lon!=null);if(!act.length)return;
+    const fs=S.R<200?10:11,G={};for(const o of act){const k=o.lat.toFixed(1)+','+o.lon.toFixed(1);(G[k]=G[k]||{key:k,lat:o.lat,lon:o.lon,ops:[]}).ops.push(o)}
+    const boxes=[],hit=b=>boxes.some(x=>b.x<x.x+x.w&&b.x+b.w>x.x&&b.y<x.y+x.h&&b.y+b.h>x.y),sel=TARGET&&TARGET.op?TARGET.op:null;
+    const L=Object.values(G).map(x=>({...x,p:pr(x.lat,x.lon)}));
+    for(const x of L)boxes.push({x:x.p[0]-5,y:x.p[1]-5,w:10,h:10});
+    boxes.push({x:S.cx-6,y:S.cy-6,w:80,h:22});if(tp)boxes.push({x:tp[0]-10,y:tp[1]-10,w:20,h:20});
+    L.sort((a,b)=>(b.ops.includes(sel)-a.ops.includes(sel)));c.globalAlpha=opsStale()?.55:1;
+    for(const x of L){const[px,py]=x.p,on=x.ops.includes(sel),st=x.ops.map(o=>ndStatus(opEntName(o))),nd=st.includes('needed'),wk=!nd&&st.includes('worked');
+      if(nd||wk){c.beginPath();c.arc(px,py,on?10:8.5,0,2*Math.PI);c.strokeStyle='#e9c46a';c.lineWidth=nd?2.4:1.4;c.setLineDash(nd?[]:[3,2]);c.stroke();c.setLineDash([])}
+      c.beginPath();c.arc(px,py,on?6.5:5,0,2*Math.PI);c.fillStyle='#e05555';c.fill();c.strokeStyle='#fff';c.lineWidth=on?2.2:1.3;c.stroke();
+      DXP_HITS.push({x:px,y:py,key:x.key,ops:x.ops});
+      if(on&&tp)continue;   // 相手にしている局は、相手の印のラベルで示す
+      const calls=[...new Set(x.ops.map(o=>o.call))],txt=calls.length>2?calls.slice(0,2).join('·')+'…':calls.join('·');
+      c.font='bold '+fs+'px sans-serif';const w=c.measureText(txt).width+6,h=fs+4;
+      const cand=[[8,-h/2],[-8-w,-h/2],[-w/2,-h-7],[-w/2,7],[8,-h-4],[-8-w,-h-4],[8,4],[-8-w,4]];
+      for(const rr of[26,40])for(let a=0;a<360;a+=30){const ox=rr*Math.cos(a*R),oy=rr*Math.sin(a*R);cand.push([ox>=0?ox:ox-w,oy-h/2])}
+      for(const[ox,oy]of cand){const b={x:px+ox,y:py+oy,w,h};if(hit(b))continue;
+        if(Math.hypot(Math.max(Math.abs(b.x-S.cx),Math.abs(b.x+w-S.cx)),Math.max(Math.abs(b.y-S.cy),Math.abs(b.y+h-S.cy)))>S.R-2)continue;
+        boxes.push(b);
+        if(Math.hypot(ox,oy)>22){const lx=Math.max(b.x,Math.min(px,b.x+w)),ly=Math.max(b.y,Math.min(py,b.y+h));c.strokeStyle='rgba(230,235,240,.7)';c.lineWidth=1;c.beginPath();c.moveTo(px,py);c.lineTo(lx,ly);c.stroke()}
+        c.fillStyle=on?'rgba(120,20,20,.9)':nd?'rgba(150,110,20,.92)':'rgba(10,14,20,.78)';c.fillRect(b.x,b.y,w,h);c.fillStyle='#fff';c.textAlign='left';c.fillText(txt,b.x+3,b.y+h-4);break}}
+    c.globalAlpha=1};
   // ローバンドの遠距離（電離圏ダクトの可能性）：条件に当たる方面への短経路を白い線で
   // 線と重ならないよう、線に直角の向きに少し離し、黒い下地を付けて文字を置く
   const mapLabel=(txt,x,y,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1;let px=-dy/L,py=dx/L;
@@ -913,8 +1112,10 @@ function drawMap(P){
     let best=0,bx=0;for(let x=0;x<=km;x+=100){const[la,lo]=dest(STATION.lat,STATION.lon,az,x),m=Math.abs(magLat(la,lo));if(m>best){best=m;bx=x}}
     const mp=pa(az,bx);c.strokeStyle='#f08a4b';c.lineWidth=2;c.beginPath();c.arc(mp[0],mp[1],6,0,2*Math.PI);c.stroke();
     c.fillStyle='#f08a4b';c.font='bold 11px sans-serif';c.fillText(`${sp.mag>=0?'N':'S'}${Math.abs(sp.mag).toFixed(0)}°`,mp[0]+8,mp[1]-6);
+    drawDxp(t);
     c.fillStyle='#e05555';c.beginPath();c.arc(t[0],t[1],6,0,2*Math.PI);c.fill();c.strokeStyle='#fff';c.lineWidth=1.5;c.stroke();
     c.fillStyle='#fff';c.font='bold 12px sans-serif';{const right=t[0]>S.cx+S.R*0.55;c.textAlign=right?'right':'left';c.fillText(label,t[0]+(right?-10:9),t[1]+(right?-8:4));c.textAlign='left'}}
+  if(!P)drawDxp(null);
   c.restore();
   // 外周と方位の目盛り
   c.strokeStyle='#5a6573';c.lineWidth=1.2;c.beginPath();c.arc(S.cx,S.cy,S.R,0,2*Math.PI);c.stroke();
@@ -1015,7 +1216,7 @@ function gPhysics(g, now) {
   }
   return res;
 }
-function guideHTML(g, now) {
+function guideParts(g, now) {
   const head = Array.from({ length: 24 }, (_, h) => `<th>${h}</th>`).join(''), headJ = Array.from({ length: 24 }, (_, h) => `<th class="gj">${(h + 9) % 24}</th>`).join('');
   const cellE = c => { const v = gLv(c), bg = v >= 6 ? 'rgba(216,177,74,.85)' : v >= 3 ? 'rgba(127,211,198,.55)' : v >= 1 ? 'rgba(127,211,198,.22)' : 'transparent'; return `<td style="background:${bg}"></td>`; };
   const cellP = (x, mark) => { const bg = x.v === 2 ? 'rgba(199,125,255,.55)' : x.v === 1 ? 'rgba(199,125,255,.2)' : 'transparent'; return `<td style="background:${bg}">${x.v === 2 && x.lp ? 'L' : ''}</td>`; };
@@ -1068,7 +1269,9 @@ function guideHTML(g, now) {
     <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">日本</th>${headJ}</tr>${pRows}</table></div>
     <details class="gdet" data-k="howP"${gOpen('howP')}><summary>この目安の見方</summary><p class="gfine">ローバンドは短経路（夜側にならなければ長経路）の大半が夜（太陽高度−6°以下）になる時刻、ミドルは経路に昼と夜が混ざる時刻、ハイバンドは経路の大半が昼で SFI が十分な時刻を、濃い紫で示します。電離層の詳しい計算（MUFの予測）ではなく、昼夜にもとづく目安です。オーロラ帯はいまの状態で計算しているので、数時間先は変わることがあります。</p></details>`;
   const aPart = agree.length ? `<details class="gdet gagree" data-k="agree"${gOpen('agree')}><summary>実績と物理の目安がそろう時間帯（${agree.length}バンド）</summary>${agree.join('<br>')}</details>` : '';
-  return `<div class="gbox"><div class="gttl" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">交信しやすいバンドと時間帯の目安<span style="color:var(--c5);font-size:.85em;white-space:nowrap">検証中</span></div><p class="gfine" style="margin:0 0 6px">実際の交信の結果と照らし合わせて、当たり具合を確かめている段階です。</p>${gBzWarn(pathStats(g.az, g.km, now))}${aPart}${ePart}${plHTML(g, now)}${pPart}</div>`;
+  const eState = !SUMMARY ? (SUMMARY_P ? 'loading' : 'fail') : !eData ? 'none' : 'ok';
+  return { bz: gBzWarn(pathStats(g.az, g.km, now)), agree, eState, pl: plHTML(g, now),
+    pPart: `<div class="gbox">${pPart}</div>`, ePart: `<div class="gbox" style="margin-top:4px">${ePart}</div>` };
 }
 // ---- いまお勧めのバンド（PSK の実績＋いまの物理の条件・宇宙天気。検証中）
 var B36 = '0123456789abcdefghijklmnopqrstuvwxyz';
@@ -1106,16 +1309,19 @@ function plHTML(g, now) {
     <details class="gdet" data-k="plHow"${gOpen('plHow')}><summary>この手がかりの見方</summary><p class="gfine">FT8 などの受信の報告からは、電波がどちらの経路で届いたかは分かりません。そこで、受信できた時刻に、短経路と長経路のそれぞれの途中（両端1,000kmを除く）の7割以上が夜だったかを計算しました。ローバンドは昼側で吸収が強いので、片方の経路だけが夜なら、その経路で届いた可能性が高いと考えます。日本側は東京付近、相手側はエンティティの代表位置で計算しており、オーロラ帯の影響は含めていません。DXクラスターは、日本の局がスポットしたもののうち、コメントに LP（ロングパス）・SP（ショートパス）・skew の記載があったものを数えています。人がアンテナを向けて確かめた情報なので、上の推定の答え合わせに使えますが、件数はまだわずかです。</p></details>`;
   return `<details class="gdet" data-k="pl"${gOpen('pl')}><summary>短経路・長経路の手がかり（ローバンド）<span style="color:#d64545;font-size:.85em">（検証中）</span></summary>${body}</details>`;
 }
+var REC_SUM = '';
 function recHTML(g, now) {
-  const h = new Date(now).getUTCHours(), title = `いまお勧めのバンド（UTC ${h}時台・日本時間 ${(h + 9) % 24}時台）`;
+  const h = new Date(now).getUTCHours(), title = `お薦めのバンドの内訳（UTC ${h}時台・日本時間 ${(h + 9) % 24}時台）`;
+  REC_SUM = '';
   const wrap = body => `<details class="gdet grec" data-k="rec"${gOpen('rec')}><summary>${title}<span style="color:#d64545;font-size:.85em">（検証中）</span></summary>${body}</details>`;
-  if (!SUMMARY) return wrap(`<p class="gfine">${SUMMARY_P ? '実績のデータを読み込んでいます…' : '実績のデータを読み込めませんでした。'}</p>`);
+  if (!SUMMARY) { REC_SUM = SUMMARY_P ? '実績のデータを読み込んでいます…' : '実績のデータを読み込めませんでした'; } if (!SUMMARY) return wrap(`<p class="gfine">${SUMMARY_P ? '実績のデータを読み込んでいます…' : '実績のデータを読み込めませんでした。'}</p>`);
   let data = null, isEnt = false, label = '';
   if (TARGET.ent && CTY) { const i = CTY.ent.findIndex(e => e[0] === TARGET.ent); if (i >= 0 && SUMMARY.e[String(i)]) { data = SUMMARY.e[String(i)]; isEnt = true; } }
   if (!data) { const f = llToGrid(TARGET.lat, TARGET.lon).slice(0, 2); if (SUMMARY.f[f]) { data = SUMMARY.f[f]; label = `（相手の周辺・大区画 ${f} の記録のため、最高でも○）`; } }
   const win = [(h + 23) % 24, h, (h + 1) % 24], nWin = win.reduce((a, w) => a + (SUMMARY.n[w] || 0), 0);
   const how = `<details class="gdet" data-k="recHow"${gOpen('recHow')}><summary>この判定の見方</summary><p class="gfine">いまの時刻の前後1時間（UTC ${win[0]}〜${(h + 2) % 24}時）について、直近${SUMMARY.days}日間の抜き取りのうち、日本の局がこの相手の信号を受信できた回の割合で判定します。◎は5割以上、○は2割以上（△：1割以上、×：1割未満は表示しません）。前後1時間の抜き取りが10回未満のときは判定しません。一時的な運用（DXペディションなど）に引っ張られないよう、受信できた日が3日以上あれば◎まで、2日なら○まで、1日だけなら表示しません。相手そのものの記録がなく周辺の大区画の記録で代用するときは、最高でも○とします。さらに、いまの条件で一段下げます：ローバンドで経路の大半が昼側のとき、ハイバンドで経路の大半が夜側または SFI が低いとき、短経路がオーロラ帯の濃い部分（30%以上）を通るときのローバンド、Bz の注意が出ていて経路がオーロラ帯の近くを通るときのロー・ミドルバンド。しきい値は出発点としての案で、実際の交信の結果と照らし合わせて見直していきます。</p></details>`;
-  if (!data) return wrap(`<p class="gtxt">この相手（周辺を含む）の受信の記録が、まだありません。</p>${how}`);
+  if (!data) { REC_SUM = 'この相手（周辺を含む）の受信の記録が、まだありません'; return wrap(`<p class="gtxt">この相手（周辺を含む）の受信の記録が、まだありません。</p>${how}`); }
+  if (nWin < 10) REC_SUM = `この時刻の抜き取りがまだ少なく（${nWin}回）、判定できません`;
   if (nWin < 10) return wrap(`<p class="gtxt">この時刻の抜き取りがまだ少なく（${nWin}回）、判定できません。</p>${how}`);
   const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
   const sfi = SFI_NOW ?? 100, near = Math.abs(sp.mag) >= 55 || (sp.aur != null && sp.aur >= 10), bz = gBzActive();
@@ -1137,6 +1343,8 @@ function recHTML(g, now) {
     if (bz && near && (grp === 'low' || grp === 'mid')) { gr--; why.push('Bz の注意'); }
     if (gr >= 1) out.push({ b, gr, rate, days, why });
   }
+  REC_SUM = out.length ? out.map(x => `${x.gr === 2 ? '◎' : '○'} <b>${x.b}</b>（${x.rate}%）`).join('　') + (label ? '　<span style="color:var(--muted);font-size:.85em">相手の周辺の記録</span>' : '')
+    : 'いまの時刻は、お薦めできるバンドがありません（記録が少ないか、開いていない時間帯です）';
   const list = out.length
     ? out.map(x => `<div><b style="font-size:1.1em">${x.gr === 2 ? '◎' : '○'}</b> <b>${x.b}</b>　受信できた割合 ${x.rate}%${x.days != null ? `（${x.days}日）` : ''}${x.why.length ? `<span style="color:var(--sub, var(--muted))">　※${x.why.join('、')}${x.why.some(w => !w.includes('まで')) ? 'のため一段下げ' : ''}</span>` : ''}</div>`).join('')
     : `<p class="gtxt">いまの時刻は、お勧めできるバンドがありません（記録が少ない、または開いていない時間帯です）。</p>`;
@@ -1144,13 +1352,27 @@ function recHTML(g, now) {
 }
 function renderGuide(g, now) {
   const box = document.getElementById('dxOut'); if (!box || !TARGET) return;
-  box.insertAdjacentHTML('afterbegin', '<div id="dxRec"></div>');
-  { const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
-    box.insertAdjacentHTML('afterbegin', `<div id="dxLb">${lbHTML(g, sp, lp, now)}</div>`); lbWire(); }
-  box.insertAdjacentHTML('beforeend', '<div id="dxGuide"></div>');
-  const fill = () => { const el = document.getElementById('dxGuide'); if (el) { el.innerHTML = guideHTML(g, now); gWatch(el); }
-    const er = document.getElementById('dxRec'); if (er) { er.innerHTML = recHTML(g, now); gWatch(er); } };
+  const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
+  const lb = document.getElementById('dxLb'); if (lb) { lb.innerHTML = lbHTML(g, sp, lp, now); lbWire(); }
+  const put = (id, html) => { const el = document.getElementById(id); if (el) { el.innerHTML = html; gWatch(el); } };
+  const fill = () => { const P = guideParts(g, now);
+    put('dxGuide', P.pPart); put('dxRec', recHTML(g, now)); put('dxPl', P.pl);
+    put('dxRes', P.ePart); put('dxSum', sumHTML(g, now, P)); };
   if (SUMMARY) fill(); else { fill(); loadSummary().then(fill).catch(fill); }
+}
+// ---- 概要：いまの見込み（お薦めのバンド・方位・グレイラインダクト・24時間でそろう時間帯）
+function sumHTML(g, now, P) {
+  const L = (2 * Math.PI * EARTH - g.km), km = x => Math.round(x / 10) * 10 >= 1000 ? (Math.round(x / 100) * 100).toLocaleString('ja-JP') : Math.round(x).toLocaleString('ja-JP');
+  const row = (k, v) => `<div class="sumrow"><span class="k">${k}</span><div>${v}</div></div>`;
+  const gl = glStatus(now);
+  const ag = P.eState === 'ok' ? (P.agree.length ? P.agree.join('<br>') : '実績と物理の目安がそろう時間帯は、これから24時間にはありません（詳細の物理の目安と、結果の記録をご覧ください）')
+    : P.eState === 'loading' ? '実績のデータを読み込んでいます…' : P.eState === 'fail' ? '実績のデータを読み込めませんでした（詳細の物理の目安をご覧ください）'
+    : 'この相手の実績がまだないため、そろう時間帯は出せません（詳細の物理の目安をご覧ください）';
+  return `<div class="sumbox"><div class="sh"><span>概要：いまの見込み</span><span style="color:var(--c5);font-size:.85em;font-weight:400">検証中</span></div>${P.bz || ''}
+    ${row('いまお薦めのバンド<br><span class="kd kd-pre">予測</span>', REC_SUM || '―')}
+    ${row('アンテナの向き', `短経路 <b class="az">${Math.round(g.az)}°</b>（${km(g.km)} km）　長経路 <b class="az">${Math.round((g.az + 180) % 360)}°</b>（${km(L)} km）`)}
+    ${gl ? row('ローバンドの遠距離<br><span class="kd kd-phy">物理</span><span class="kd kd-obs">実測</span>', `<div class="gld ${gl.on ? 'on' : ''}" style="margin:0">${gl.html}</div>`) : ''}
+    ${row('これから24時間<br><span class="kd kd-pre">予測</span><span class="kd kd-phy">物理</span>', `<span style="font-size:.85em;color:var(--muted)">実績と物理の目安がそろう時間帯</span><br>${ag}`)}</div>`;
 }
 
 // ---- 届く強さの見込み（送信電力・アンテナ利得・周波数から。簡易な回線計算。検証中）
@@ -1219,10 +1441,17 @@ function targetRender(){
   const sp=pathStats(g.az,g.km,now),lp=pathStats((g.az+180)%360,2*Math.PI*EARTH-g.km,now);
   const sk=needSkew(sp)?skewSearch(g,TARGET.lat,TARGET.lon):null;
   drawMap({sp,lp,az:g.az,km:g.km,label:TARGET.short||'',sk});
-  $('dxOut').innerHTML=`<div class="tgt-who">${TARGET.label}<span class="loc">${TARGET.loc}</span></div>${(()=>{const g=glStatus(now);return g?`<div class="gld ${g.on?'on':''}">${g.html}<span style="color:#d64545;font-size:.85em">（検証中）</span></div>`:''})()}
+  $('dxOut').innerHTML=`<div class="tgt-who">${TARGET.label}${ndTag(TARGET.ent)}<span class="loc">${TARGET.loc}</span></div>
+  <div id="dxSum"></div>
+  <h4 class="stp"><span>詳細</span>いまの経路と、これから24時間の物理の目安<span class="kd kd-phy">物理</span></h4>
   <div class="tbl"><table class="paths-tbl"><thead><tr><th>昼夜<br><span class="th2">相手／自局（${esc(STATION.name)}）</span></th><th>短経路<br><span class="th2">方位・距離・最高地磁気緯度<br>オーロラ確率・経路の暗さ</span></th><th>長経路<br><span class="th2">同左</span></th><th>判定（主にローバンド）</th></tr></thead>
   <tbody><tr><td><span class="tag ${c}">${l}</span><br><span class="tag ${jc}">${jl}</span></td><td>${pathCell(sp)}</td><td>${pathCell(lp)}</td><td>${advise(sp,lp)}${skewNote(g,sp,sk,true)}</td></tr></tbody></table></div>
-  <p class="fn">1分ごとに計算し直します。宇宙天気（Kp・太陽風・Bz）は上の値と同じで、どの相手でも共通です。国分寺の電離層の値は日本の上空の値で、相手側の電離層の状態ではありません。</p>`;
+  <p class="fn">1分ごとに計算し直します。宇宙天気（Kp・太陽風・Bz）は上の値と同じで、どの相手でも共通です。国分寺の電離層の値は日本の上空の値で、相手側の電離層の状態ではありません。</p>
+  <div id="dxGuide"></div>
+  <h4 class="stp"><span>アドバイス</span>お薦めのバンドの内訳・経路の手がかり・届く強さ</h4>
+  <div id="dxRec"></div><div id="dxPl"></div><div id="dxLb"></div>
+  <h4 class="stp"><span>結果</span>日本の局の受信の記録<span class="kd kd-obs">実測</span></h4>
+  <div id="dxRes"></div>`;
   renderGuide(g,now);
 }
 
@@ -1245,13 +1474,13 @@ function nowRender(){const R=$('npRecent'),O=$('npOut'),N=$('npNote');if(!R)retu
   const rb=NOWJ.recent.bands||{},rec=NOWJ.recent,clean=x=>esc(String(x).replace('Z',''));
   let h=`<p class="gfine" style="margin:0 0 4px">UTC ${clean(rec.from)}〜${clean(rec.to)}（抜き取り${rec.samples}回）。<span class="npr">★</span>＝最近の日本の記録ではまれ。各バンドで、まれなものを先に、残りを遠い順に最大8つ。括弧の数は、そのバンドで受信できたエンティティの数です。名前にマウスを重ねると、距離・抜き取りの回数・SNR が出ます。</p>`;
   const lines=NP_BANDS.filter(b=>rb[b]).map(b=>`<div class="npline"><b>${b}</b>（${rb[b].n}）：`+
-    rb[b].top.map(x=>`<span title="${x.km.toLocaleString()} km・抜き取り${x.s}回・SNR ${x.snr??'―'} dB">${x.rare?'<span class="npr">★'+esc(x.name)+'</span>':esc(x.name)}</span>${mark(x.e)}`).join('、')+'</div>');
+    rb[b].top.map(x=>`<span title="${x.km.toLocaleString()} km・抜き取り${x.s}回・SNR ${x.snr??'―'} dB">${x.rare?'<span class="npr">★'+esc(x.name)+'</span>':esc(x.name)}</span>${ndIdx(x.e)}${mark(x.e)}`).join('、')+'</div>');
   R.innerHTML=h+(lines.join('')||'<div class="npline">この3時間に受信できたエンティティはありませんでした。</div>');
   const ob=NOWJ.outlook.bands||{},hrs=NOWJ.outlook.hours||[];
   const hj=hrs.length?`UTC ${hrs[0]}〜${(hrs[hrs.length-1]+1)%24}時（日本時間 ${(hrs[0]+9)%24}〜${(hrs[hrs.length-1]+10)%24}時）`:'';
   let o=`<p class="gfine" style="margin:0 0 4px">${hj}に、直近${NOWJ.outlook.days??28}日間の記録で受信の割合が3割以上、かつ3日以上受信できたエンティティです。比較的珍しいものを先に最大8つ。数字はその時間帯の受信の割合です。</p>`;
   if(cau.on)o+=`<div class="gwarn">地磁気が${cau.bz?'乱れる兆し（Bz の注意）':`乱れる予報（Kp ${cau.kp.toFixed(1)}）`}があります。<span class="nphl">▼</span> の付いた相手は、経路が高緯度（地磁気緯度60°以上）を通るため、記録より弱まる可能性があります。</div>`;
-  o+=NP_BANDS.filter(b=>ob[b]).map(b=>`<div class="npline"><b>${b}</b>（${ob[b].n}）：`+ob[b].top.map(x=>`${esc(x.name)} ${x.rate}%${mark(x.e)}`).join('、')+'</div>').join('')||'<div class="npline">見通しを出せる記録がありません。</div>';
+  o+=NP_BANDS.filter(b=>ob[b]).map(b=>`<div class="npline"><b>${b}</b>（${ob[b].n}）：`+ob[b].top.map(x=>`${esc(x.name)}${ndIdx(x.e)} ${x.rate}%${mark(x.e)}`).join('、')+'</div>').join('')||'<div class="npline">見通しを出せる記録がありません。</div>';
   const sc=NOWJ.score7||{};let n=0,hit=0,pn=0,ph=0;for(const b in sc){n+=sc[b][0];hit+=sc[b][1];pn+=sc[b][2];ph+=sc[b][3]}
   o+=n>=30?`<p class="gfine" style="margin:6px 0 0">採点（直近7日間）：見通しに挙げた相手のうち、実際に3時間以内に受信できた割合 ${Math.round(hit/n*100)}%（${n}件）。比較のため、「直近3時間に受信できた相手は、次の3時間も受信できる」という単純な見込みでは ${pn?Math.round(ph/pn*100):'―'}%（${pn}件）。</p>`
     :`<p class="gfine" style="margin:6px 0 0">採点：見通しは3時間後に実際の受信と突き合わせて採点しています。件数がたまったら、ここに的中の割合を表示します。</p>`;
@@ -1297,11 +1526,16 @@ loadLand();window.addEventListener('resize',()=>drawMap(LASTP));
 (async()=>{const g=LS('nowcast.myGrid');if(g)$('myGrid').value=g;await setStation();dayNight();const d=LS('nowcast.dx');
   if(d){$('dxIn').value=d;findTarget()}else{EX_DX=exampleDx();$('dxIn').value=EX_DX;findTarget()}})();
 // 伝搬の見込み（地図と経路）の開閉。最初は開いた状態。開いたときに地図を描き直す
-(()=>{const det=$('propDet');if(!det)return;if(LS('nowcast.propOpen')==='0')det.open=false;
+(()=>{const det=$('t3');if(!det)return;if(LS('nowcast.propOpen')==='0')det.open=false;
   det.addEventListener('toggle',()=>{LS('nowcast.propOpen',det.open?'1':'0');if(det.open){targetRender();drawMap(LASTP)}})})();
+// 四段の開閉（1・2・4段）。既定は1段が開く、2・4段が閉じる（HTML の open）。開閉の状態をブラウザに覚える。3段目は伝搬レーダーの開閉（nowcast.propOpen）
+['t1','t2','t4'].forEach(id=>{const d=$(id);if(!d)return;{const v=LS('nowcast.'+id);if(v==='0')d.open=false;else if(v==='1')d.open=true}
+  d.addEventListener('toggle',()=>LS('nowcast.'+id,d.open?'1':'0'))});
+// 目次：閉じている段は開いてから移る
+document.querySelectorAll('.toc a').forEach(a=>a.addEventListener('click',()=>{const d=$(a.getAttribute('href').slice(1));if(d&&!d.open)d.open=true}));
 load();loadIono();setInterval(load,5*60e3);setInterval(loadIono,15*60e3);setInterval(()=>{dayNight();bandGuide(lastV);targetRender()},60e3);
 })();
 </script>
-<p style="text-align:center;color:#666;font-size:.72rem;margin:18px 0 8px">版：2026-11-26</p>
+<p style="text-align:center;color:#666;font-size:.72rem;margin:18px 0 8px">版：2026-11-26j</p>
 </body>
 </html>
