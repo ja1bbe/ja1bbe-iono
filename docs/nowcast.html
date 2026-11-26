@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>宇宙天気とHF帯バンド ナウキャスト｜JA1BBE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+.gbox{margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--ink)}
+.gttl{font-weight:700;color:var(--gold);margin-bottom:6px}
+.gsub{font-weight:700;margin:10px 0 4px;font-size:.92em;color:var(--ink)}
+.gtxt{font-size:.9em;line-height:1.7;color:var(--ink)}
+.gagree{margin:6px 0 4px;padding:6px 8px;border-left:3px solid var(--gold);background:rgba(216,177,74,.10);font-size:.9em;line-height:1.7;color:var(--ink)}
+.gtbl{overflow-x:auto;margin-top:6px}
+.gt{border-collapse:collapse;font-size:11px;min-width:100%}
+.gt th,.gt td{border:1px solid var(--line);padding:1px 0;text-align:center;min-width:14px;height:16px;font-weight:400;color:var(--ink)}
+.gt td{color:var(--ink);font-weight:700}
+.gt th.gb{padding:1px 6px;text-align:left;white-space:nowrap;color:var(--ink);font-weight:700}
+.gt .gj{color:var(--muted)}
+.gfine{font-size:12px;color:var(--muted);line-height:1.6;margin:6px 0 0}
+#dxLb input,#dxLb select{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:2px 4px;font:inherit}
+.grec{margin:4px 0 10px;padding:6px 10px;border:1px solid #c9971f;border-radius:8px;background:rgba(216,177,74,.08)}
+.grec>summary{font-size:.95em}
+.gwarn{margin:6px 0 8px;padding:6px 8px;border-left:3px solid #d64545;background:rgba(214,69,69,.10);font-size:.88em;line-height:1.7}
+.gdet{margin:6px 0 0}
+.glgo{background:transparent;border:1px solid #5ad1ff;color:#5ad1ff;border-radius:6px;padding:2px 8px;font-size:.8rem;cursor:pointer}
+.gld{margin:4px 0 8px;font-size:.92rem;color:var(--sub,#9aa6b4)}.gld.on{color:#e9eef5;border-left:3px solid #5ad1ff;padding-left:8px}
+.rec1{font-size:.82em;color:#e9c46a;font-weight:700;white-space:nowrap}
+.npline{margin:4px 0;line-height:1.75}.npr{color:#e9c46a;font-weight:700}.nphl{color:#ff6b6b;font-size:.85em}
+.gdet>summary{cursor:pointer;font-size:.85em;font-weight:700;padding:3px 0;list-style:none}
+.gdet>summary::-webkit-details-marker{display:none}
+.gdet>summary::before{content:'▶ ';font-size:.8em}
+#propDet>summary{cursor:pointer;list-style:none;color:var(--gold);font-size:1.1rem;font-weight:700;margin:26px 0 10px}
+#propDet>summary::-webkit-details-marker{display:none}
+#propDet>summary::before{content:'▶ ';font-size:.8em}
+#propDet[open]>summary::before{content:'▼ '}
+.gdet[open]>summary::before{content:'▼ '}
+
+:root{
+  --bg:#0b0b0c; --panel:#161618; --panel2:#1e1e21; --line:#2c2c31;
+  --ink:#ececec; --muted:#9a9aa3; --gold:#d8b14a;
+  --c1:#2bb3a3; --c2:#7fd3c6; --c3:#e9c46a; --c4:#f08a4b; --c5:#e05555;
+  --sans:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+  --mono:"JetBrains Mono","Consolas","Menlo",monospace;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+/* 埋め込み枠の中のスクロールバーを隠す（スクロール自体はマウスホイールや指でできる） */
+html,body{scrollbar-width:none;-ms-overflow-style:none}
+html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}
+
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.7;font-size:15px}
+.wrap{max-width:1040px;margin:0 auto;padding:24px 18px 40px}
+header h1{color:var(--gold);font-size:clamp(1.4rem,3.4vw,2rem);margin:0;font-weight:700}
+header p{color:var(--muted);margin:4px 0 0;font-size:.9rem}
+.bar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:14px 0 20px;font-size:.85rem;color:var(--muted)}
+.bar button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 12px;font:inherit;cursor:pointer}
+.bar button:hover{border-color:var(--gold)}
+.msg{background:#2a2216;border:1px solid #5a4620;color:#f1d79a;border-radius:8px;padding:10px 14px;margin-bottom:18px;display:none}
+
+/* verdict */
+.verdict{border-radius:10px;padding:20px 22px;margin-bottom:18px;border:1px solid var(--line);background:var(--panel)}
+.verdict .lab{font-size:.8rem;color:var(--muted)}
+.verdict .state{font-size:1.6rem;font-weight:700;margin:2px 0 6px}
+.verdict .why{margin:0;color:#d6d6d6}
+.bands{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px}
+@media (max-width:760px){.bands{grid-template-columns:1fr}}
+.verdict.sm .state{font-size:1.3rem}
+.paths-tbl td{vertical-align:top;font-size:.86rem;line-height:1.55}
+.th2{font-size:.75rem;color:#77777f;font-weight:400}
+.fn{color:var(--muted);font-size:.84rem;margin:6px 0 0}
+.az{font-family:var(--mono);font-size:1.05rem;color:var(--gold);font-weight:500}
+.adv{font-weight:700}
+.paths{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+@media (max-width:620px){.paths{grid-template-columns:1fr}}
+.paths div{background:var(--panel2);border-radius:8px;padding:10px 14px;font-size:.9rem}
+.paths b{display:block;font-size:.85rem;color:var(--muted);font-weight:500}
+
+h2{color:var(--gold);font-size:1.1rem;margin:26px 0 10px;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:820px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;border-top:4px solid var(--line)}
+.card .n{font-size:.82rem;color:var(--muted)}
+.card .v{font-family:var(--mono);font-size:1.7rem;font-weight:500;line-height:1.3}
+.card .v small{font-size:.8rem;color:var(--muted);margin-left:4px;font-family:var(--sans)}
+.card .s{font-size:.82rem}
+.stale .card{opacity:.55}
+.stale .card .v::after{content:'（古い値）';font-size:.75rem;color:var(--muted);margin-left:6px;font-family:var(--sans)}
+.l1{border-top-color:var(--c1)}.l2{border-top-color:var(--c2)}.l3{border-top-color:var(--c3)}.l4{border-top-color:var(--c4)}.l5{border-top-color:var(--c5)}
+.t1{color:var(--c1)}.t2{color:var(--c2)}.t3{color:var(--c3)}.t4{color:var(--c4)}.t5{color:var(--c5)}
+
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:760px){.charts{grid-template-columns:1fr}}
+.chart{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.chart .n{font-size:.85rem;color:var(--muted);margin-bottom:6px}
+.chart svg{width:100%;height:auto;display:block}
+
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.9rem}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--muted);font-weight:500}
+.tag{display:inline-block;border-radius:4px;padding:0 8px;font-size:.82rem}
+.day{background:#3a3420;color:#f1d79a}.gl{background:#3b2a3f;color:#e6b6f0}.night{background:#18283f;color:#9cc3f5}
+.both{color:var(--c1);font-weight:700}
+
+.tgt-form{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin:10px 0 4px;font-size:.9rem}
+.tgt-form label{color:var(--muted);font-size:.82rem;display:flex;align-items:center;gap:6px}
+.tgt-form input{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font:500 1rem var(--mono);text-transform:uppercase}
+.tgt-form input:focus{outline:none;border-color:var(--gold)}
+#myGrid{width:9em}#dxIn{width:12em}
+.tgt-form button{background:var(--gold);color:#111;border:0;border-radius:6px;padding:7px 16px;font:700 .9rem var(--sans);cursor:pointer}
+.tgt-form button.sub{background:var(--panel2);color:var(--ink);border:1px solid var(--line);font-weight:500}
+.tgt-who{font-size:1.05rem;font-weight:700;margin:12px 0 4px}
+.tgt-who .loc{font-size:.84rem;color:var(--muted);font-weight:400;margin-left:8px}
+.mapwrap{margin-top:14px}
+#dxMap{width:100%;max-width:620px;aspect-ratio:1/1;display:block;margin:0 auto}
+.magbtn{background:transparent;border:1px solid #c9971f;color:inherit;border-radius:6px;padding:3px 10px;font-size:.85em;cursor:pointer}
+.legend{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 16px;font-size:.8rem;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:18px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.note{color:var(--muted);font-size:.84rem;margin-top:24px;border-top:1px solid var(--line);padding-top:14px}
+.note a{color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>宇宙天気とHF帯バンド ナウキャスト</h1>
+  <p>JA1BBE のDXCC代行ワッチと同じNOAAのデータを、ブラウザでそのまま表示しています</p>
+</header>
+<div class="bar">
+  <span id="upd">データを取得しています…</span>
+  <button id="reload" type="button">今すぐ更新</button>
+  <button id="demo" type="button">サンプルデータで表示</button>
+  <span>5分ごとに自動更新</span>
+  <a href="https://ja1bbe.wixsite.com/mysite/contact" target="_blank" rel="noopener" style="margin-left:auto;color:#e9c46a;text-decoration:underline">✉ ご意見・ご感想はこちら</a>
+</div>
+<div class="msg" id="msg"></div>
+
+<section class="verdict" id="verdict">
+  <div class="lab">ローバンド（160 / 80 / 40m）の目安</div>
+  <div class="state" id="state">―</div>
+  <p class="why" id="why"></p>
+  <div class="paths">
+    <div><b>高緯度を通るパス（欧州・北米方面）</b><span id="pHigh">―</span></div>
+    <div><b>低緯度のパス（東南アジア・オセアニア方面）</b><span id="pLow">―</span></div>
+  </div>
+</section>
+
+<div class="bands">
+  <div class="verdict sm" id="vMid"><div class="lab">ミドルバンド（30 / 20 / 17m）の目安</div><div class="state" id="sMid">―</div><p class="why" id="wMid"></p></div>
+  <div class="verdict sm" id="vHigh"><div class="lab">ハイバンド（15 / 12 / 10m）の目安</div><div class="state" id="sHigh">―</div><p class="why" id="wHigh"></p></div>
+</div>
+
+<section class="verdict" id="nowpsk">
+<div class="lab">いま開いている相手と、これから3時間（日本の局の受信の記録から）</div>
+<details class="gdet" id="npRecentD"><summary>直近3時間に開いていたエンティティ（日本の局の受信）</summary><div id="npRecent" class="gtxt">読み込み中…</div></details>
+<details class="gdet" id="npOutD"><summary>これから3時間の見通し（過去の記録）<span style="color:#d64545;font-size:.85em">（検証中）</span></summary><div id="npOut" class="gtxt"></div></details>
+<p class="fn" id="npNote" style="margin:6px 0 0"></p>
+</section>
+<details id="propDet" open><summary>JA1BBE 伝搬レーダー（地図と経路）</summary>
+<p class="fn" style="margin:-4px 0 10px">宇宙天気と受信の記録から見た、いまの伝搬の条件を、自局を中心に映します。</p>
+<section class="verdict" id="target">
+  <div class="lab">交信したい相手までの経路（自局と相手を、それぞれグリッドロケータまたはコールサインで入力）</div>
+  <div class="tgt-form">
+    <label>自局 <input id="myGrid" value="PM95vq" maxlength="15" autocomplete="off" spellcheck="false" aria-label="自局のグリッドロケータまたはコールサイン" placeholder="PM95 / JA1BBE"></label>
+    <label>相手 <input id="dxIn" placeholder="ZF2AA / FK89" maxlength="15" autocomplete="off" spellcheck="false" aria-label="相手のコールサインまたはグリッドロケータ"></label>
+    <button id="dxGo" type="button">経路を調べる</button>
+    <button id="dxClr" class="sub" type="button">消す</button>
+  </div>
+  <p class="fn" id="stInfo"></p>
+  <p class="fn" id="exNote" style="display:none;color:var(--gold)"></p>
+  <div class="mapwrap"><canvas id="dxMap" role="img" aria-label="自局を中心にした正距方位図。短経路と長経路、昼夜、オーロラ帯を表示"></canvas>
+    <div class="legend"><span><i style="background:var(--gold)"></i>短経路</span><span><i style="background:repeating-linear-gradient(90deg,#7fd3c6 0 4px,transparent 4px 7px)"></i>長経路</span><span><i style="background:repeating-linear-gradient(90deg,#c77dff 0 3px,transparent 3px 6px)"></i>ずらした方位</span><span><i style="background:#163250"></i>昼の海</span><span><i style="background:#05080d;border:1px solid #333"></i>夜（太陽高度−6°以下）</span><span><i style="background:#3a3550"></i>薄明</span><span><i style="background:rgba(80,220,140,.7)"></i>オーロラ 10〜30%</span><span><i style="background:rgba(240,90,80,.75)"></i>30%以上</span><span><i style="background:transparent;border:2px solid #f08a4b;border-radius:50%;width:10px"></i>最高地磁気緯度の地点</span></div>
+    <div style="margin-top:6px;text-align:center"><button id="magBtn" type="button" class="magbtn">▶ 地磁気緯度線を重ねる</button> <button id="drapBtn" type="button" class="magbtn">▶ D層の吸収を重ねる</button> <button id="stormBtn" type="button" class="magbtn">▶ 嵐の広がりを重ねる</button> <button id="ductBtn" type="button" class="magbtn">▶ ローバンドの遠距離（電離圏ダクトの可能性）を重ねる</button> <span style="display:block;margin-top:4px;color:#d64545;font-size:.8em">（D層の吸収、嵐の広がり、ローバンドの遠距離は検証中）</span></div>
+    <p id="drapNote" class="gfine" style="display:none;text-align:left;font-size:.8rem;max-width:760px;margin:6px auto 0"></p>
+    <div id="ductNote" class="gfine" style="display:none;text-align:left;font-size:.8rem;max-width:760px;margin:6px auto 0"></div>
+    <p id="stormNote" class="gfine" style="display:none;text-align:left;font-size:.8rem;max-width:760px;margin:6px auto 0"></p>
+    <p id="magNote" class="gfine" style="display:none;text-align:center;font-size:.8rem">点線は地磁気緯度 0°・±30°・±70°、<span style="color:#f08a4b">橙は ±60°</span>（静穏時のオーロラ帯の赤道側の縁の目安。Kp が上がるとこれより低緯度まで広がります）。地球の磁場を一つの棒磁石とみなす近似（経路の判定と同じ計算）で、実際の地磁気とは場所によって数度ずれます。</p>
+    <p class="fn" style="text-align:center">自局を中心にした正距方位図です。中心から見た方向がそのまま大圏方位（上が真北）、中心からの距離が実際の距離を表します。外周は地球の裏側（約20,000km）で、長経路は外周を越えて反対側から相手に届きます。</p></div>
+  <details class="gdet" id="glTTD"><summary>グレイラインダクトの時刻表（いまから24時間）<span style="color:#d64545;font-size:.85em">（検証中）</span></summary><div id="glTT" class="gtxt">計算中…</div></details>
+<div id="dxOut"><p class="fn">相手のコールサイン（例：ZF2AA、VP2V/JA1XXX）か、グリッドロケータ（例：FK89、FK89ab）を入れて「経路を調べる」を押すと、自局からの短経路・長経路の方位、距離、最高地磁気緯度、オーロラ確率、経路の暗さと判定を表示します。コールサインの場合は、そのエンティティの代表位置で計算します。短経路がオーロラ帯にかかるときは、左右60°までずらした方位の中から、オーロラ帯を避けて相手に届く経路（途中で曲がる経路として近似）を探し、紫の点線で示します。電離層の傾きや散乱で電波が曲がる経路の目安で、届くことを保証するものではありません。</p></div>
+</section>
+</details>
+
+<h2>現在の値</h2>
+<div class="grid" id="cards"></div>
+<p class="fn" id="btNote">Bt は太陽風の磁場の強さ（向きを問わない大きさ）で、Bz が南を向いたときに取り得る大きさの上限です。Bt そのものは電波に直接は効きませんが、Bt が大きい（目安 10nT 以上）ときは「乱れの燃料が多い」状態で、磁場の向きが変わって Bz が南を向くと、Bt に近い大きさまで南向きになることがあります。Bt が大きく Bz が南向きのときは地磁気が乱れやすいので、欧州・北米など北回りの経路、特にローバンドに警戒してください。Bt が大きくても Bz が北向きのままなら、大きな乱れにはなりにくいです。</p>
+
+<h2>推移</h2>
+<div class="charts">
+  <div class="chart"><div class="n">Kp指数（直近48時間・3時間ごと）</div><div id="kpChart"></div></div>
+  <div class="chart"><div class="n">Bz（直近6時間・nT）上が北向き、下が南向き</div><div id="bzChart"></div></div>
+</div>
+<div class="chart" style="margin-top:10px"><div class="n">Kpの予報（NOAA・3日間・3時間ごと）　塗りつぶしは実測・速報値、枠だけの棒は予報値</div><div id="kpfChart"></div>
+<p class="fn" id="kpfSum" style="color:#d6d6d6"></p>
+<p class="fn">予報はNOAA宇宙天気予報センターによるもので、主にCME（コロナ質量放出）の到来予想や、約27日周期で繰り返す高速太陽風にもとづきます。CMEの到着時刻の予測には一般に半日程度の誤差があるため、予報の時刻は幅を持って見てください。Kpが5以上（G1以上）の予報は、欧州・北米・カリブなど北回りのパスが弱まる可能性を示します。<a style="color:var(--gold)" href="https://www.swpc.noaa.gov/products/3-day-forecast" target="_blank" rel="noopener">NOAAの3日間予報</a></p></div>
+
+<h2>方面別の経路判定（ローテーター方位つき）</h2>
+<div class="tbl"><table class="paths-tbl">
+  <thead><tr><th>方面<br><span class="th2">いまのお薦めバンド<span style="color:#d64545">（検証中）</span></span></th><th>昼夜<br><span class="th2">相手／自局</span></th><th>短経路<br><span class="th2">方位・距離・最高地磁気緯度<br>オーロラ確率・経路の暗さ</span></th><th>長経路<br><span class="th2">同左</span></th><th>判定（主にローバンド）</th></tr></thead>
+  <tbody id="dn"></tbody>
+</table></div>
+<p class="fn" id="jaSun"></p>
+<p class="fn" id="aurInfo"></p>
+<p class="fn">方位は真北を0°とした大圏方位で、自局のグリッドロケータ（既定はPM95）の中心を基準に計算しています。4桁のグリッドは東西約180km・南北約110kmの範囲なので、6桁（例：PM95ve）で入れると、より正確になります。ローテーターが磁北基準の場合は、日本付近の磁気偏角（西へ約7〜9°）の分だけ補正してください。「経路の暗さ」は、経路上の地点のうち太陽高度が-6°以下の割合です。「最高地磁気緯度」は地磁気を双極子で近似した計算値で、北米上空は地磁気の極に近いため、地理的な緯度より高くなります。オーロラ確率は、NOAAのOVATIONモデルによる30〜90分先の推定値を、経路上で最も高い地点で示しています（30%以上を「通過」、10〜30%を「縁」としています）。オーロラ帯ではD層・E層への電子の降り込みにより吸収が強まり、特に160m・80mで信号が大きく弱まることがあります。</p>
+
+<h2>電離層（国分寺）</h2>
+<div class="grid" id="ionoCards"></div>
+<div class="charts" id="ionoCharts" style="margin-top:10px"><div class="chart"><div class="n">見かけの高さ（直近6時間・km）</div><div id="hfChart"></div></div>
+<div class="chart"><div class="n">foF2（直近6時間・MHz）</div><div id="foChart"></div></div></div>
+<p class="fn" id="ionoMsg"></p>
+<p class="fn">見かけの高さは、電波が反射して戻るまでの時間から求めた反射点の高さで、h'F2が求まらない夜間などはh'Fで代用しています。急な上昇は擾乱の前触れのことがあります。MUFの目安は、foF2の約3倍（1ホップ約3,000kmの場合のおおよその値）として計算しています。いずれも国分寺の真上の値で、交信したい方向の経路上の状態そのものではありません。観測値は自動処理の結果を含みます。</p>
+<p class="fn">出典：情報通信研究機構（NICT） 電離圏観測データ　<a style="color:var(--gold)" href="https://wdc.nict.go.jp/Ionosphere/index.html" target="_blank" rel="noopener">https://wdc.nict.go.jp/Ionosphere/index.html</a></p>
+
+<div class="note">
+  <p>この表示は、日本（東京）の昼夜・SFI・地磁気の状態から一般的な傾向をまとめた目安で、実際のコンディションを保証するものではありません。ローバンドの伝搬は、昼夜、D層の吸収、自局と相手局の雑音にも大きく左右されます。最終的な判断材料は、実際の受信と交信です。</p>
+  <p>データ：NOAA Space Weather Prediction Center（米国海洋大気庁 宇宙天気予報センター）。値の見方は「宇宙天気・電離層 通知の見方ガイド」と同じ区分です。</p>
+</div>
+</div>
+
+<script>
+(function(){
+const SWPC='https://services.swpc.noaa.gov';
+const URLS={kp:SWPC+'/products/noaa-planetary-k-index.json',mag:SWPC+'/json/rtsw/rtsw_mag_1m.json',
+  wind:SWPC+'/json/rtsw/rtsw_wind_1m.json',scales:SWPC+'/products/noaa-scales.json',sfi:SWPC+'/products/10cm-flux-30-day.json',aur:SWPC+'/json/ovation_aurora_latest.json',kpf:SWPC+'/products/noaa-planetary-k-index-forecast.json'};
+const $=id=>document.getElementById(id);
+const ts=s=>{s=String(s).replace(' ','T');if(!/Z$|[+-]\d\d:?\d\d$/.test(s))s+='Z';return Date.parse(s)};
+const fmtUTC=t=>{const d=new Date(t);return String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0')+' UTC'};
+const fmtJSTd=t=>{const d=new Date(t+9*3600e3);return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+' '+String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0')};
+const fmtJST=t=>{const d=new Date(t+9*3600e3);return String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0')};
+
+async function getJSON(u){const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error(r.status);return r.json()}
+
+/* ---- parsing (same logic as dxcc_notify.py) */
+function parseKp(d){
+  if(d&&d.length&&Array.isArray(d[0])){const h=d[0];d=d.slice(1).map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]])))}
+  return d.map(r=>[ts(r.time_tag),parseFloat(r.Kp??r.kp)]).filter(x=>!isNaN(x[1])).sort((a,b)=>a[0]-b[0]).slice(-16);
+}
+function parseRtsw(d,cols){
+  const act=d.filter(r=>r&&r.active===true);if(!act.length)return null;
+  const out={series:{}};const latest=Math.max(...act.map(r=>ts(r.time_tag)));out.at=latest;
+  for(const [n,c] of Object.entries(cols)){
+    const v=act.filter(r=>r[c]!=null).map(r=>[ts(r.time_tag),parseFloat(r[c])]).sort((a,b)=>a[0]-b[0]);
+    if(!v.length)continue;out[n]=v[v.length-1][1];
+    const w=v.filter(x=>x[0]>latest-1800e3).map(x=>x[1]);if(w.length)out[n+'30']=w.reduce((a,b)=>a+b,0)/w.length;
+    out.series[n]=v.filter(x=>x[0]>latest-6*3600e3);
+  }
+  return out;
+}
+function parseScales(d){const c=d['0']||{},o={};for(const k of['S','G','R']){const s=(c[k]||{}).Scale;if(s!==undefined&&s!==null&&s!=='')o[k]=parseInt(s)}
+  const p=((d['1']||{}).S||{}).Prob;if(p!==undefined&&p!==null&&p!=='')o.Sprob=parseInt(p);return o}
+function parseSfi(d){const r=d.filter(x=>x&&x.flux!=null);return r.length?parseFloat(r[r.length-1].flux):null}
+
+/* ---- levels (guide thresholds) */
+const lvKp=k=>k<2?1:k<4?2:k<5?3:k<7?4:5;
+const lvBz=b=>b>=2?1:b>-2?2:b>-5?3:b>-10?4:5;
+const lvV=v=>v<400?1:v<500?2:v<600?3:v<800?4:5;
+const lvN=n=>n<5?1:n<10?2:n<20?3:n<30?4:5;
+const lvS=s=>s===0?1:s===1?2:s===2?3:s===3?4:5;
+const lvSfi=s=>s<100?2:s<150?3:s<200?4:5;
+
+function card(name,val,unit,lv,sub){return `<div class="card l${lv}"><div class="n">${name}</div><div class="v">${val}<small>${unit}</small></div><div class="s t${lv}">${sub}</div></div>`}
+
+function render(v){
+  const c=[];
+  if(v.kp!=null)c.push(card('Kp指数',v.kp.toFixed(1),'',lvKp(v.kp),['静穏','やや不安定','活発','磁気嵐','激しい磁気嵐'][lvKp(v.kp)-1]));
+  if(v.bz!=null){const b=v.bz30??v.bz;c.push(card('Bz（30分平均）',(b>=0?'+':'')+b.toFixed(1),'nT',lvBz(b),b<0?'南向き':'北向き'))}
+  if(v.bt!=null){const bz=v.bz30??v.bz,warn=v.bt>=10&&bz!=null&&bz<=-5;c.push(card('Bt',v.bt.toFixed(1),'nT',warn?4:v.bt<10?2:v.bt<20?3:4,v.bt>=10?(warn?'燃料多・Bz南向き：警戒':'燃料多：Bzの向きに注意'):'Bzが南を向ける大きさの上限'))}
+  if(v.speed!=null){const s=v.speed30??v.speed;c.push(card('太陽風速度',s.toFixed(0),'km/s',lvV(s),'30分平均'))}
+  if(v.density!=null){const n=v.density30??v.density;c.push(card('太陽風密度',n.toFixed(1),'個/cm³',lvN(n),'30分平均'))}
+  if(v.S!=null)c.push(card('Sスケール','S'+v.S,'',lvS(v.S),v.Sprob!=null?`今日のプロトン現象確率 ${v.Sprob}%`:'太陽放射線嵐'));
+  if(v.G!=null)c.push(card('Gスケール','G'+v.G,'',v.G===0?1:v.G+1>5?5:v.G+1,'NOAAの嵐の段階（Kpより遅れて更新）'));
+  if(v.aurMax!=null)c.push(card('オーロラ（北半球）',v.aurMax.toFixed(0),'%',v.aurMax<10?1:v.aurMax<30?2:v.aurMax<50?3:v.aurMax<70?4:5,'OVATIONの最大確率'));
+  if(v.sfi!=null)c.push(card('SFI',v.sfi.toFixed(0),'sfu',lvSfi(v.sfi),'高いほどハイバンド向き'));
+  $('cards').innerHTML=c.join('')||'<p style="color:var(--muted)">値を取得できていません。</p>';
+  SW_NOW={bz30:v.bz30??v.bz,sp:v.speed30??v.speed,kp:v.kp,south:gSouthMin((v.series&&v.series.bz)||[])};stormNoteSet();
+  verdict(v);bandGuide(v);kpChart(v.kpHist||[]);kpfChart(v.kpf||[]);bzChart((v.series&&v.series.bz)||[]);
+  const at=v.rtswAt||(v.kpHist&&v.kpHist.length&&v.kpHist[v.kpHist.length-1][0]);
+  $('upd').textContent=(v.demo?'サンプルデータ表示中':'最終データ時刻 ')+(at&&!v.demo?fmtUTC(at)+'（日本時間 '+fmtJST(at)+'）':'');
+}
+
+/* ---- verdict: same rules as the notification script, phrased as a tendency */
+function verdict(v){
+  const kp=v.kp,bz=v.bz30??v.bz,sp=v.speed30??v.speed,S=v.S??0,hist=v.kpHist||[];
+  let st,col,why=[];
+  const recentStorm=hist.some(([t,k])=>t>Date.now()-86400e3&&k>=4);
+  if(kp==null){st='判定できません';col='var(--muted)';why.push('Kp指数を取得できていません。')}
+  else if(bz!=null&&sp!=null&&bz<-10&&sp>=500){st='悪化の兆候';col='var(--c5)';why.push('強い南向きのBzと高速の太陽風が続いています。1時間ほどのうちに地磁気が乱れる可能性があります。')}
+  else if(kp>=5){st='地磁気嵐';col='var(--c5)';why.push(`Kp ${kp.toFixed(1)}。地磁気が大きく乱れています。`)}
+  else if(kp>=4){st='乱れ気味';col='var(--c4)';why.push(`Kp ${kp.toFixed(1)}。地磁気が活発です。`)}
+  else if(recentStorm&&kp<=2&&bz!=null&&bz>0&&sp!=null&&sp<450){st='好転の傾向';col='var(--c1)';why.push('直近24時間の地磁気の乱れが収まり、Bzは北向き、太陽風も落ち着いています。')}
+  else if(kp<=2&&(bz==null||bz>-2)){st='静穏';col='var(--c1)';why.push('地磁気は落ち着いています。ローバンドにとって好ましい状態です。')}
+  else{st='おおむね安定';col='var(--c3)';why.push(`Kp ${kp.toFixed(1)}。大きな乱れはありませんが、${bz!=null&&bz<-2?'Bzが南向きです。':'やや不安定です。'}`)}
+  if(S>=1)why.push(`プロトン現象（S${S}）が起きています。`);
+  $('state').textContent=st;$('state').style.color=col;$('verdict').style.borderColor=col;$('why').textContent=why.join(' ');
+  let hi,lo;
+  if(S>=2){hi='極域の吸収が強まり、著しく弱まることがあります（数日続くことも）。';}
+  else if(S===1){hi='極域の吸収で弱まる可能性があります。';}
+  else if(kp!=null&&kp>=4){hi='フェージングや減衰が強まりやすい状態です。';}
+  else if(bz!=null&&sp!=null&&bz<-10&&sp>=500){hi='これから悪化する可能性があります。';}
+  else if(kp!=null&&kp<=2){hi='地磁気の面では好条件です。';}
+  else hi='大きな支障は見られません。';
+  lo=(S>=1||(kp!=null&&kp>=5))?'影響は高緯度パスより小さい傾向です。':'地磁気の影響は比較的小さいパスです。';
+  $('pHigh').dataset.base=hi;$('pHigh').textContent=hi;$('pLow').textContent=lo;
+}
+
+/* ---- mid / high band guidance (general tendencies from Japan's daylight, SFI, Kp, S) */
+let lastV=null;
+function bandGuide(v){
+  if(!v)return;lastV=v;
+  const ej=sunElev(35.68,139.69,Date.now()),sfi=v.sfi,kp=v.kp,S=v.S??0;
+  const tod=ej>6?'day':ej>-6?'twi':'night';
+  const disturb=[];if(kp!=null&&kp>=4)disturb.push('地磁気が乱れているため、欧州・北米など高緯度パスは弱まりやすい状態です。');
+  if(S>=1)disturb.push(`プロトン現象（S${S}）により、極域を通るパスは弱まることがあります。`);
+  let ms,mc,mw;
+  if(tod==='day'){ms='日中の時間帯';mc='var(--c1)';mw='日中は20m・17mが中心です。SFIが高い日ほど17mが遠くまで伸びやすくなります。30mはアジア・オセアニア方面が中心です。'}
+  else if(tod==='twi'){ms='朝夕の時間帯';mc='var(--c1)';mw='日本の朝夕は、30m・20mが欧州・北米方面に開けやすい時間帯です。グレイラインに沿ったパスに注目してください。'}
+  else{ms='夜の時間帯';mc='var(--c3)';mw='夜は30mが中心です。20mは太陽活動が高い日ほど、夜遅くまで開けていることがあります。17mは閉じやすくなります。'}
+  let hs,hc,hw;
+  if(tod==='night'){hs='閉じやすい時間帯';hc='var(--c4)';hw='日本は夜です。F2層の電子密度が下がるため、ハイバンドは一般に閉じている時間帯です。'}
+  else if(sfi==null){hs='判定できません';hc='var(--muted)';hw='SFIを取得できていません。'}
+  else{
+    if(sfi>=150){hs='開けやすい';hc='var(--c1)';hw=`SFI ${sfi.toFixed(0)}。太陽活動が高く、日中は15m〜10mとも開ける可能性が高い状態です。`}
+    else if(sfi>=100){hs='15m中心';hc='var(--c3)';hw=`SFI ${sfi.toFixed(0)}。日中は15mが開けやすく、12m・10mは日によって開けることがあります。`}
+    else{hs='開けにくい';hc='var(--c4)';hw=`SFI ${sfi.toFixed(0)}。日中に15mが開けることはありますが、12m・10mは難しい状態です（夏はスポラディックE層で開けることがあります）。`}
+    if(IONO&&IONO.latest.foF2!=null&&Date.now()-IONO.latest.t<90*60e3){const muf=IONO.latest.foF2*3;
+      hw+=` 国分寺のfoF2は${IONO.latest.foF2.toFixed(1)}MHzで、MUFの目安は約${muf.toFixed(0)}MHzです`+(muf>=28?'（10mまで届く目安）。':muf>=24.9?'（12mまで届く目安）。':muf>=21?'（15mまで届く目安）。':'（15mにも届きにくい目安）。');
+      if(muf<21){hs='開けにくい';hc='var(--c4)'}}
+    if(tod==='twi')hw='日本は朝夕の時間帯です。'+hw;
+  }
+  $('sMid').textContent=ms;$('sMid').style.color=mc;$('vMid').style.borderColor=mc;$('wMid').textContent=mw+(disturb.length?' '+disturb.join(' '):'');
+  $('sHigh').textContent=hs;$('sHigh').style.color=hc;$('vHigh').style.borderColor=hc;$('wHigh').textContent=hw+(disturb.length&&tod!=='night'?' '+disturb.join(' '):'');
+}
+
+/* ---- Kp 3-day forecast */
+function parseKpf(d){
+  if(d&&d.length&&Array.isArray(d[0])){const h=d[0];d=d.slice(1).map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]])))}
+  return d.map(r=>({t:ts(r.time_tag),kp:parseFloat(r.kp??r.Kp),kind:String(r.observed??r.kind??'').toLowerCase(),g:r.noaa_scale||null}))
+    .filter(r=>!isNaN(r.kp)&&!isNaN(r.t)).sort((a,b)=>a.t-b.t);
+}
+const gOf=k=>k>=9?'G5':k>=8?'G4':k>=7?'G3':k>=6?'G2':k>=5?'G1':'G0';
+function kpfChart(rows){
+  const now=Date.now();rows=rows.filter(r=>r.t>=now-24*3600e3);KPL=rows;try{nowRender()}catch(e){}
+  if(!rows.length){$('kpfChart').innerHTML='<p style="color:var(--muted);margin:0">予報データを取得できませんでした。</p>';$('kpfSum').textContent='';return}
+  const W=960,H=140,n=rows.length,bw=W/n,cols=['#2bb3a3','#7fd3c6','#e9c46a','#f08a4b','#e05555'];
+  let s=`<svg viewBox="0 0 ${W} ${H+34}">`;
+  for(const y of[4,5,7]){const yy=H-H*y/9;s+=`<line x1="0" x2="${W}" y1="${yy}" y2="${yy}" stroke="#2c2c31"/><text x="${W-2}" y="${yy-2}" fill="#77777f" font-size="10" text-anchor="end">${y}${y===5?'（G1）':''}</text>`}
+  rows.forEach((r,i)=>{const bh=Math.max(2,H*r.kp/9),c=cols[lvKp(r.kp)-1],pred=r.kind.startsWith('pred');
+    s+=pred?`<rect x="${i*bw+2}" y="${H-bh}" width="${bw-4}" height="${bh}" rx="2" fill="${c}" fill-opacity=".18" stroke="${c}" stroke-dasharray="3 2"><title>${fmtJSTd(r.t)}〜 予報 Kp ${r.kp.toFixed(2)}</title></rect>`
+           :`<rect x="${i*bw+2}" y="${H-bh}" width="${bw-4}" height="${bh}" rx="2" fill="${c}"><title>${fmtJSTd(r.t)}〜 Kp ${r.kp.toFixed(2)}</title></rect>`;
+    const j=new Date(r.t+9*3600e3);if(j.getUTCHours()<3)s+=`<line x1="${i*bw}" x2="${i*bw}" y1="0" y2="${H}" stroke="#3a3a40"/><text x="${i*bw+3}" y="${H+14}" fill="#9a9aa3" font-size="11">${j.getUTCMonth()+1}/${j.getUTCDate()}</text>`;
+  });
+  const ni=rows.findIndex(r=>r.t+3*3600e3>now);if(ni>=0){const x=ni*bw+bw*((now-rows[ni].t)/(3*3600e3));s+=`<line x1="${x}" x2="${x}" y1="0" y2="${H}" stroke="#d8b14a" stroke-width="1.5"/><text x="${x+3}" y="${H+28}" fill="#d8b14a" font-size="11">現在</text>`}
+  $('kpfChart').innerHTML=s+'</svg><div style="font-size:.75rem;color:var(--muted)">日付の区切りは日本時間の0時</div>';
+  const next=rows.filter(r=>r.t+3*3600e3>now&&r.t<now+24*3600e3);
+  if(!next.length){$('kpfSum').textContent='';return}
+  const mx=next.reduce((a,b)=>b.kp>a.kp?b:a),g=gOf(mx.kp);
+  let txt=`今後24時間の予報の最大は Kp ${mx.kp.toFixed(2)}（${g}）、日本時間 ${fmtJSTd(mx.t)}〜${fmtJST(mx.t+3*3600e3)} の枠です。`;
+  if(mx.kp>=5)txt+=' 地磁気嵐の予報です。欧州・北米・カリブなど北回りのパスは、この時間帯の前後で弱まる可能性があります。';
+  else if(mx.kp>=4)txt+=' やや活発になる予報です。高緯度パスに注意してください。';
+  else txt+=' 大きな乱れは予報されていません。';
+  const all=rows.filter(r=>r.t>now&&r.kind.startsWith('pred')),gmx=all.length?all.reduce((a,b)=>b.kp>a.kp?b:a):null;
+  if(gmx&&gmx.kp>=5&&gmx!==mx)txt+=` なお、3日間の予報期間中では ${fmtJSTd(gmx.t)}〜 に Kp ${gmx.kp.toFixed(2)}（${gOf(gmx.kp)}）の予報があります。`;
+  $('kpfSum').textContent=txt;
+}
+
+/* ---- charts */
+function kpChart(h){
+  if(!h.length){$('kpChart').innerHTML='<p style="color:var(--muted);margin:0">データなし</p>';return}
+  const W=480,H=150,bw=W/16;let s=`<svg viewBox="0 0 ${W} ${H+18}">`;
+  for(const y of[4,5,7]){const yy=H-H*y/9;s+=`<line x1="0" x2="${W}" y1="${yy}" y2="${yy}" stroke="#2c2c31"/><text x="${W-2}" y="${yy-2}" fill="#77777f" font-size="10" text-anchor="end">${y}</text>`}
+  const cols=['#2bb3a3','#7fd3c6','#e9c46a','#f08a4b','#e05555'];
+  h.forEach(([t,k],i)=>{const bh=Math.max(2,H*k/9);s+=`<rect x="${i*bw+2}" y="${H-bh}" width="${bw-4}" height="${bh}" rx="2" fill="${cols[lvKp(k)-1]}"><title>${fmtUTC(t)} Kp ${k}</title></rect>`;
+    if(i%4===0)s+=`<text x="${i*bw+2}" y="${H+14}" fill="#77777f" font-size="10">${fmtJST(t)}</text>`});
+  $('kpChart').innerHTML=s+'</svg><div style="font-size:.75rem;color:var(--muted)">横軸は日本時間</div>';
+}
+function bzChart(sr){
+  if(sr.length<2){$('bzChart').innerHTML='<p style="color:var(--muted);margin:0">データなし</p>';return}
+  const W=480,H=150,t0=sr[0][0],t1=sr[sr.length-1][0];
+  const m=Math.max(10,...sr.map(x=>Math.abs(x[1])));const X=t=>(t-t0)/(t1-t0||1)*W,Y=b=>H/2-b/m*(H/2-6);
+  let s=`<svg viewBox="0 0 ${W} ${H+18}"><rect x="0" y="${H/2}" width="${W}" height="${H/2}" fill="rgba(224,85,85,.07)"/><line x1="0" x2="${W}" y1="${H/2}" y2="${H/2}" stroke="#55555c"/>`;
+  s+=`<text x="4" y="12" fill="#77777f" font-size="10">+${m.toFixed(0)}</text><text x="4" y="${H-2}" fill="#77777f" font-size="10">-${m.toFixed(0)}</text>`;
+  s+=`<polyline fill="none" stroke="#d8b14a" stroke-width="1.6" points="${sr.map(x=>X(x[0]).toFixed(1)+','+Y(x[1]).toFixed(1)).join(' ')}"/>`;
+  s+=`<text x="0" y="${H+14}" fill="#77777f" font-size="10">${fmtJST(t0)}</text><text x="${W}" y="${H+14}" fill="#77777f" font-size="10" text-anchor="end">${fmtJST(t1)}</text>`;
+  $('bzChart').innerHTML=s+'</svg><div style="font-size:.75rem;color:var(--muted)">横軸は日本時間、赤い帯が南向き</div>';
+}
+
+/* ---- sun / day-night */
+function sunElev(lat,lon,t){
+  const d=new Date(t),doy=(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())-Date.UTC(d.getUTCFullYear(),0,0))/864e5;
+  const hr=d.getUTCHours()+d.getUTCMinutes()/60,g=2*Math.PI/365*(doy-1+(hr-12)/24);
+  const eq=229.18*(0.000075+0.001868*Math.cos(g)-0.032077*Math.sin(g)-0.014615*Math.cos(2*g)-0.040849*Math.sin(2*g));
+  const dec=0.006918-0.399912*Math.cos(g)+0.070257*Math.sin(g)-0.006758*Math.cos(2*g)+0.000907*Math.sin(2*g)-0.002697*Math.cos(3*g)+0.00148*Math.sin(3*g);
+  const ha=((hr*60+eq+4*lon)/4-180)*Math.PI/180,la=lat*Math.PI/180;
+  return Math.asin(Math.sin(la)*Math.sin(dec)+Math.cos(la)*Math.cos(dec)*Math.cos(ha))*180/Math.PI;
+}
+// 太陽の方位（真北から時計回り、度）。sunElev と同じ式
+function sunAz(lat,lon,t){
+  const d=new Date(t),doy=(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())-Date.UTC(d.getUTCFullYear(),0,0))/864e5;
+  const hr=d.getUTCHours()+d.getUTCMinutes()/60,g=2*Math.PI/365*(doy-1+(hr-12)/24);
+  const eq=229.18*(0.000075+0.001868*Math.cos(g)-0.032077*Math.sin(g)-0.014615*Math.cos(2*g)-0.040849*Math.sin(2*g));
+  const dec=0.006918-0.399912*Math.cos(g)+0.070257*Math.sin(g)-0.006758*Math.cos(2*g)+0.000907*Math.sin(2*g)-0.002697*Math.cos(3*g)+0.00148*Math.sin(3*g);
+  const ha=((hr*60+eq+4*lon)/4-180)*Math.PI/180,la=lat*Math.PI/180;
+  return(Math.atan2(Math.sin(ha),Math.cos(ha)*Math.sin(la)-Math.tan(dec)*Math.cos(la))*180/Math.PI+180)%360;
+}
+// グレイライン（境目に沿う方向）：自局が薄明のとき、太陽の方位 ±90° の二方向。
+// バンドは自局の太陽高度で分ける（物理の目安、記録では未確認）：160m −18°〜−6°、80m −12°〜+3°
+function grayState(t){const e=sunElev(STATION.lat,STATION.lon,t),bands=[];
+  if(e>=-18&&e<=-6)bands.push('160m');if(e>=-12&&e<=3)bands.push('80m');
+  if(!bands.length)return{e,bands};const a=sunAz(STATION.lat,STATION.lon,t);return{e,bands,az:[(a+90)%360,(a+270)%360]}}
+// グレイラインの伝搬ルート：自局か相手局が薄明（−18°〜+3°）のとき、自局と相手局を結ぶ経路のうち 7割以上が夜のもの
+function glRoute(t){if(!TARGET)return null;const tw=e=>e>=-18&&e<=3,bandsOf=e=>[...(e>=-18&&e<=-6?['160m']:[]),...(e>=-12&&e<=3?['80m']:[])];
+  const eS=sunElev(STATION.lat,STATION.lon,t),eT=sunElev(TARGET.lat,TARGET.lon,t);if(!tw(eS)&&!tw(eT))return null;
+  const g=bearingDist(STATION.lat,STATION.lon,TARGET.lat,TARGET.lon);if(g.km<50)return null;
+  const sp=pathStats(g.az,g.km,t),lp=pathStats((g.az+180)%360,2*Math.PI*EARTH-g.km,t),routes=[];
+  if(sp.dark>=0.7)routes.push('sp');if(lp.dark>=0.7)routes.push('lp');if(!routes.length)return null;
+  const bs=['160m','80m'].filter(b=>(tw(eS)&&bandsOf(eS).includes(b))||(tw(eT)&&bandsOf(eT).includes(b)));
+  return{who:tw(eS)&&tw(eT)?'両端':tw(eT)?'相手側':'自局側',bs,routes,eS,eT,sp,lp,az:g.az}}
+// 経路が北回り・南回り・東回り・西回りのどれか
+function routeHemi(az,km){let mx=-90,mn=90;for(let x=0;x<=km;x+=250){const[la]=dest(STATION.lat,STATION.lon,az,x);if(la>mx)mx=la;if(la<mn)mn=la}
+  const[le]=dest(STATION.lat,STATION.lon,az,km),hi=Math.max(STATION.lat,le),lo=Math.min(STATION.lat,le),nEx=mx-hi,sEx=lo-mn;
+  // 両端より 5° 以上北（南）へ張り出せば北回り（南回り）。どちらでもなければ出発の方位で東回り・西回り
+  if(nEx>=5&&nEx>=sEx)return'北回り';if(sEx>=5)return'南回り';return(az%360)<180?'東回り':'西回り'}
+// 実測：相手（の国）が直近3時間に日本で受信されたか（now.json）と、28日間のいまの時刻の前後1時間の受信の割合（paths.json）
+function glMeasure(t){if(!TARGET)return'';const bands=['160m','80m'],h=new Date(t).getUTCHours(),win=[(h+23)%24,h,(h+1)%24];
+  let idx=-1;if(TARGET.ent&&CTY)idx=CTY.ent.findIndex(e=>e[0]===TARGET.ent);
+  const parts=[];
+  if(idx>=0&&NOWJ&&NOWJ.recent){const rb=NOWJ.recent.bands||{},heard=bands.filter(b=>rb[b]&&(rb[b].all||[]).includes(idx));
+    parts.push(heard.length?`直近3時間に日本で受信あり（${heard.join('・')}）`:'直近3時間に日本での受信なし（160m・80m）')}
+  else if(idx<0)parts.push('直近3時間：グリッドで入れたため判定なし');
+  if(SUMMARY){const data=idx>=0?SUMMARY.e[String(idx)]:SUMMARY.f&&SUMMARY.f[llToGrid(TARGET.lat,TARGET.lon).slice(0,2)],nW=win.reduce((a,w)=>a+(SUMMARY.n[w]||0),0);
+    if(data&&nW>=10){const r=bands.map(b=>{const d=data[b];const v=d&&d.r?Math.round(win.reduce((a,w)=>a+gLv(d.r[w])*10*(SUMMARY.n[w]||0),0)/nW):0;return`${b} ${v}%`});
+      parts.push(`28日間のこの時間帯の受信の割合 ${r.join('・')}${idx<0?'（周辺の大区画）':''}`)}
+    else parts.push('28日間のこの時間帯の記録なし')}
+  return parts.length?'<br><span style="font-size:.92em">実測：'+parts.join('、')+'</span>':''}
+// 二局の間のグレイラインダクトの状態（あり・なしと理由）
+function glStatus(t){if(!TARGET)return null;const tw=e=>e>=-18&&e<=3;
+  const eS=sunElev(STATION.lat,STATION.lon,t),eT=sunElev(TARGET.lat,TARGET.lon,t),r=glRoute(t);
+  if(r){const g=bearingDist(STATION.lat,STATION.lon,TARGET.lat,TARGET.lon);
+    const rs=r.routes.map(x=>x==='sp'?`短経路 ${Math.round(g.az)}°（${routeHemi(g.az,g.km)}）`:`長経路 ${Math.round((g.az+180)%360)}°（${routeHemi((g.az+180)%360,2*Math.PI*EARTH-g.km)}）`);
+    return{on:true,html:`<b>グレイラインダクト：あり</b>（物理の条件） — ${rs.join('・')}、${r.who==='両端'?'両端':r.who==='相手側'?'相手側':'自局側'}が薄明、${r.bs.map(b=>`<span style="color:${DUCT_COL[b]}">${b}</span>`).join('・')}`+glMeasure(t)}}
+  const why=!tw(eS)&&!tw(eT)?`自局（${eS.toFixed(0)}°）も相手局（${eT.toFixed(0)}°）も薄明ではありません`:`${tw(eT)?'相手側':'自局側'}は薄明ですが、短経路・長経路とも夜が 7割未満です`;
+  return{on:false,html:`<b>グレイラインダクト：なし</b>（物理の条件：${why}）`+glMeasure(t)}}
+function grayNext(t){for(let k=1;k<=144;k++){const tt=t+k*6e5;if(grayState(tt).bands.length)return tt}return null}
+// 国分寺の電離層データ（JSON）の置き場所。取得の仕組みができたらURLを設定する
+const IONO_URL='https://ja1bbe.github.io/ja1bbe-iono/iono.json';
+let IONO=null;
+function ionoRender(){
+  const m=$('ionoMsg');
+  $('ionoCharts').style.display=IONO?'':'none';
+  if(!IONO){$('ionoCards').innerHTML='';
+    m.textContent=IONO_URL?'電離層データを取得できませんでした。':'国分寺の電離層データは配信の準備中です（NICTの了承を得て、15分ごとの取得の仕組みを準備しています）。';return}
+  const L=IONO.latest,age=(Date.now()-L.t)/60e3,h=L.hF2??L.hF,hn=L.hF2!=null?"h'F2":"h'F";
+  const kind=L.hF2!=null?'hF2':'hF',prev=IONO.recent.filter(r=>r.t<=L.t-3600e3&&r[kind]!=null).pop(),dh=prev&&h!=null?h-prev[kind]:null;
+  const c=[];
+  if(L.foF2!=null){c.push(card('foF2',L.foF2.toFixed(1),'MHz',2,'F2層の臨界周波数'));const muf=L.foF2*3;c.push(card('MUFの目安',muf.toFixed(0),'MHz',muf>=28?1:muf>=21?2:muf>=14?3:4,'foF2×3（約3,000km）'))}
+  if(h!=null)c.push(card('見かけの高さ（'+hn+'）',h.toFixed(0),'km',dh!=null&&dh>=50?4:2,dh==null?'1時間前との比較なし':(dh>=0?'1時間で +':'1時間で ')+dh.toFixed(0)+' km'+(dh>=50?'（急上昇）':'')));
+  c.push(card('Spread-F',L.spreadF?'有':'無','',L.spreadF?4:1,L.spreadF?'反射が乱れ、フェージングが増えやすい':'兆候なし'));
+  $('ionoCards').innerHTML=c.join('');$('ionoCards').classList.toggle('stale',age>90);const dl=age>90||new Date(L.t+9*3600e3).getUTCDate()!==new Date(Date.now()+9*3600e3).getUTCDate();
+  line('hfChart',IONO.recent.filter(r=>(r.hF2??r.hF)!=null).map(r=>[r.t,r.hF2??r.hF]),'#d8b14a',dl);
+  line('foChart',IONO.recent.filter(r=>r.foF2!=null).map(r=>[r.t,r.foF2]),'#7fd3c6',dl);
+  m.textContent=`観測時刻 ${fmtUTC(L.t)}（日本時間 ${fmtJSTd(L.t)}）`+(age>90?`。最新の観測から約${age<180?Math.round(age)+'分':Math.round(age/60)+'時間'}経っています（NICT が1日1回、日本時間20時30分ごろにまとめて公開するため）。この値は現在の状態とは異なる可能性があり、ハイバンドの目安には使っていません。`:'');
+}
+function line(id,sr,col,dl){const F=dl?fmtJSTd:fmtJST;
+  if(sr.length<2){$(id).innerHTML='<p style="color:var(--muted);margin:0">データなし</p>';return}
+  const W=480,H=130,t0=sr[0][0],t1=sr[sr.length-1][0],vs=sr.map(x=>x[1]),lo=Math.min(...vs),hi=Math.max(...vs),pad=(hi-lo)*0.15||1;
+  const X=t=>(t-t0)/(t1-t0||1)*W,Y=v=>H-(v-lo+pad)/(hi-lo+2*pad)*H;
+  $(id).innerHTML=`<svg viewBox="0 0 ${W} ${H+18}"><polyline fill="none" stroke="${col}" stroke-width="1.8" points="${sr.map(x=>X(x[0]).toFixed(1)+','+Y(x[1]).toFixed(1)).join(' ')}"/>`+
+   `<text x="2" y="12" fill="#77777f" font-size="10">${hi.toFixed(hi<30?1:0)}</text><text x="2" y="${H-2}" fill="#77777f" font-size="10">${lo.toFixed(lo<30?1:0)}</text>`+
+   `<text x="0" y="${H+14}" fill="#77777f" font-size="10">${F(t0)}</text><text x="${W}" y="${H+14}" fill="#77777f" font-size="10" text-anchor="end">${F(t1)}</text></svg><div style="font-size:.75rem;color:var(--muted)">横軸は日本時間</div>`;
+}
+function parseIono(d){const rec=(d.recent||[]).map(r=>({t:ts(r.time),foF2:r.foF2??null,hF:r.hF??null,hF2:r.hF2??null,spreadF:!!r.spreadF})).sort((a,b)=>a.t-b.t);
+  return{recent:rec,latest:rec[rec.length-1]}}
+async function loadIono(){if(!IONO_URL){IONO=null;ionoRender();return}
+  try{const d=await getJSON(IONO_URL);IONO=parseIono(d);if(!IONO.latest)IONO=null}catch(e){IONO=null}ionoRender();bandGuide(lastV)}
+
+let STATION={name:'PM95',lat:35.5,lon:139.0};        // 基準地点（自局のグリッドロケータから設定。既定はPM95）
+const GMPOLE={lat:80.8,lon:-72.6};                    // 地磁気北極（双極子近似）
+const R=Math.PI/180,EARTH=6371;
+let AUR=null;   // {grid:Float32Array(360*181), obs, fc, nmax}
+function aurAt(lat,lon){if(!AUR)return null;let L=Math.round(lon);L=((L%360)+360)%360;const la=Math.max(-90,Math.min(90,Math.round(lat)));return AUR.grid[L*181+la+90]}
+function magLat(lat,lon){return Math.asin(Math.sin(lat*R)*Math.sin(GMPOLE.lat*R)+Math.cos(lat*R)*Math.cos(GMPOLE.lat*R)*Math.cos((lon-GMPOLE.lon)*R))/R}
+function bearingDist(la1,lo1,la2,lo2){const p1=la1*R,p2=la2*R,dl=(lo2-lo1)*R;
+  const d=Math.acos(Math.min(1,Math.sin(p1)*Math.sin(p2)+Math.cos(p1)*Math.cos(p2)*Math.cos(dl)));
+  const az=(Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))/R+360)%360;
+  return{az,km:d*EARTH}}
+function dest(la,lo,az,km){const d=km/EARTH,p1=la*R,t=az*R;const p2=Math.asin(Math.sin(p1)*Math.cos(d)+Math.cos(p1)*Math.sin(d)*Math.cos(t));
+  const l2=lo*R+Math.atan2(Math.sin(t)*Math.sin(d)*Math.cos(p1),Math.cos(d)-Math.sin(p1)*Math.sin(p2));return[p2/R,((l2/R+540)%360)-180]}
+function pathStats(az,km,t){let dark=0,n=0,mm=-90,au=null;
+  for(let x=0;x<=km;x+=200){const[la,lo]=dest(STATION.lat,STATION.lon,az,x);n++;
+    if(sunElev(la,lo,t)<-6)dark++;const m=magLat(la,lo);if(Math.abs(m)>Math.abs(mm)||mm===-90)mm=m;
+    const a=aurAt(la,lo);if(a!=null)au=Math.max(au??0,a)}
+  return{az,km,dark:dark/n,mag:mm,aur:au}}
+// ---- オーロラ帯を避ける「ずらした方位」（試す価値の目安）
+// 電離層の傾きや散乱で曲がって届く経路を、途中で折れ曲がる2本の大圏で近似する。大圏から左右60°まで5°刻みで、
+// オーロラ帯（OVATION 10%以上。取得できないときは地磁気緯度60°以上）を通らず、遠回りが大圏の1.3倍以内の経路を探す。
+function seg(la1,lo1,la2,lo2,step){const g=bearingDist(la1,lo1,la2,lo2),out=[];for(let x=0;x<g.km;x+=step)out.push(dest(la1,lo1,g.az,x));out.push([la2,lo2]);return{pts:out,km:g.km}}
+function polyRisk(pts){let mm=0,au=null;for(const[la,lo]of pts){const m=Math.abs(magLat(la,lo));if(m>mm)mm=m;const a=aurAt(la,lo);if(a!=null)au=Math.max(au??0,a)}return{mm,au}}
+const detourTxt = x => x < 100 ? '遠回りはごくわずか' : `遠回り 約${(Math.round(x / 100) * 100).toLocaleString()} km`;
+function skewSearch(g,tla,tlo){const cand=[];
+  for(let d=5;d<=60;d+=5)for(const s of[1,-1]){const az=(g.az+s*d+360)%360;let best=null;
+    for(let D=1500;D<=g.km+1000;D+=500){const[pla,plo]=dest(STATION.lat,STATION.lon,az,D);
+      const a=seg(STATION.lat,STATION.lon,pla,plo,250),b=seg(pla,plo,tla,tlo,250),tot=a.km+b.km;if(tot>g.km*1.3)continue;
+      const pts=a.pts.concat(b.pts),r=polyRisk(pts);if(AUR?(r.au??0)>=10:r.mm>=60)continue;
+      if(!best||tot<best.km)best={az,off:s*d,km:tot,mag:r.mm,aur:r.au,turn:[pla,plo],pts}}
+    if(best)cand.push(best)}
+  if(!cand.length)return null;cand.sort((x,y)=>Math.abs(x.off)-Math.abs(y.off)||x.km-y.km);
+  const c=cand[0];c.extra=c.km-g.km;return c}
+const needSkew=sp=>AUR?(sp.aur??0)>=10:Math.abs(sp.mag)>=62;
+function skewNote(g,sp,sk,detail){if(!needSkew(sp))return'';
+  const where=AUR?`オーロラ帯${(sp.aur??0)>=30?'を通過':'の縁を通過'}`:`地磁気緯度 ${Math.abs(sp.mag).toFixed(0)}° の高緯度を通過`;
+  if(!sk)return`<br><span class="adv">ずらした方位</span>：短経路は${where}。左右60°までずらしても、オーロラ帯を避けて届く経路は見つかりませんでした。`;
+  return`<br><span class="adv t3">ずらした方位 ${sk.az.toFixed(0)}° を試す価値あり</span><span style="color:var(--c5);font-size:.85em">（検証中）</span>：短経路 ${g.az.toFixed(0)}° は${where}。`+
+    (detail?`${sk.az.toFixed(0)}° 方向に送り出し、${llToGrid(sk.turn[0],sk.turn[1]).slice(0,4)} 付近で曲がって届く経路なら、オーロラ帯を避けられます（${detourTxt(sk.extra)}）。電離層の傾きや散乱で曲がる経路なので、届くかどうかは条件しだいです。`
+      :`曲がって届く経路でオーロラ帯を避けられます（${detourTxt(sk.extra)}）。`)}
+const aurTxt=a=>a==null?'―':a>=30?`<span class="t5">${a.toFixed(0)}%（通過）</span>`:a>=10?`<span class="t4">${a.toFixed(0)}%（縁）</span>`:`<span class="t1">${a.toFixed(0)}%（影響小）</span>`;
+const pathCell=p=>`<span class="az">${p.az.toFixed(0)}°</span>　${(Math.round(p.km/100)*100).toLocaleString()} km<br>地磁気緯度 ${p.mag>=0?'N':'S'}${Math.abs(p.mag).toFixed(0)}°<br>オーロラ ${aurTxt(p.aur)}<br>暗さ ${(p.dark*100).toFixed(0)}%`;
+function advise(sp,lp){
+  const bad=a=>a!=null&&a>=30,edge=a=>a!=null&&a>=10&&a<30;
+  if(sp.dark>=0.8&&!bad(sp.aur))return`<span class="adv t1">短経路 ${sp.az.toFixed(0)}° でローバンドを狙える条件</span>${edge(sp.aur)?'（オーロラ帯の縁を通るため、やや弱まる可能性）':''}`;
+  if(lp.dark>=0.8&&!bad(lp.aur)&&(bad(sp.aur)||sp.dark<0.5))return`<span class="adv t3">長経路 ${lp.az.toFixed(0)}° を検討</span>（短経路は${bad(sp.aur)?'オーロラ帯を通過':'明るい区間が多い'}）`;
+  if(bad(sp.aur)&&sp.dark>=0.5)return`<span class="adv t5">短経路はオーロラ帯を通過</span>：北回りは大きく弱まる可能性。高緯度を通らない方面に切り替えを`;
+  if(sp.dark>=0.5)return`<span class="adv t3">短経路 ${sp.az.toFixed(0)}°</span>：経路の一部が明るい。グレイラインに注目`;
+  if(sp.dark>=0.2)return`<span class="adv">短経路 ${sp.az.toFixed(0)}°</span>：ミドルバンド中心の時間帯`;
+  return`<span class="adv">短経路 ${sp.az.toFixed(0)}°</span>：経路の大部分が明るい。ハイ・ミドルバンドの時間帯`;
+}
+const dnState=e=>e>6?['昼','day']:e>-6?['薄明','gl']:['夜','night'];
+// ---- 方面別の表の「いまのお薦めバンド」（検証中）
+// 方面の代表地点のグリッド大区画について、日本の局が受信できた記録（直近28日間、いまの前後1時間）から、
+// 受信の割合が2割以上のバンドのうち最も割合の高いものを選ぶ。いまの経路と宇宙天気で一段下げる条件は、
+// 相手を入れたときの「いまお勧めのバンド」と同じ。記録で選べないときは、経路の昼夜と SFI から物理の目安を出す。
+function regionRec(la,lo,g,sp,lp,now){
+  const h=new Date(now).getUTCHours(),sfi=SFI_NOW??100,bz=gBzActive(),near=Math.abs(sp.mag)>=55||(sp.aur!=null&&sp.aur>=10);
+  const adj=(b,gr)=>{const grp=G_GROUP[b];
+    if(grp==='low'&&!(sp.dark>=0.6||lp.dark>=0.8))gr--;
+    if(grp==='high'&&(sp.dark>0.4||sfi<90))gr--;
+    if(grp==='low'&&sp.aur!=null&&sp.aur>=30)gr--;
+    if(bz&&near&&(grp==='low'||grp==='mid'))gr--;
+    return gr};
+  // 記録は日本の局が受信したものなので、自局が日本から離れているとき（1,500km 以上）は使わない
+  const jaHome=bearingDist(STATION.lat,STATION.lon,35.68,139.76).km<1500;
+  if(jaHome&&SUMMARY&&SUMMARY.f){const f=llToGrid(la,lo).slice(0,2),data=SUMMARY.f[f],win=[(h+23)%24,h,(h+1)%24],nWin=win.reduce((a,w)=>a+(SUMMARY.n[w]||0),0);
+    if(data&&nWin>=10){let best=null;
+      for(const b of G_BANDS){const d=data[b];if(!d||!d.r)continue;
+        const rate=Math.round(win.reduce((a,w)=>a+gLv(d.r[w])*10*(SUMMARY.n[w]||0),0)/nWin);
+        const gr=adj(b,rate>=20?1:rate>=10?0:-1);
+        if(gr>=1&&(!best||rate>best.rate))best={b,rate}}
+      if(best)return `お薦め ${best.b}（記録 ${best.rate}%）`}}
+  let b;
+  if(sp.dark>=0.7||lp.dark>=0.8)b=(sp.aur!=null&&sp.aur>=30)?'30m':'40m';
+  else if(sp.dark>=0.3)b='20m';
+  else b=sfi>=120?'15m':sfi>=95?'17m':'20m';
+  return `お薦め ${b}（物理の目安）`}
+function dayNight(){
+  const now=Date.now(),JA=[STATION.lat,STATION.lon];
+  const P=[['欧州（ロンドン）',51.5,-0.13],['北米東部（ニューヨーク）',40.7,-74.0],['北米西部（ロサンゼルス）',34.05,-118.24],['カリブ（プエルトリコ）',18.47,-66.11],['アフリカ西海岸（セネガル・ダカール）',14.69,-17.45],['南米（ブラジル・サンパウロ）',-23.55,-46.63],['南部アフリカ（ヨハネスブルグ）',-26.2,28.05],['オセアニア（シドニー）',-33.87,151.21],['東南アジア（シンガポール）',1.35,103.82]];
+  const ej=sunElev(JA[0],JA[1],now),[jl,jc]=dnState(ej);let northBad=[];
+  $('dn').innerHTML=P.map(([n,la,lo])=>{const e=sunElev(la,lo,now),[l,c]=dnState(e);
+    const g=bearingDist(JA[0],JA[1],la,lo),sp=pathStats(g.az,g.km,now),lp=pathStats((g.az+180)%360,2*Math.PI*EARTH-g.km,now);
+    if(sp.aur!=null&&sp.aur>=30)northBad.push(n.replace(/（.*/,''));
+    return `<tr><td><b>${n}</b><br><span class="rec1">${regionRec(la,lo,g,sp,lp,now)}</span></td><td><span class="tag ${c}">${l}</span><br><span class="tag ${jc}">${jl}</span></td><td>${pathCell(sp)}</td><td>${pathCell(lp)}</td><td>${advise(sp,lp)}${needSkew(sp)?skewNote(g,sp,skewSearch(g,la,lo),false):''}</td></tr>`}).join('');
+  const base=$('pHigh').dataset.base;if(base!==undefined)$('pHigh').textContent=base+(northBad.length?` 現在、${northBad.join('・')}方面の短経路にオーロラ帯がかかっています。`:'');
+  if(AUR)$('aurInfo').textContent=`オーロラ（OVATION）：観測 ${fmtUTC(AUR.obs)}、予測対象 ${fmtUTC(AUR.fc)}。北半球の最大確率 ${AUR.nmax.toFixed(0)}%。`;
+  else $('aurInfo').textContent='オーロラのデータを取得できていないため、オーロラ確率は表示していません。';
+  const j=new Date(now+9*3600e3),base0=Date.UTC(j.getUTCFullYear(),j.getUTCMonth(),j.getUTCDate())-9*3600e3;let rise,set,prev=sunElev(JA[0],JA[1],base0);
+  for(let m=1;m<=1440;m++){const t=base0+m*60e3,e=sunElev(JA[0],JA[1],t);if(prev<-0.833&&e>=-0.833)rise=t;if(prev>=-0.833&&e<-0.833)set=t;prev=e}
+  $('jaSun').textContent=`自局（${STATION.name}）の今日の日の出 ${rise?fmtJST(rise):'―'}・日の入り ${set?fmtJST(set):'―'}（日本時間、計算値）。`;
+}
+function parseAur(d){const g=new Float32Array(360*181);let nmax=0;
+  for(const [lo,la,a] of d.coordinates){const L=((Math.round(lo)%360)+360)%360,A=Math.round(la);if(A<-90||A>90)continue;g[L*181+A+90]=a;if(A>0&&a>nmax)nmax=a}
+  return{grid:g,obs:ts(d['Observation Time']),fc:ts(d['Forecast Time']),nmax}}
+
+/* ---- 交信したい相手（自局・相手のグリッドロケータ、またはコールサイン） */
+const CTY_URL='https://ja1bbe.github.io/ja1bbe-iono/cty.json';   // cty.dat を変換した表（コールサイン → エンティティと代表位置）
+let CTY=null,TARGET=null;
+// 位置がわかっている局は、コールサインで入れてもそのグリッドで計算する（必要に応じて書き足す）
+const KNOWN={'JA1BBE':'PM95RN'};
+const LS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function gridToLL(g){
+  g=String(g||'').trim().toUpperCase();
+  if(!/^[A-R]{2}[0-9]{2}([A-X]{2})?$/.test(g))return null;
+  let lon=(g.charCodeAt(0)-65)*20-180+(+g[2])*2,lat=(g.charCodeAt(1)-65)*10-90+(+g[3]);
+  if(g.length===6){lon+=(g.charCodeAt(4)-65)*(2/24)+1/24;lat+=(g.charCodeAt(5)-65)*(1/24)+1/48}else{lon+=1;lat+=0.5}
+  return{grid:g,lat,lon};
+}
+function llToGrid(lat,lon){lon+=180;lat+=90;const A=String.fromCharCode(65+Math.floor(lon/20)),B=String.fromCharCode(65+Math.floor(lat/10));
+  return A+B+Math.floor((lon%20)/2)+Math.floor(lat%10)}
+async function loadCty(){if(CTY)return CTY;CTY=await getJSON(CTY_URL);return CTY}
+// コールサイン → [エンティティ名, 緯度, 経度, プレフィックス]。cty.dat と同じ最長一致
+function lookupCall(call){
+  call=call.toUpperCase().replace(/\s+/g,'');
+  if(CTY.exact[call]!=null)return ent(CTY.exact[call],call);
+  const parts=call.split('/'),IGN=/^(P|M|MM|AM|QRP|A|B|LH|\d)$/;
+  let key=parts[0];
+  if(parts.length>1){const others=parts.filter((p,i)=>p&&!IGN.test(p)&&p!==parts.reduce((a,b)=>b.length>a.length?b:a,''));
+    if(others.length)key=others[0].length<=parts[0].length?others[0]:parts[0];
+    if(/\/MM$/.test(call))return null;}
+  for(let n=key.length;n>0;n--){const p=key.slice(0,n);if(CTY.prefix[p]!=null)return ent(CTY.prefix[p],p)}
+  return null;
+}
+function ent(v,matched){const i=Array.isArray(v)?v[0]:v,e=CTY.ent[i];const lat=Array.isArray(v)?v[1]:e[1],lon=Array.isArray(v)?v[2]:e[2];return{name:e[0],lat,lon,matched}}
+async function setStation(){
+  const raw=$('myGrid').value.trim().toUpperCase(),g=gridToLL(raw);
+  if(KNOWN[raw]){const k=gridToLL(KNOWN[raw]);STATION={name:raw,lat:k.lat,lon:k.lon};$('myGrid').value=raw;LS('nowcast.myGrid',raw);
+    $('stInfo').textContent=`自局：${raw}（登録済みのグリッド ${k.grid}、緯度 ${k.lat.toFixed(2)}°・経度 ${k.lon.toFixed(2)}°）を基準に計算しています。`;return true}
+  if(g){STATION={name:g.grid,lat:g.lat,lon:g.lon};$('myGrid').value=g.grid;LS('nowcast.myGrid',g.grid);
+    $('stInfo').textContent=`自局：グリッド ${g.grid} の中心（緯度 ${g.lat.toFixed(2)}°・経度 ${g.lon.toFixed(2)}°）を基準に計算しています。`;return true}
+  if(/^[A-Z0-9\/]{3,15}$/.test(raw)){
+    try{await loadCty();const r=lookupCall(raw);
+      if(r){STATION={name:raw,lat:r.lat,lon:r.lon};$('myGrid').value=raw;LS('nowcast.myGrid',raw);
+        $('stInfo').textContent=`自局：${raw}（${r.name}）の代表位置 ${llToGrid(r.lat,r.lon)}（緯度 ${r.lat.toFixed(1)}°・経度 ${r.lon.toFixed(1)}°）を基準に計算しています。コールサインではエンティティの代表位置になるので、正確に計算するにはグリッドロケータ（例：PM95ve）で入れてください。`;return true}}catch(e){}}
+  const d=gridToLL('PM95');STATION={name:d.grid,lat:d.lat,lon:d.lon};
+  $('stInfo').innerHTML=`<span class="t4">自局の「${esc(raw)}」を判別できなかったため、PM95 を基準にしています。</span>`;return false;
+}
+// 相手の例：保存された相手がないときだけ、日本時間の時間帯に合わせて入れる（保存はしない）
+//   朝 4〜9時：カナリア諸島 IL17（日本の夜明けで、欧州・アフリカ方面のローバンドが強まりやすい時間帯）
+//   昼 9〜17時：南極・昭和基地 KC90sx
+//   夜 17〜4時：カリブ・アンティグア FK97cc（北米の夜明けのころ。北回りでオーロラ帯にかかる例）
+let EX_DX=null;
+const EX_LIST={IL17:'カナリア諸島',KC90SX:'南極・昭和基地',FK97CC:'カリブ・アンティグア'};
+function exampleDx(){const h=(new Date().getUTCHours()+9)%24;return h>=4&&h<9?'IL17':h>=9&&h<17?'KC90SX':'FK97CC'}
+function exNoteSet(){const n=$('exNote');if(!n)return;const dx=$('dxIn').value.trim().toUpperCase(),isDx=EX_DX&&dx===EX_DX,isMe=$('myGrid').value.trim().toUpperCase()==='PM95VQ';
+  if(!isDx&&!isMe){n.style.display='none';return}
+  const parts=[];if(isMe)parts.push('自局は東京の中心（皇居、PM95vq）');if(isDx)parts.push(`相手はいまの時間帯に合わせて ${EX_LIST[dx]}（${dx}）`);
+  n.textContent=`例として、${parts.join('、')}を入れています（相手の例は、朝はカナリア諸島、昼は南極・昭和基地、夜はカリブ）。ご自分のコールサインかグリッドと、交信したい相手に書き換えてください。`;n.style.display=''}
+// 相手を判別できなかったとき：入力欄のすぐ下に橙色で知らせ、地図の前の相手の線を消す
+function dxFail(msg){TARGET=null;$('dxOut').innerHTML=`<p class="fn t4">${msg}</p>`;drawMap(null);
+  const n=$('exNote');if(n){n.innerHTML=`<span style="color:#f08a4b">${msg}</span>`;n.style.display=''}}
+// ---- グレイラインダクトの時刻表：いまから24時間に、主な相手と自局の間で「あり」になる時間帯（自局の欄の局から計算）
+const GLTT=[['米国東部（W1AW）','FN31'],['米国中部','EM15'],['米国西部','DM79'],['米国北西部','CN87'],['アラスカ','BP51'],['ハワイ','BL01'],['アンティグア（V26JJ）','FK97'],['プエルトリコ','FK68'],['コロンビア','FJ24'],['アルゼンチン','GF05'],['ウルグアイ','GF15'],['ブラジル','GG66'],
+  ['英国','IO91'],['ドイツ','JO62'],['モスクワ','KO85'],['カナリア諸島','IL18'],['モロッコ','IM63'],['南アフリカ','KG33'],['ケニア','KI88'],['アラブ首長国連邦','LL75'],['インド','MK82'],['オーストラリア（シドニー）','QF56'],['ニュージーランド','RF70'],['イースター島','DG52']];
+function glTTCalc(t0){const tw=e=>e>=-18&&e<=3,out=[],step=10*60e3,N=24*6;
+  const darkF=(az,km,t)=>{let n=0,d=0;for(let x=0;x<=km;x+=300){const[la,lo]=dest(STATION.lat,STATION.lon,az,x);n++;if(sunElev(la,lo,t)<-6)d++}return d/n};
+  for(const[nm,gq]of GLTT){const la=(gq.charCodeAt(1)-65)*10-90+(+gq[3])+0.5,lo=(gq.charCodeAt(0)-65)*20-180+(+gq[2])*2+1,g=bearingDist(STATION.lat,STATION.lon,la,lo);if(g.km<1500)continue;
+    let cur=null;const wins=[];
+    for(let k=0;k<=N;k++){const t=t0+k*step,eS=sunElev(STATION.lat,STATION.lon,t),eT=sunElev(la,lo,t);let r='';
+      if(tw(eS)||tw(eT)){if(darkF(g.az,g.km,t)>=0.7)r='sp';else if(darkF((g.az+180)%360,2*Math.PI*EARTH-g.km,t)>=0.7)r='lp'}
+      if(r){const side=tw(eS)&&tw(eT)?'両端':tw(eT)?(sunElev(la,lo,t+18e5)>eT?'相手側の夜明け':'相手側の夕暮れ'):(sunElev(STATION.lat,STATION.lon,t+18e5)>eS?'自局側の夜明け':'自局側の夕暮れ');
+        if(!cur)cur={a:t,b:t,r,side};else cur.b=t}
+      else if(cur){wins.push(cur);cur=null}}
+    if(cur)wins.push(cur);
+    // 同じ経路の窓が 3時間以内に続くときは、一つの行にまとめる（例：自局側の夜明け → 相手側の夕暮れ）
+    const ok=wins.filter(w=>w.b-w.a>=step);let grp=null;
+    for(const w of ok){if(grp&&grp.r===w.r&&w.a-grp.wins[grp.wins.length-1].b<=3*3600e3){grp.wins.push(w);continue}
+      if(grp)out.push(grp);const az=w.r==='sp'?g.az:(g.az+180)%360,km=w.r==='sp'?g.km:2*Math.PI*EARTH-g.km;grp={nm,gq,r:w.r,az,hemi:routeHemi(az,km),wins:[w],a:w.a}}
+    if(grp)out.push(grp)}
+  return out.sort((x,y)=>x.a-y.a)}
+const GLTT_ENT={'FN31':'United States','EM15':'United States','DM79':'United States','CN87':'United States','BP51':'Alaska','BL01':'Hawaii','FK97':'Antigua & Barbuda','FK68':'Puerto Rico','FJ24':'Colombia','GF05':'Argentina','GF15':'Uruguay','GG66':'Brazil','IO91':'England','JO62':'Fed. Rep. of Germany','KO85':'European Russia','IL18':'Canary Islands','IM63':'Morocco','KG33':'South Africa','KI88':'Kenya','LL75':'United Arab Emirates','MK82':'India','QF56':'Australia','RF70':'New Zealand','DG52':'Easter Island','PM95':'Japan'};
+// 時刻表の行の「記録（PSK）」：窓の時間帯に日本の局がその地域（グリッドの大区画）を受信できた割合（直近28日間）と、直近3時間の受信
+function glTTRec(w){const jaHome=bearingDist(STATION.lat,STATION.lon,35.68,139.76).km<1500;if(!jaHome)return'—（自局が日本のときだけ）';if(!SUMMARY)return'記録を読み込み中';
+  const hs=new Set();for(const x of w.wins)for(let t=x.a;t<=x.b+6e5;t+=36e5)hs.add(new Date(t).getUTCHours());const H=[...hs],nW=H.reduce((a,h)=>a+(SUMMARY.n[h]||0),0),data=SUMMARY.f&&SUMMARY.f[w.gq.slice(0,2)];
+  let txt=(data&&nW>=10)?['160m','80m'].map(b=>{const d=data[b];return`${b} ${d&&d.r?Math.round(H.reduce((a,h)=>a+gLv(d.r[h])*10*(SUMMARY.n[h]||0),0)/nW):0}%`}).join('・'):'記録なし';
+  const nm=GLTT_ENT[w.gq],idx=nm&&CTY?CTY.ent.findIndex(e=>e[0]===nm):-1;
+  if(idx>=0&&NOWJ&&NOWJ.recent){const rb=NOWJ.recent.bands||{},heard=['160m','80m'].filter(b=>rb[b]&&(rb[b].all||[]).includes(idx));if(heard.length)txt+=`<br><b style="color:#5ad1ff">直近3時間に受信あり（${heard.join('・')}）</b>`}
+  return txt}
+async function glTTRender(){const box=$('glTT'),d=$('glTTD');if(!box||!d||!d.open)return;try{await loadCty()}catch(e){}try{if(!SUMMARY)await loadSummary()}catch(e){}const t0=Math.floor(Date.now()/6e5)*6e5,L=glTTCalc(t0);
+  const hm=t=>{const x=new Date(t+9*3600e3);return String(x.getUTCHours()).padStart(2,'0')+':'+String(x.getUTCMinutes()).padStart(2,'0')};
+  box.innerHTML=`<p class="gfine" style="margin:0 0 6px">自局（${esc(STATION.name)}）から見て、主な相手との間で「グレイラインダクト：あり」（自局か相手局が薄明で、経路の 7割以上が夜）になる時間帯です。いまから24時間、日本時間。時間帯は太陽の位置（物理の条件）で決まり、宇宙天気では変わりません。「記録（PSK）」は、その時間帯に日本の局がその地域を 160m・80m で受信できた割合（PSK Reporter の抜き取り、直近28日間）で、物理の条件と実際の受信の両方から見られます。「地図で見る」を押すと、その相手を伝搬レーダーに描きます。</p>`+
+    (L.length?`<div class="tbl"><table class="paths-tbl"><thead><tr><th>時間帯（日本時間）</th><th>相手（グリッド）</th><th>経路</th><th>薄明</th><th>記録（PSK）<br><span class="th2">日本の受信の割合 28日間</span></th><th></th></tr></thead><tbody>`+
+    L.map(w=>{const nowIn=w.wins.some(x=>x.a<=Date.now()&&Date.now()<=x.b),sides=w.wins.map(x=>x.side).filter((v,i,a)=>!i||v!==a[i-1]);return`<tr${nowIn?' style="background:rgba(90,209,255,.10)"':''}><td style="white-space:nowrap">${w.wins.map(x=>`${hm(x.a)}〜${hm(x.b+6e5)}`).join('<br>')}${nowIn?' <b style="color:#5ad1ff">いま</b>':''}</td><td>${esc(w.nm)}<br><span class="th2">${w.gq}</span></td><td>${w.r==='sp'?'短経路':'長経路'} ${Math.round(w.az)}°<br><span class="th2">${w.hemi}</span></td><td>${sides.join(' →<br>')}</td><td style="white-space:nowrap">${glTTRec(w)}</td><td><button type="button" class="glgo" data-g="${w.gq}">地図で見る</button></td></tr>`}).join('')+
+    `</tbody></table></div>`:'<p class="gfine">この24時間に「あり」になる相手はありません。</p>')}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('.glgo');if(!b)return;$('dxIn').value=b.dataset.g;findTarget();const m=$('dxMap');if(m)m.scrollIntoView({behavior:'smooth',block:'center'})});
+(()=>{const d=document.getElementById('glTTD');if(!d)return;try{if(localStorage.getItem('pc.glTTD')==='1')d.open=true}catch(e){}
+  d.addEventListener('toggle',()=>{try{localStorage.setItem('pc.glTTD',d.open?'1':'0')}catch(e){}if(d.open)setTimeout(glTTRender,30)});
+  setInterval(()=>{if(!document.hidden)glTTRender()},10*60e3);if(d.open)setTimeout(glTTRender,800)})();
+async function findTarget(){
+  await setStation();
+  const raw=$('dxIn').value.trim().toUpperCase();$('dxIn').value=raw;
+  if(!raw){TARGET=null;targetRender();return}
+  const g=gridToLL(raw);
+  if(KNOWN[raw]){const k=gridToLL(KNOWN[raw]);TARGET={short:raw,label:`${esc(raw)}`,loc:`登録済みのグリッド ${k.grid}（緯度 ${k.lat.toFixed(2)}°・経度 ${k.lon.toFixed(2)}°）`,lat:k.lat,lon:k.lon}}
+  else if(g){TARGET={short:g.grid,label:`グリッド ${g.grid}`+(EX_DX&&raw===EX_DX?`（例：${EX_LIST[raw]}）`:''),loc:`緯度 ${g.lat.toFixed(1)}°・経度 ${g.lon.toFixed(1)}°`,lat:g.lat,lon:g.lon}}
+  else{
+    if(!/^[A-Z0-9\/]{2,15}$/.test(raw)){dxFail('コールサインかグリッドロケータ（4桁または6桁）を入れてください。');return}
+    try{await loadCty()}catch(e){dxFail('コールサインの表（cty.json）を読み込めませんでした。グリッドロケータで入力してください。');return}
+    const r=lookupCall(raw);
+    if(!r){dxFail(`「${esc(raw)}」のエンティティを判別できませんでした。コールサインを確かめるか、グリッドロケータで入力してください。`);return}
+    TARGET={short:raw,label:`${esc(raw)}　${esc(r.name)}`,loc:`代表位置 ${llToGrid(r.lat,r.lon)}（緯度 ${r.lat.toFixed(1)}°・経度 ${r.lon.toFixed(1)}°）`,lat:r.lat,lon:r.lon,ent:r.name};
+  }
+  if(!(EX_DX&&raw===EX_DX))LS('nowcast.dx',raw);exNoteSet();targetRender();dayNight();
+}
+/* ---- 正距方位図（自局が中心） */
+const LAND_URL='https://ja1bbe.github.io/ja1bbe-iono/land.json';   // Natural Earth 1:110m の陸地の輪郭
+let LAND=null;
+async function loadLand(){try{LAND=(await getJSON(LAND_URL)).rings}catch(e){LAND=null}drawMap(LASTP)}
+const DIRS=[['欧州',51.5,-0.13],['北米東',40.7,-74.0],['北米西',34.05,-118.24],['カリブ',18.47,-66.11],['西アフリカ',14.69,-17.45],['南米',-23.55,-46.63],['南部アフリカ',-26.2,28.05],['オセアニア',-33.87,151.21],['東南アジア',1.35,103.82]];
+let LASTP=null;
+// ---- D層の吸収を重ねる（NOAA D-RAP）と、嵐の広がりを重ねる（Bz と太陽風から見積もるオーロラ帯の広がり、経路の危ない区間）。どちらも検証中
+// 以前の「嵐の影響を重ねる」（stormOn）を開いていた場合は、D層の吸収も開いた状態で引き継ぐ
+var STORM_ON=(()=>{try{return localStorage.getItem('stormOn')==='1'}catch(e){return false}})();
+var DRAP_ON=(()=>{try{const v=localStorage.getItem('drapOn');return v===null?localStorage.getItem('stormOn')==='1':v==='1'}catch(e){return false}})();
+var DRAP=null;
+function parseDrap(txt){const rows=[],lat=[];let valid='',xr='',pr='';
+  for(const ln of txt.split(/\r?\n/)){let m;
+    if((m=ln.match(/Product Valid At\s*:\s*(.+)/)))valid=m[1].trim();
+    else if((m=ln.match(/X-RAY Message\s*:\s*(.*)/)))xr=m[1].trim();
+    else if((m=ln.match(/Proton Message\s*:\s*(.*)/)))pr=m[1].trim();
+    else if((m=ln.match(/^\s*(-?\d+)\s*\|(.*)$/))){lat.push(+m[1]);rows.push(m[2].trim().split(/\s+/).map(Number))}}
+  return rows.length?{lat,rows,valid,xr,pr}:null}
+async function loadDrap(){try{const r=await fetch(SWPC+'/text/drap_global_frequencies.txt',{cache:'no-store'});if(r.ok)DRAP=parseDrap(await r.text())}catch(e){}stormNoteSet();if(DRAP_ON)drawMap(LASTP)}
+function drapAt(la,lo){if(!DRAP)return null;const n=DRAP.lat.length,i=Math.max(0,Math.min(n-1,Math.round((DRAP.lat[0]-la)/(DRAP.lat[0]-DRAP.lat[1]||2)))),row=DRAP.rows[i];
+  const nc=row.length,j=((Math.round((lo+178)/(360/nc))%nc)+nc)%nc;return row[j]}
+// Bz の南向きと太陽風の速さから、オーロラ帯の赤道側の縁がどこまで広がりそうかを見積もる（地磁気緯度。夜側の目安）
+function stormEdge(){if(!SW_NOW)return null;const bs=Math.max(0,-(SW_NOW.bz30??0)),v=SW_NOW.sp??400,E=v*bs*1e-3;
+  const kpE=Math.min(9,1+0.6*E),kp=Math.max(kpE,SW_NOW.kp??0);return{edge:Math.max(45,Math.min(64,66-2*kp)),kp,show:gBzActive()||kp>=4}}
+// NOAA のファイルの文字はそのまま HTML に入れず、無害化してから表示する
+function drapEsc(x){return String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function drapMax(){if(!DRAP)return null;let m=0;for(const r of DRAP.rows)for(const v of r)if(v>m)m=v;return m}
+function stormNoteSet(){const id=x=>document.getElementById(x),bd=id('drapBtn'),bs=id('stormBtn'),nd=id('drapNote'),ns=id('stormNote');
+  if(bd)bd.textContent=(DRAP_ON?'▼ ':'▶ ')+'D層の吸収を重ねる';
+  if(bs)bs.textContent=(STORM_ON?'▼ ':'▶ ')+'嵐の広がりを重ねる';
+  if(nd){nd.style.display=DRAP_ON?'':'none';const mx=drapMax();
+    nd.innerHTML=`<span style="color:#ffb070">■</span> D層の吸収（NOAA D-RAP）：電波が1dB以上吸収される周波数の上限を、1MHz以上は橙、5MHz以上は濃い橙、10MHz以上は赤紫で塗っています。上限より低い周波数ほど強く吸収されます。`+
+      (DRAP?`算出時刻 ${drapEsc(DRAP.valid)}。いまの上限の最大値は ${mx.toFixed(1)}MHz。${mx<1?'<b>いまは X線が平常で、D-RAP で塗る範囲はありません。</b>ただし、D-RAP は X線とプロトンだけから計算しているため、ふだんの昼の D層（太陽の紫外線による）の吸収は含まれません。160m・80m は、塗りがなくても昼間は強く吸収されます。':''}X線：${drapEsc(DRAP.xr||'―')}。プロトン：${drapEsc(DRAP.pr||'―')}。`:'データを読み込めていません。')+
+      `<br><b>昼側の普通の吸収</b>：X線がある程度強いと、昼側に丸く広がる範囲が出ます（D-RAP は GOES 衛星の X 線の値から計算しています）。太陽が高いほど強く、夜になると消えます。X線が平常で弱いときは、塗る範囲が出ないこともあります。`+
+      `<br><b>フレアによる吸収</b>：フレアが起きると、昼側の範囲が急に広がって強まります（いわゆるデリンジャー現象）。数十分から数時間で元に戻ります。上の「X線」の欄が M・X クラスのときはこれにあたります。`+
+      `<br><b>プロトンによる吸収</b>：極域（地磁気緯度およそ60°以上）に昼夜を問わず現れる範囲は、太陽からの高エネルギーのプロトンによるもの（極冠吸収）で、数日続くことがあります。`+
+      `<br>この吸収は主にローバンドとミドルバンドに効きます。ハイバンドに効くのは、大きなフレアやプロトン現象で上限が10〜20MHz以上になったときだけです。`}
+  if(ns){ns.style.display=STORM_ON?'':'none';const se=stormEdge();
+    ns.innerHTML=`<span style="color:#ff5a5a">- - -</span> 嵐の広がりの見込み：${se&&se.show?`いまの Bz・太陽風（Kp ${se.kp.toFixed(1)} 相当）から、オーロラ帯の赤道側の縁が地磁気緯度 ${se.edge.toFixed(0)}° 付近まで広がる見込みです。経路のうち、その内側に入る区間を赤く示します。`:se?'いまは Bz の南向きが弱く Kp も低いため、大きな広がりは見込まれず、表示していません。Bz の注意が出たときか Kp 4以上相当のときに描きます。':'太陽風のデータを読み込めていません。'}`+
+      `見積もりは経験的な目安で（検証中）、地球の磁場は棒磁石とみなした近似です。`}}
+document.addEventListener('click',e=>{const t=e.target&&e.target.id;
+  if(t==='stormBtn'){STORM_ON=!STORM_ON;try{localStorage.setItem('stormOn',STORM_ON?'1':'0')}catch(e2){}stormNoteSet();drawMap(LASTP)}
+  else if(t==='drapBtn'){DRAP_ON=!DRAP_ON;try{localStorage.setItem('drapOn',DRAP_ON?'1':'0')}catch(e2){}stormNoteSet();drawMap(LASTP)}});
+document.addEventListener('DOMContentLoaded',stormNoteSet);
+// 地磁気緯度線の表示の切り替え（状態は覚えておく）
+var MAGLINES=(()=>{try{return localStorage.getItem('magLines')==='1'}catch(e){return false}})();
+function magBtnSet(){const b=document.getElementById('magBtn'),n=document.getElementById('magNote');if(b)b.textContent=(MAGLINES?'▼ ':'▶ ')+'地磁気緯度線を重ねる';if(n)n.style.display=MAGLINES?'':'none'}
+document.addEventListener('click',e=>{if(e.target&&e.target.id==='magBtn'){MAGLINES=!MAGLINES;try{localStorage.setItem('magLines',MAGLINES?'1':'0')}catch(e2){}magBtnSet();drawMap(LASTP)}});
+document.addEventListener('DOMContentLoaded',magBtnSet);
+// ---- ローバンドの遠距離（電離圏ダクトの可能性）を重ねる。検証中
+// 記録（11月6〜18日の抜き取り）で 160m・80m の遠距離の強い受信が多かった方面と、その時刻の条件（経路の大部分が夜で、どちらかの端が薄明）を使う。
+// 仕組みが電離圏ダクトか、境目で D層の吸収が小さくなるためかは、この記録からは見分けられない。
+var DUCT_ON=(()=>{try{return localStorage.getItem('ductOn')==='1'}catch(e){return false}})();
+const DUCT_REG=[['北米中部','EM',35,-90],['北米西部','DM',35,-110],['北米北西部','DN',45,-110],['欧州西部','JN',45,10],['欧州北部','JO',55,10],['欧州東部','KN',45,30]];
+// 8000km以上の相手を、受信した日本の局の上位1割の SNR が −5dB 以上で受信した回数（時刻 UTC ごと。na 北米、eu 欧州、ot その他）
+// 毎日の集計（paths.json の d）があればそれを使い、なければ 11月6〜18日の固定のデータを使う
+function ductRec(){return SUMMARY&&SUMMARY.d&&SUMMARY.d['160m']?SUMMARY.d:DUCT_REC}
+function ductEnsure(){if(SUMMARY||SUMMARY_P)return;try{loadSummary().then(()=>{ductNoteSet();drawMap(LASTP)}).catch(()=>{})}catch(e){}}
+const ductArr=o=>{const a=new Array(24).fill(0);for(const k in o)a[+k]=o[k];return a};
+const DUCT_REC={'160m':{na:ductArr({6:1,11:3,12:5,13:6,14:2}),eu:ductArr({6:2,15:2,16:1,17:3,18:2,19:9,20:21,21:16,22:2}),ot:ductArr({21:1})},
+  '80m':{na:ductArr({6:2,7:4,8:8,9:1,10:12,11:44,12:119,13:82,14:57,15:10,21:6}),eu:ductArr({8:6,11:10,13:1,15:1,16:2,17:7,18:8,19:29,20:71,21:86,22:46}),ot:ductArr({2:2,7:1,8:1,9:2,10:1,11:1,17:1,18:1,22:1})}};
+function ductState(t){const tw=e=>e>=-18&&e<=3,eJ=sunElev(STATION.lat,STATION.lon,t),eJ2=sunElev(STATION.lat,STATION.lon,t+18e5);
+  return DUCT_REG.map(([n,f,la,lo])=>{const g=bearingDist(STATION.lat,STATION.lon,la,lo),sp=pathStats(g.az,g.km,t),eD=sunElev(la,lo,t),eD2=sunElev(la,lo,t+18e5);let end=null;
+    if(sp.dark>=0.7){if(tw(eD))end={who:'相手',rise:eD2>eD};else if(tw(eJ))end={who:'日本',rise:eJ2>eJ}}
+    return{n,f,la,lo,g,sp,end}})}
+// バンドの見分け：記録で、その方面（北米・欧州）・その時間帯（前後2時間）に強い受信が5回以上あったバンドだけ線を引く（160m＝白、80m＝水色）
+const DUCT_COL={'160m':'#ffffff','80m':'#5ad1ff'};
+function ductBands(d,t){const grp=['EM','DM','DN'].includes(d.f)?'na':'eu',h=new Date(t).getUTCHours();
+  return['160m','80m'].filter(b=>{let n=0;for(let k=-2;k<=2;k++)n+=ductRec()[b][grp][(h+k+24)%24];return n>=5})}
+const ductBandTxt=bs=>bs.map(b=>`<span style="color:${DUCT_COL[b]}">${b}</span>`).join('・');
+function ductNext(t){for(let k=1;k<=96;k++){const tt=t+k*9e5,s=ductState(tt).filter(d=>d.end&&d.end.rise);if(s.length)return{t:tt,s}}return null}
+const ductHM=(t,off)=>{const d=new Date(t+off*36e5);return String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0')};
+function ductChart(band,hNow){const W=480,H=110,bw=W/24,rec=ductRec()[band],tot=rec.na.map((v,i)=>v+rec.eu[i]+rec.ot[i]),mx=Math.max(...tot)||1;
+  let s=`<svg viewBox="0 0 ${W} ${H+34}" style="width:100%;max-width:480px;display:block">`;
+  s+=`<rect x="${hNow*bw}" y="0" width="${bw}" height="${H}" fill="#ffffff" fill-opacity=".12"/>`;
+  for(let h=0;h<24;h++){let y=H;for(const[k,col]of[['na','#7fd3c6'],['eu','#e9c46a'],['ot','#77777f']]){const v=rec[k][h];if(!v)continue;const hh=v/mx*(H-14);y-=hh;s+=`<rect x="${h*bw+1}" y="${y}" width="${bw-2}" height="${hh}" fill="${col}"/>`}
+    if(tot[h])s+=`<text x="${h*bw+bw/2}" y="${y-2}" fill="#b8b8c0" font-size="9" text-anchor="middle">${tot[h]}</text>`;
+    if(h%3===0)s+=`<text x="${h*bw+bw/2}" y="${H+12}" fill="#9a9aa2" font-size="10" text-anchor="middle">${h}</text><text x="${h*bw+bw/2}" y="${H+25}" fill="#77777f" font-size="9" text-anchor="middle">${(h+9)%24}</text>`}
+  s+=`<line x1="0" x2="${W}" y1="${H}" y2="${H}" stroke="#2c2c31"/></svg>`;
+  return `<div style="margin-top:8px"><b>${band}</b>　<span style="font-size:.9em">上の数字＝件数、下の目盛り＝UTC（その下は日本時間）、白い帯＝いまの時刻</span></div>`+s}
+function ductNoteSet(){if(DUCT_ON)ductEnsure();const b=document.getElementById('ductBtn'),n=document.getElementById('ductNote');
+  if(b)b.textContent=(DUCT_ON?'▼ ':'▶ ')+'ローバンドの遠距離（電離圏ダクトの可能性）を重ねる';
+  if(!n)return;n.style.display=DUCT_ON?'':'none';if(!DUCT_ON)return;
+  const t=Date.now(),st=ductState(t),rise=st.filter(d=>d.end&&d.end.rise),set=st.filter(d=>d.end&&!d.end.rise);
+  let now;
+  if(rise.length)now=`<b>いま条件に当たる方面</b>：${rise.map(d=>{const bs=ductBands(d,t);return `${d.n} ${d.f}（${d.end.who}側が日の出のころ${bs.length?'。'+ductBandTxt(bs):'。記録ではこの時間帯の強い受信は少なめ'}）`}).join('、')}。地図に実線で示しています（地図の文字は相手のグリッドの大区画）。`;
+  else{const nx=ductNext(t);now=`<b>いま</b>：日の出側の条件に当たる方面はありません。`+(nx?`次は UTC ${ductHM(nx.t,0)}（日本時間 ${ductHM(nx.t,9)}）ごろから、${nx.s.map(d=>d.n).join('・')}方面です。`:'')}
+  if(set.length)now+=`日の入り側の条件に当たる方面（${set.map(d=>{const bs=ductBands(d,t);return d.n+(bs.length?'（'+ductBandTxt(bs)+'）':'')}).join('、')}）は、点線で示しています。記録では、日の入り側は日の出側より少なめでした。`;
+  const hNow=new Date(t).getUTCHours();
+  const gs=grayState(t),gn=gs.bands.length?null:grayNext(t);
+  const glTxt=gs.bands.length?`<b>グレイラインの方向</b>：自局がいま薄明（太陽高度 ${gs.e.toFixed(0)}°）なので、境目に沿う二方向 ${gs.az.map(a=>Math.round(a)+'°').join('・')} を長い破線で描いています（${gs.bands.map(b=>`<span style="color:${DUCT_COL[b]}">${b}</span>`).join('・')}）。`:`<b>グレイラインの方向</b>：自局が薄明ではないため、描いていません。`+(gn?`次は UTC ${ductHM(gn,0)}（日本時間 ${ductHM(gn,9)}）ごろからです。`:'');
+  n.innerHTML=`<span style="color:#fff">━</span> 160m <span style="color:#5ad1ff">━</span> 80m　ローバンドの遠距離（電離圏ダクトの可能性）：冬の夜、160m・80m で遠くの局が強く入ることがあります。記録では、経路の大部分が夜で、どちらかの端が日の出のころ（薄明）にかかる時間帯に集中していました。<br><b>考え方</b>：F層は夜も残りますが、D層と E層は太陽光で作られ、夕方に消え、朝に作られます。昼夜の境目では電離層の高さと濃さが急に変わって層が傾くため、低い角度で入った電波が、E層と F層の間の電子の薄い谷間へ導かれる「入口」ができると考えられます。谷間に入った電波は上下の層に挟まれて閉じ込められ、D層を通らないので吸収を受けずに遠くまで進みます（電離圏ダクト）。ただし、境目で D層の吸収が最も小さくなるだけでも同じ形になり、記録からはどちらか見分けられません（検証中）。<br>線の色はバンドで分けています（白＝160m、水色＝80m）。条件に当たる方面のうち、記録でその方面・その時間帯（前後2時間）に強い受信が5件以上あったバンドだけを描きます。`+
+    `<br>${now}`+
+    (()=>{const r=glRoute(t);if(!TARGET)return '';if(!r)return `<br><b>グレイラインの伝搬ルート</b>：いまは自局も相手局（${TARGET.short||''}）も薄明ではないか、経路の 7割以上が夜になっていないため、描いていません。`;
+      return `<br><b>グレイラインの伝搬ルート</b>：${r.who==='両端'?'自局と相手局の両方':r.who==='相手側'?'相手局（'+(TARGET.short||'')+'）の側':'自局の側'}がいま薄明（自局 ${r.eS.toFixed(0)}°・相手 ${r.eT.toFixed(0)}°）で、${r.routes.map(x=>x==='sp'?`短経路（夜 ${Math.round(r.sp.dark*100)}%）`:`長経路（夜 ${Math.round(r.lp.dark*100)}%）`).join('・')}が夜の側を通るので、その経路を実線で描いています（${r.bs.map(b=>`<span style="color:${DUCT_COL[b]}">${b}</span>`).join('・')}）。グレイラインのダクトの考え方では、この経路で遠くまで届きやすいとされます（検証中）。`})()+
+    `<br><b>線の見分け</b>：細い線と「記録・北米中部」などの文字は、日本の局の受信の記録で強く入りやすかった方面（電離圏ダクト・記録）。太い線と「グレイラインダクト」の文字は、入れた相手局への経路で、自局か相手局が薄明のときの物理の条件によるもの。太い線の上の明るく光る区間は、経路が薄明（境目のまわり）を通る区間です。`+
+    `<br>${glTxt}自局が日の出・日の入りのころ（薄明）に、昼夜の境目に沿って進む方向（太陽の方位 ±90°）です。境目に沿ったダクトの考え方では、この方向に電波が遠くまで届きやすいとされます。バンドの色分けは自局の太陽高度による物理の目安（160m は −18°〜−6°、80m は −12°〜+3°）で、記録ではまだ確かめていません（検証中）。`+
+    `<br><b>記録</b>：${SUMMARY&&SUMMARY.d?`直近${SUMMARY.days}日間（毎日更新）`:'2026年11月6〜18日'}の抜き取り（8分間・20分ごと）で、日本の局が 8000km 以上離れた相手を強く受信した件数です（受信した日本の局の上位1割の SNR が −5dB 以上）。<span style="color:#7fd3c6">■</span>北米 <span style="color:#e9c46a">■</span>欧州 <span style="color:#9a9aa2">■</span>その他。11月中旬の記録では、北米は日本時間21〜23時ごろ（北米の夜明け）、欧州は日本時間4〜7時ごろ（日本の夜明け）に山がありました。件数は、その地域の局の多さにも左右されます。季節とともに、山の時刻はずれていきます。`+
+    ductChart('160m',hNow)+ductChart('80m',hNow)}
+document.addEventListener('click',e=>{if(e.target&&e.target.id==='ductBtn'){DUCT_ON=!DUCT_ON;try{localStorage.setItem('ductOn',DUCT_ON?'1':'0')}catch(e2){}ductNoteSet();drawMap(LASTP)}});
+document.addEventListener('DOMContentLoaded',()=>{try{ductNoteSet()}catch(e){}});
+function drawMap(P){
+  LASTP=P;const cv=$('dxMap');if(!cv)return;
+  const W=Math.min(620,cv.clientWidth||560),dpr=window.devicePixelRatio||1;
+  cv.width=Math.round(W*dpr);cv.height=Math.round(W*dpr);const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);
+  const S={cx:W/2,cy:W/2,R:W/2-30},HALF=Math.PI*EARTH;
+  const pr=(lat,lon)=>{const g=bearingDist(STATION.lat,STATION.lon,lat,lon),r=g.km/HALF*S.R;return[S.cx+r*Math.sin(g.az*R),S.cy-r*Math.cos(g.az*R),r]};
+  const pa=(az,km)=>{const r=Math.min(km,HALF)/HALF*S.R;return[S.cx+r*Math.sin(az*R),S.cy-r*Math.cos(az*R)]};
+  c.clearRect(0,0,W,W);
+  c.save();c.beginPath();c.arc(S.cx,S.cy,S.R,0,2*Math.PI);c.fillStyle='#163250';c.fill();c.clip();
+  // 陸地
+  if(LAND){for(const ring of LAND){const pts=ring.map(([lo,la])=>pr(la,lo));let jump=false;
+      for(let i=1;i<pts.length;i++){if(Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1])>S.R*0.35){jump=true;break}}
+      c.beginPath();let pen=false;
+      for(let i=0;i<pts.length;i++){const p=pts[i];if(i&&Math.hypot(p[0]-pts[i-1][0],p[1]-pts[i-1][1])>S.R*0.35)pen=false;
+        if(!pen){c.moveTo(p[0],p[1]);pen=true}else c.lineTo(p[0],p[1])}
+      if(!jump){c.closePath();c.fillStyle='#355a3e';c.fill()}
+      c.strokeStyle='#7a9a80';c.lineWidth=.8;c.stroke()}}
+  // 昼夜とオーロラ（逆投影で1点ずつ色を決める）
+  const N=240,off=document.createElement('canvas');off.width=N;off.height=N;const oc=off.getContext('2d'),img=oc.createImageData(N,N),now=Date.now();
+  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const dx=(i+.5)/N*2-1,dy=(j+.5)/N*2-1,rr=Math.hypot(dx,dy);if(rr>1)continue;
+    const az=Math.atan2(dx,-dy)/R,[la,lo]=dest(STATION.lat,STATION.lon,(az+360)%360,rr*HALF),e=sunElev(la,lo,now),k=(j*N+i)*4;
+    let r=0,g=0,b=0,a=0;
+    if(e<-6){r=2;g=5;b=12;a=175}else if(e<0){r=40;g=34;b=80;a=Math.round(70+(-e/6)*70)}
+    if(DRAP_ON&&DRAP){const v=drapAt(la,lo);if(v!=null&&v>=1){const s3=v>=10?[220,70,170,170]:v>=5?[255,120,40,150]:[255,176,90,Math.round(70+v*12)];r=s3[0];g=s3[1];b=s3[2];a=Math.max(a,s3[3])}}
+    const au=aurAt(la,lo);
+    if(au!=null&&au>=10){const strong=au>=30;r=strong?240:80;g=strong?90:220;b=strong?80:140;a=Math.max(a,strong?190:Math.round(70+au*3))}
+    img.data[k]=r;img.data[k+1]=g;img.data[k+2]=b;img.data[k+3]=a}
+  oc.putImageData(img,0,0);c.imageSmoothingEnabled=true;c.drawImage(off,S.cx-S.R,S.cy-S.R,2*S.R,2*S.R);
+
+    // 地磁気緯度線（双極子近似。開閉ボタンで重ねる）
+    if (MAGLINES) {
+      for (const L of [-70, -60, -30, 0, 30, 60, 70]) {
+        const pts = []; for (let a = 0; a <= 360; a += 2) { const [la, lo] = dest(GMPOLE.lat, GMPOLE.lon, a, (90 - L) * R * EARTH); pts.push(pr(la, lo)); }
+        const key = Math.abs(L) === 60;
+        c.setLineDash(key ? [6, 3] : [2, 4]); c.strokeStyle = key ? 'rgba(240,138,75,.95)' : 'rgba(225,225,235,.6)'; c.lineWidth = key ? 1.7 : 1;
+        c.beginPath(); let pen = false;
+        for (let i = 0; i < pts.length; i++) { const p = pts[i]; if (i && Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]) > S.R * 0.35) pen = false; if (!pen) { c.moveTo(p[0], p[1]); pen = true; } else c.lineTo(p[0], p[1]); }
+        c.stroke();
+        // 数字は、自局の近くと短経路の線上を避けた位置に置く（重なりを減らすため）
+        const tg = P && P.az != null ? pa(P.az, P.km) : null;
+        const segD = p => { if (!tg) return 1e9; const vx = tg[0] - S.cx, vy = tg[1] - S.cy, t = Math.max(0, Math.min(1, ((p[0] - S.cx) * vx + (p[1] - S.cy) * vy) / (vx * vx + vy * vy))); return Math.hypot(p[0] - S.cx - t * vx, p[1] - S.cy - t * vy); };
+        let best = null; for (const p of pts) { const d = Math.hypot(p[0] - S.cx, p[1] - S.cy); if (d < S.R * 0.92 && d > S.R * 0.12 && segD(p) > S.R * 0.12 && (!best || d < best.d)) best = { p, d }; }
+        if (best) { c.setLineDash([]); c.font = 'bold ' + (S.R < 200 ? 9 : 10) + 'px sans-serif'; c.fillStyle = key ? '#f08a4b' : '#e1e1eb'; c.fillText(L === 0 ? '0°' : (L > 0 ? 'N' : 'S') + Math.abs(L) + '°', best.p[0] + 4, best.p[1] - 3); }
+      }
+      c.setLineDash([]);
+    }
+  // 距離の同心円
+  c.setLineDash([3,4]);c.strokeStyle='#33404e';c.lineWidth=1;c.fillStyle='#7d8896';c.font='10px sans-serif';c.textAlign='left';
+  for(const km of[5000,10000,15000]){const r=km/HALF*S.R;c.beginPath();c.arc(S.cx,S.cy,r,0,2*Math.PI);c.stroke();c.fillText((km/1000)+',000km',S.cx+3,S.cy-r-3)}
+  c.setLineDash([]);
+  // 9方面の目印
+  c.font='11px sans-serif';
+  for(const[n,la,lo]of DIRS){const[x,y]=pr(la,lo);c.fillStyle='#9aa6b4';c.beginPath();c.arc(x,y,2.5,0,2*Math.PI);c.fill();c.fillText(n,x+5,y+4)}
+  // ローバンドの遠距離（電離圏ダクトの可能性）：条件に当たる方面への短経路を白い線で
+  // 線と重ならないよう、線に直角の向きに少し離し、黒い下地を付けて文字を置く
+  const mapLabel=(txt,x,y,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1;let px=-dy/L,py=dx/L;
+    if(px*(x-S.cx)+py*(y-S.cy)<0){px=-px;py=-py}   // 中心から遠ざかる側へ
+    const w=c.measureText(txt).width,h=15,ox=x+px*16,oy=y+py*16;let lx=px>=0?ox:ox-w;
+    // 地図の円の外にはみ出さないよう、左右を円の内側に収める
+    const half=Math.sqrt(Math.max(0,(S.R-6)**2-(oy-6-S.cy)**2));lx=Math.min(Math.max(lx,S.cx-half+4),S.cx+half-w-4);
+    c.fillStyle='rgba(10,14,20,.78)';c.fillRect(lx-4,oy-h+3,w+8,h+2);c.fillStyle='#ffffff';c.textAlign='left';c.fillText(txt,lx,oy)};
+  if(DUCT_ON){try{ductNoteSet();const grp={},tn=Date.now();for(const d of ductState(tn)){if(!d.end)continue;const bs=ductBands(d,tn);if(!bs.length)continue;const pts=[];
+      for(let x=0;x<d.g.km;x+=150){const[la,lo]=dest(STATION.lat,STATION.lon,d.g.az,x);pts.push(pr(la,lo))}pts.push(pr(d.la,d.lo));
+      // 2本のときは、左右に少しずらして並べる
+      const off=(o)=>pts.map((q,i)=>{const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)],dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1;return[q[0]-dy/L*o,q[1]+dx/L*o]});
+      bs.forEach((b,k)=>{const P2=bs.length>1?off(k?2.2:-2.2):pts,line=()=>{c.beginPath();P2.forEach((q,i)=>i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1]));c.stroke()};
+        c.setLineDash(d.end.rise?[]:[4,4]);c.strokeStyle='rgba(0,0,0,.55)';c.lineWidth=(d.end.rise?1.8:1.4)+2;line();
+        c.strokeStyle=DUCT_COL[b];c.globalAlpha=d.end.rise?1:.75;c.lineWidth=d.end.rise?1.8:1.4;line();c.globalAlpha=1;c.setLineDash([])});
+      const q=pts[pts.length-1];c.fillStyle=DUCT_COL[bs[0]];c.beginPath();c.arc(q[0],q[1],3.5,0,2*Math.PI);c.fill();const area=d.n.startsWith('北米')?'北米':d.n.startsWith('欧州')?'欧州':d.n;(grp[area]=grp[area]||[]).push({n:d.n.replace(area,''),q})}
+      // 同じ地域の線が並んだときは、文字を一つにまとめる（例：記録・北米（中部・西部・北西部））
+      c.font='bold 11px sans-serif';
+      for(const area in grp){const L=grp[area],far=L.reduce((m,x)=>Math.hypot(x.q[0]-S.cx,x.q[1]-S.cy)>Math.hypot(m.q[0]-S.cx,m.q[1]-S.cy)?x:m,L[0]);
+        const txt=L.length>1?`記録・${area}（${L.map(x=>x.n).join('・')}）`:`記録・${area}${L[0].n}`;
+        const mx=S.cx+(far.q[0]-S.cx)*0.45,my=S.cy+(far.q[1]-S.cy)*0.45;mapLabel(txt,mx,my,[S.cx,S.cy],far.q)}}catch(e){}}
+  // グレイライン：境目に沿う二方向（長い破線、160m 白・80m 水色）
+  if(DUCT_ON){try{const tn=Date.now();
+      const gs=grayState(tn);
+      if(gs.bands.length){for(const az of gs.az){const pts=[];for(let x=0;x<=19900;x+=150){const[la,lo]=dest(STATION.lat,STATION.lon,az,x);pts.push(pr(la,lo))}
+          const off=o=>pts.map((q,i)=>{const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)],dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1;return[q[0]-dy/L*o,q[1]+dx/L*o]});
+          gs.bands.forEach((b,k)=>{const P2=gs.bands.length>1?off(k?2.2:-2.2):pts,line=()=>{c.beginPath();P2.forEach((q,i)=>i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1]));c.stroke()};
+            c.setLineDash([12,7]);c.strokeStyle='rgba(0,0,0,.5)';c.lineWidth=4;line();c.strokeStyle=DUCT_COL[b];c.lineWidth=2;line();c.setLineDash([])});
+          const i72=Math.floor(pts.length*0.72),q=pts[i72];c.font='bold 11px sans-serif';mapLabel('グレイライン '+Math.round(az)+'°',q[0],q[1],pts[i72-1],pts[i72+1]||q)}}
+  }catch(e){}}
+  // 経路
+  if(P&&P.sk){const sk=P.sk;c.strokeStyle='#c77dff';c.lineWidth=2.4;c.setLineDash([3,3]);c.beginPath();
+    sk.pts.forEach(([la,lo],i)=>{const q=pr(la,lo);if(i)c.lineTo(q[0],q[1]);else c.moveTo(q[0],q[1])});c.stroke();c.setLineDash([]);
+    const q=pr(sk.turn[0],sk.turn[1]);c.fillStyle='#c77dff';c.beginPath();c.arc(q[0],q[1],4,0,2*Math.PI);c.fill()}
+  if(P){const{sp,az,km,label}=P;
+    // 「届く強さの見込み」を開いているときは、届く強さに応じて相手に近づくほど線を薄くする
+    let aS=1,aL=1;if(LB_ON&&P.lp){const nw=Date.now();aS=lbCalc(az,km,nw,LB.b,sp.aur).cat.a;aL=lbCalc((az+180)%360,2*Math.PI*EARTH-km,nw,LB.b,P.lp.aur).cat.a}
+    const grad=(x0,y0,x1,y1,rgb,a0,a1)=>{const gr=c.createLinearGradient(x0,y0,x1,y1);gr.addColorStop(0,`rgba(${rgb},${a0})`);gr.addColorStop(1,`rgba(${rgb},${a1})`);return gr};
+    const e1=pa((az+180)%360,HALF),e2=pa(az,HALF),t=pa(az,km),Ltot=2*Math.PI*EARTH-km,aMid=1-(1-aL)*Math.min(1,HALF/Ltot);
+    c.lineWidth=2;c.setLineDash([7,5]);
+    c.strokeStyle=grad(S.cx,S.cy,e1[0],e1[1],'127,211,198',1,aMid);c.beginPath();c.moveTo(S.cx,S.cy);c.lineTo(e1[0],e1[1]);c.stroke();
+    c.strokeStyle=grad(e2[0],e2[1],t[0],t[1],'127,211,198',aMid,aL);c.beginPath();c.moveTo(e2[0],e2[1]);c.lineTo(t[0],t[1]);c.stroke();c.setLineDash([]);
+    c.strokeStyle=grad(S.cx,S.cy,t[0],t[1],'216,177,74',1,aS);c.lineWidth=3.2;c.beginPath();c.moveTo(S.cx,S.cy);c.lineTo(t[0],t[1]);c.stroke();
+    // グレイラインの伝搬ルート（自局か相手局が薄明で、夜の側を通る経路）
+    if(DUCT_ON){try{const r=glRoute(Date.now());if(r){
+      const segs=[];if(r.routes.includes('sp'))segs.push([[S.cx,S.cy],t]);if(r.routes.includes('lp')){segs.push([[S.cx,S.cy],e1]);segs.push([e2,t])}
+      r.bs.forEach((b,k)=>{const o=r.bs.length>1?(k?3:-3):0;
+        for(const[a,b2]of segs){const dx=b2[0]-a[0],dy=b2[1]-a[1],L=Math.hypot(dx,dy)||1,ox=-dy/L*o,oy=dx/L*o;
+          c.setLineDash([]);c.strokeStyle='rgba(0,0,0,.55)';c.lineWidth=7;c.beginPath();c.moveTo(a[0]+ox,a[1]+oy);c.lineTo(b2[0]+ox,b2[1]+oy);c.stroke();
+          c.strokeStyle=DUCT_COL[b];c.lineWidth=3.6;c.beginPath();c.moveTo(a[0]+ox,a[1]+oy);c.lineTo(b2[0]+ox,b2[1]+oy);c.stroke()}});
+      // 経路のうち薄明（太陽高度 −18°〜+3°）の中を通る区間を光らせる（境目に出入りする区間）
+      const tn2=Date.now(),g3=bearingDist(STATION.lat,STATION.lon,TARGET.lat,TARGET.lon);
+      for(const rt of r.routes){const az3=rt==='sp'?g3.az:(g3.az+180)%360,km3=rt==='sp'?g3.km:2*Math.PI*EARTH-g3.km;let prev=null,pen=false;
+        c.strokeStyle='rgba(255,236,170,.55)';c.lineWidth=12;c.lineCap='round';c.beginPath();
+        for(let x=0;x<=km3;x+=100){const[la,lo]=dest(STATION.lat,STATION.lon,az3,x),e=sunElev(la,lo,tn2),q=pr(la,lo),inT=e>=-18&&e<=3;
+          if(prev&&Math.hypot(q[0]-prev[0],q[1]-prev[1])>S.R*0.35)pen=false;
+          if(inT){if(!pen){c.moveTo(q[0],q[1]);pen=true}else c.lineTo(q[0],q[1])}else pen=false;prev=q}
+        c.stroke();c.lineCap='butt'}
+      const[a,b2]=segs[0],mx=(a[0]+b2[0])/2,my=(a[1]+b2[1])/2;c.font='bold 11px sans-serif';const g2=bearingDist(STATION.lat,STATION.lon,TARGET.lat,TARGET.lon),hm=r.routes[0]==='sp'?routeHemi(g2.az,g2.km):routeHemi((g2.az+180)%360,2*Math.PI*EARTH-g2.km);mapLabel('グレイラインダクト（'+(r.routes[0]==='sp'?'短経路・':'長経路・')+hm+'）',mx,my,a,b2)}}catch(e){}}
+    const se=STORM_ON?stormEdge():null;
+    if(se&&se.show){
+      // 広がりの見込みの縁（北と南の地磁気緯度 ±edge）
+      for(const L of[se.edge,-se.edge]){const pts=[];for(let a2=0;a2<=360;a2+=2){const[la,lo]=dest(GMPOLE.lat,GMPOLE.lon,a2,(90-L)*R*EARTH);pts.push(pr(la,lo))}
+        c.setLineDash([8,4]);c.strokeStyle='rgba(255,90,90,.95)';c.lineWidth=2;c.beginPath();let pen=false;
+        for(let i=0;i<pts.length;i++){const p=pts[i];if(i&&Math.hypot(p[0]-pts[i-1][0],p[1]-pts[i-1][1])>S.R*0.35)pen=false;if(!pen){c.moveTo(p[0],p[1]);pen=true}else c.lineTo(p[0],p[1])}c.stroke()}
+      c.setLineDash([]);
+      // 経路の危ない区間（地磁気緯度が縁より高い部分）を赤く
+      const seg=(az2,len)=>{c.strokeStyle='rgba(255,70,70,.95)';c.lineWidth=5;c.beginPath();let pen=false,prev=null;
+        for(let x=0;x<=len;x+=100){const[la,lo]=dest(STATION.lat,STATION.lon,az2,x),q=pr(la,lo),inZ=Math.abs(magLat(la,lo))>=se.edge;
+          if(prev&&Math.hypot(q[0]-prev[0],q[1]-prev[1])>S.R*0.35)pen=false;
+          if(inZ){if(!pen){c.moveTo(q[0],q[1]);pen=true}else c.lineTo(q[0],q[1])}else pen=false;prev=q}c.stroke()};
+      seg(az,km);seg((az+180)%360,2*Math.PI*EARTH-km)}
+    // 経路上で地磁気緯度が最も高い地点
+    let best=0,bx=0;for(let x=0;x<=km;x+=100){const[la,lo]=dest(STATION.lat,STATION.lon,az,x),m=Math.abs(magLat(la,lo));if(m>best){best=m;bx=x}}
+    const mp=pa(az,bx);c.strokeStyle='#f08a4b';c.lineWidth=2;c.beginPath();c.arc(mp[0],mp[1],6,0,2*Math.PI);c.stroke();
+    c.fillStyle='#f08a4b';c.font='bold 11px sans-serif';c.fillText(`${sp.mag>=0?'N':'S'}${Math.abs(sp.mag).toFixed(0)}°`,mp[0]+8,mp[1]-6);
+    c.fillStyle='#e05555';c.beginPath();c.arc(t[0],t[1],6,0,2*Math.PI);c.fill();c.strokeStyle='#fff';c.lineWidth=1.5;c.stroke();
+    c.fillStyle='#fff';c.font='bold 12px sans-serif';{const right=t[0]>S.cx+S.R*0.55;c.textAlign=right?'right':'left';c.fillText(label,t[0]+(right?-10:9),t[1]+(right?-8:4));c.textAlign='left'}}
+  c.restore();
+  // 外周と方位の目盛り
+  c.strokeStyle='#5a6573';c.lineWidth=1.2;c.beginPath();c.arc(S.cx,S.cy,S.R,0,2*Math.PI);c.stroke();
+  c.textAlign='center';c.font='11px sans-serif';
+  for(let a=0;a<360;a+=10){const o=pa(a,HALF),x2=S.cx+(S.R+(a%30?4:7))*Math.sin(a*R),y2=S.cy-(S.R+(a%30?4:7))*Math.cos(a*R);
+    c.strokeStyle='#5a6573';c.beginPath();c.moveTo(o[0],o[1]);c.lineTo(x2,y2);c.stroke();
+    if(a%30===0){c.fillStyle=a===0?'#d8b14a':'#9aa6b4';c.fillText(a===0?'N 0°':a+'°',S.cx+(S.R+18)*Math.sin(a*R),S.cy-(S.R+18)*Math.cos(a*R)+4)}}
+  if(P){c.fillStyle='#d8b14a';c.font='bold 12px sans-serif';c.fillText(P.az.toFixed(0)+'°',S.cx+(S.R+18)*Math.sin(P.az*R),S.cy-(S.R+18)*Math.cos(P.az*R)+4);
+    if(P.sk){c.fillStyle='#c77dff';c.fillText(P.sk.az.toFixed(0)+'°',S.cx+(S.R+18)*Math.sin(P.sk.az*R),S.cy-(S.R+18)*Math.cos(P.sk.az*R)+4)}}
+  // 中心（自局）
+  c.fillStyle='#d8b14a';c.beginPath();c.arc(S.cx,S.cy,5,0,2*Math.PI);c.fill();c.fillStyle='#d8b14a';c.font='bold 12px sans-serif';c.textAlign='left';c.fillText(STATION.name,S.cx+8,S.cy+14);
+}
+// ---- 交信しやすいバンドと時間帯の目安（実績と物理の目安を並べる）
+var SUMMARY_URL = 'https://raw.githubusercontent.com/ja1bbe/propagation/main/data/summary/paths.json';
+var SUMMARY = null, SUMMARY_P = null, SFI_NOW = null;
+function loadSummary() {
+  if (!SUMMARY_P) SUMMARY_P = fetch(SUMMARY_URL, { cache: 'no-store' })
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(d => (SUMMARY = d)).catch(e => { SUMMARY_P = null; throw e; });
+  return SUMMARY_P;
+}
+// 開閉式の欄の状態（1分ごとの描き直しと、次に開いたときにも引き継ぐ）
+// ---- Bz の南向きが強く続くときの、この経路への注意（物理の仕組みにもとづく見込み。検証中）
+var SW_NOW = null;
+// 直近から遡って、10分平均の Bz が −3nT 以下（南向き）で続いている時間（分）
+function gSouthMin(sr) {
+  if (!sr || sr.length < 2) return 0;
+  const end = sr[sr.length - 1][0]; let t0 = end;
+  for (let i = sr.length - 1; i >= 0; i--) {
+    const t = sr[i][0], w = sr.filter(r => r[0] <= t && r[0] > t - 600e3).map(r => r[1]).filter(x => !isNaN(x));
+    if (!w.length) break;
+    if (w.reduce((a, b) => a + b, 0) / w.length > -3) break;
+    t0 = t;
+  }
+  return Math.round((end - t0) / 60e3);
+}
+function gBzWarn(sp) {
+  if (!SW_NOW || SW_NOW.bz30 == null) return '';
+  const bz = SW_NOW.bz30, dur = SW_NOW.south || 0, v = SW_NOW.sp;
+  const strong = bz <= -10, moderate = !strong && bz <= -5 && dur >= 60;
+  if (!strong && !moderate) return '';
+  const head = `Bz が${strong ? '強く' : ''}南向き（30分平均 ${bz.toFixed(1)}nT${dur >= 10 ? `、約${dur}分継続` : ''}）${v != null && v >= 500 ? `。太陽風も速く（${Math.round(v)}km/s）、影響が強まりやすい状態です` : ''}`;
+  const near = Math.abs(sp.mag) >= 55 || (sp.aur != null && sp.aur >= 10);
+  const body = near
+    ? `この経路の短経路は地磁気緯度 ${Math.abs(sp.mag).toFixed(0)}° まで上がり、オーロラ帯の近くを通ります。<br>
+       <b>ローバンド（160・80・40m）</b>：オーロラ帯での吸収で、数十分のうちに信号が弱まるおそれ<br>
+       <b>ミドル（30・20・17m）</b>：信号の揺らぎ（フラッタ）で、FT8 のデコードが減るおそれ<br>
+       <b>ハイバンド（15・12・10m）</b>：数時間後に電離層嵐で MUF が下がり、開きにくくなることがある（乱れの初めに一時的に良くなることもある）`
+    : `この経路の短経路は地磁気緯度 ${Math.abs(sp.mag).toFixed(0)}° までで、極域から離れているため、すぐの影響は小さい見込みです。乱れが長引くと、数時間後にハイバンドが開きにくくなることがあります。`;
+  return `<div class="gwarn"><b>注意：${head}</b><span style="color:#d64545;font-size:.85em">（検証中）</span><br>${body}
+    <p class="gfine" style="margin-top:4px">Bz の南向きが強く続くと、太陽風のエネルギーが流れ込んでオーロラ帯が広がり、極域寄りの経路が影響を受けます。30分平均が −10nT 以下、または −5nT 以下が1時間以上続くときに表示します。物理の仕組みにもとづく見込みで、データでの確認はこれからです。</p></div>`;
+}
+var G_OPEN = (() => { try { return JSON.parse(localStorage.getItem('guide.open') || '{}'); } catch (e) { return {}; } })();
+var gOpen = k => G_OPEN[k] ? ' open' : '';
+function gWatch(el) {
+  if (!el || el.dataset.w) return; el.dataset.w = '1';
+  el.addEventListener('toggle', e => {
+    const d = e.target; if (!d.dataset || !d.dataset.k) return;
+    G_OPEN[d.dataset.k] = d.open; try { localStorage.setItem('guide.open', JSON.stringify(G_OPEN)); } catch (e2) {}
+  }, true);
+}
+var G_BANDS = ['160m', '80m', '60m', '40m', '30m', '20m', '17m', '15m', '12m', '10m', '6m'];
+var G_GROUP = { '160m': 'low', '80m': 'low', '60m': 'low', '40m': 'low', '30m': 'mid', '20m': 'mid', '17m': 'mid', '15m': 'high', '12m': 'high', '10m': 'high', '6m': 'high' };
+var gLv = c => c === 'A' ? 10 : (parseInt(c, 10) || 0);
+var gEsc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// 時刻の集合 → 「21〜24 UTC（日本時間 6〜9時）」。日付をまたぐ続きもまとめる
+function gWindows(hs) {
+  if (!hs.length) return '';
+  const on = Array(24).fill(false); hs.forEach(h => on[h] = true);
+  if (on.every(Boolean)) return '終日';
+  if (hs.length >= 18) return `ほぼ終日（${gWindows([...Array(24).keys()].filter(h => !on[h]))}を除く）`;
+  let s = 0; while (on[s]) s = (s + 1) % 24;       // 「開いていない」時刻から数え始める
+  const out = []; let i = 0;
+  while (i < 24) {
+    const h = (s + i) % 24;
+    if (!on[h]) { i++; continue; }
+    let n = 0; while (n < 24 && on[(h + n) % 24]) n++;
+    const e = (h + n) % 24;
+    out.push(`${h}〜${e} UTC（日本時間 ${(h + 9) % 24}〜${(e + 9) % 24}時）`); i += n;
+  }
+  return out.join('、');
+}
+// 物理の目安：これから24時間の各時刻（毎時30分）の経路の昼夜・いまのオーロラ帯・SFI から
+function gPhysics(g, now) {
+  const sfi = SFI_NOW ?? 100, res = { low: [], mid: [], high: [] };
+  for (let h = 0; h < 24; h++) {
+    const d = new Date(now); d.setUTCHours(h, 30, 0, 0);
+    let t = d.getTime(); if (t < now - 30 * 60e3) t += 864e5;
+    const sp = pathStats(g.az, g.km, t), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, t);
+    const spBad = sp.aur != null && sp.aur >= 30;
+    let lo = 0, lpUse = false;
+    if (sp.dark >= 0.8 && !spBad) lo = 2;
+    else if (lp.dark >= 0.8 && (spBad || sp.dark < 0.5)) { lo = 2; lpUse = true; }
+    else if (sp.dark >= 0.6) lo = 1;
+    res.low.push({ v: lo, lp: lpUse });
+    res.mid.push({ v: sp.dark > 0.2 && sp.dark < 0.8 ? 2 : 1 });
+    res.high.push({ v: sp.dark <= 0.2 && sfi >= 120 ? 2 : sp.dark <= 0.4 && sfi >= 90 ? 1 : 0 });
+  }
+  return res;
+}
+function guideHTML(g, now) {
+  const head = Array.from({ length: 24 }, (_, h) => `<th>${h}</th>`).join(''), headJ = Array.from({ length: 24 }, (_, h) => `<th class="gj">${(h + 9) % 24}</th>`).join('');
+  const cellE = c => { const v = gLv(c), bg = v >= 6 ? 'rgba(216,177,74,.85)' : v >= 3 ? 'rgba(127,211,198,.55)' : v >= 1 ? 'rgba(127,211,198,.22)' : 'transparent'; return `<td style="background:${bg}"></td>`; };
+  const cellP = (x, mark) => { const bg = x.v === 2 ? 'rgba(199,125,255,.55)' : x.v === 1 ? 'rgba(199,125,255,.2)' : 'transparent'; return `<td style="background:${bg}">${x.v === 2 && x.lp ? 'L' : ''}</td>`; };
+  // 実績
+  let ePart = '', eKey = null, eLabel = '', eData = null, agree = [];
+  if (SUMMARY) {
+    if (TARGET.ent && CTY) { const i = CTY.ent.findIndex(e => e[0] === TARGET.ent); if (i >= 0 && SUMMARY.e[String(i)]) { eData = SUMMARY.e[String(i)]; eLabel = TARGET.short && TARGET.short.toUpperCase() !== TARGET.ent.toUpperCase() ? `${TARGET.short}（${TARGET.ent}）` : TARGET.ent; } }
+    if (!eData) { const f = llToGrid(TARGET.lat, TARGET.lon).slice(0, 2); if (SUMMARY.f[f]) { eData = SUMMARY.f[f]; eLabel = `${TARGET.short ? TARGET.short + ' の' : '相手の'}周辺（グリッドの大区画 ${f}）`; } }
+  }
+  const phys = gPhysics(g, now);
+  if (!SUMMARY) ePart = SUMMARY_P ? `<p class="gfine">実績のデータを読み込んでいます…</p>` : `<p class="gfine">実績のデータを読み込めませんでした。物理の目安だけを表示しています。</p>`;
+  else if (!eData) ePart = `<p class="gfine">この相手（周辺を含む）との実績は、直近${SUMMARY.days}日間の記録にまだありません。物理の目安を参考にしてください。</p>`;
+  else {
+    const has = (b, k) => eData[b] && /[1-9A]/.test(eData[b][k]);
+    const bands = G_BANDS.filter(b => has(b, 'r'));   // 受信（日本の局が相手を受信）を中心に示す
+    const rows = bands.map(b => `<tr><th class="gb">${b}</th>${[...eData[b].r].map(cellE).join('')}</tr>`).join('');
+    const best = bands.map(b => ({ b, s: [...eData[b].r].reduce((a, c) => a + gLv(c), 0), hs: [...eData[b].r].map((c, h) => gLv(c) >= 3 ? h : -1).filter(h => h >= 0) }))
+      .filter(x => x.hs.length);   // 低いバンドから順に
+    const txt = best.length ? best.map(x => `<b>${x.b}</b> ${gWindows(x.hs)}`).join('<br>') : 'よく受信できていた時間帯（抜き取りの3割以上で受信の報告あり）はまだありません。まれに受信できた時間帯は表の薄い色のところです。';
+    // 実績と物理の目安がそろう時間帯
+    for (const x of best) { const p = phys[G_GROUP[x.b]]; const hs = x.hs.filter(h => p[h].v === 2); if (hs.length) agree.push(`<b>${x.b}</b> ${gWindows(hs)}`); }
+    const tx = G_BANDS.filter(b => has(b, 't')).map(b => ({ b, hs: [...eData[b].t].map((c, h) => gLv(c) >= 3 ? h : -1).filter(h => h >= 0) })).filter(x => x.hs.length);
+    const txTxt = tx.length ? `<div class="gtxt" style="margin-top:6px;opacity:.85">参考：日本の局の信号が相手側で受信されていた時間帯<br>${tx.map(x => `<b>${x.b}</b> ${gWindows(x.hs)}`).join('<br>')}</div>` : '';
+    const noRx = !bands.length ? '<p class="gfine">この相手からの信号を日本の局が受信した記録は、まだありません。</p>' : '';
+    // 受信できた回の宇宙天気と、同じ時刻の抜き取り全体の宇宙天気（中央値）
+    const f1 = (v, d) => v == null ? '―' : v.toFixed(d);
+    const swRows = bands.filter(b => eData[b].w).map(b => {
+      const [on, ok, ov, of] = eData[b].w.o, [bn, bk, bv, bf] = eData[b].w.b;
+      const hint = on >= 10 && ok != null && bk != null && ov != null && bv != null
+        ? (bk - ok >= 0.7 || bv - ov >= 60 ? '　<span style="color:var(--c2)">静かなとき・遅い太陽風のときに受信しやすい傾向（参考）</span>'
+          : ok - bk >= 0.7 || ov - bv >= 60 ? '　<span style="color:var(--c4)">乱れたとき・速い太陽風のときにも受信できている（参考）</span>' : '') : '';
+      return `<b>${b}</b> 受信できた回：Kp ${f1(ok, 1)}・太陽風 ${f1(ov, 0)} km/s・SFI ${f1(of, 0)}（${on}回）／同じ時刻の全体：Kp ${f1(bk, 1)}・${f1(bv, 0)} km/s・SFI ${f1(bf, 0)}（${bn}回）${hint}`;
+    });
+    const swPart = swRows.length ? `<details class="gdet" data-k="sw"${gOpen('sw')}><summary>受信できたときの宇宙天気（中央値）</summary><div class="gtxt" style="font-size:.85em">${swRows.join('<br>')}</div>
+      <p class="gfine">受信できた回と、同じ時刻（UTC）の抜き取り全体の宇宙天気を中央値で比べています。受信できた回のほうが Kp が低く、太陽風が遅ければ、静かなときのほうが受信しやすい傾向を示します。差が小さいときは、この期間では宇宙天気による違いが見えていないということです。受信できた回が5回以上のバンドだけ表示し、傾向の表示は10回以上のときだけです。Kp は GFZ の3時間値、SFI は F10.7 の観測値（その日の値）、太陽風の速さは NOAA の1時間平均。Bz は1時間平均するとほぼゼロになり違いが表れにくいため、載せていません。</p></details>` : '';
+    const nn = SUMMARY.n.filter(Boolean);
+    ePart = `<div class="gsub">実績：${gEsc(eLabel)}の信号を日本で受信できた時間帯（直近${SUMMARY.days}日間、日本全体）</div>${noRx}<details class="gdet" data-k="eTxt"${gOpen('eTxt')}><summary>時間帯を文字で見る</summary><div class="gtxt">${txt}</div>${txTxt}</details>
+      <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">日本</th>${headJ}</tr>${rows}</table></div>
+      ${swPart}
+      <details class="gdet" data-k="howE"${gOpen('howE')}><summary>この目安の見方</summary><p class="gfine">PSK Reporter のリアルタイム配信を、20分ごとに8分間（1時間あたり24分）受信して集めた記録です。${SUMMARY.since}以降の抜き取り${SUMMARY.samples}回（時刻ごとに${Math.min(...nn)}〜${Math.max(...nn)}回）のうち、日本の局がこの相手の信号を受信した報告があった回の割合を色で示します（濃い黄：6割以上、青緑：3割以上、薄い青緑：まれ）。送信の届き方は出力やアンテナ（ミドル・ハイバンドの3〜4エレ八木、ローバンドの1エレなど）で大きく変わるため、局の設備に左右されにくい受信を中心にしています。件数ではなく回数で数えるので、一つの局の運用で大きく振れることは避けられますが、FT8などデジタルモードの記録で、相手の地域で運用している局の多さにも左右されます。毎日お昼ごろ（11:50）に更新。</p></details>`;
+  }
+  // 物理の目安
+  const pw = k => gWindows(phys[k].map((x, h) => x.v === 2 ? h : -1).filter(h => h >= 0));
+  const lpH = phys.low.some(x => x.v === 2 && x.lp);
+  const pTxt = [`<b>ローバンド（160・80・40m）</b> ${pw('low') || '経路全体が夜になる時刻はありません'}${lpH ? '（L は長経路が夜側）' : ''}`,
+    `<b>ミドル（30・20・17m）</b> ${pw('mid') || '―'}（昼夜の境目を含む時刻）`,
+    `<b>ハイバンド（15・12・10m）</b> ${pw('high') || (SFI_NOW != null && SFI_NOW < 120 ? 'SFI がやや低く、経路の大半が昼になる時刻はありますが目安としては控えめです' : '経路の大半が昼になる時刻はありません')}`].join('<br>');
+  const pRows = [['ロー', 'low'], ['ミドル', 'mid'], ['ハイ', 'high']].map(([n, k]) => `<tr><th class="gb">${n}</th>${phys[k].map(x => cellP(x)).join('')}</tr>`).join('');
+  const pPart = `<div class="gsub">物理の目安：これから24時間（経路の昼夜・いまのオーロラ帯・SFI ${SFI_NOW != null ? SFI_NOW.toFixed(0) : '―'}）</div><details class="gdet" data-k="pTxt"${gOpen('pTxt')}><summary>時間帯を文字で見る</summary><div class="gtxt">${pTxt}</div></details>
+    <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">日本</th>${headJ}</tr>${pRows}</table></div>
+    <details class="gdet" data-k="howP"${gOpen('howP')}><summary>この目安の見方</summary><p class="gfine">ローバンドは短経路（夜側にならなければ長経路）の大半が夜（太陽高度−6°以下）になる時刻、ミドルは経路に昼と夜が混ざる時刻、ハイバンドは経路の大半が昼で SFI が十分な時刻を、濃い紫で示します。電離層の詳しい計算（MUFの予測）ではなく、昼夜にもとづく目安です。オーロラ帯はいまの状態で計算しているので、数時間先は変わることがあります。</p></details>`;
+  const aPart = agree.length ? `<details class="gdet gagree" data-k="agree"${gOpen('agree')}><summary>実績と物理の目安がそろう時間帯（${agree.length}バンド）</summary>${agree.join('<br>')}</details>` : '';
+  return `<div class="gbox"><div class="gttl" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">交信しやすいバンドと時間帯の目安<span style="color:var(--c5);font-size:.85em;white-space:nowrap">検証中</span></div><p class="gfine" style="margin:0 0 6px">実際の交信の結果と照らし合わせて、当たり具合を確かめている段階です。</p>${gBzWarn(pathStats(g.az, g.km, now))}${aPart}${ePart}${plHTML(g, now)}${pPart}</div>`;
+}
+// ---- いまお勧めのバンド（PSK の実績＋いまの物理の条件・宇宙天気。検証中）
+var B36 = '0123456789abcdefghijklmnopqrstuvwxyz';
+function gBzActive() {
+  if (!SW_NOW || SW_NOW.bz30 == null) return false;
+  return SW_NOW.bz30 <= -10 || (SW_NOW.bz30 <= -5 && (SW_NOW.south || 0) >= 60);
+}
+// ---- 短経路・長経路の手がかり（ローバンド。PSK の受信の時刻の昼夜による判別と、DXクラスターのコメント。検証中）
+function plHTML(g, now) {
+  if (!SUMMARY || !TARGET) return '';
+  let ei = -1; if (TARGET.ent && CTY) ei = CTY.ent.findIndex(e => e[0] === TARGET.ent);
+  const ed = ei >= 0 ? SUMMARY.e[String(ei)] : null, cd = ei >= 0 && SUMMARY.c ? SUMMARY.c[String(ei)] : null;
+  const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
+  const pc = x => Math.round(x * 100);
+  const nowTxt = `いま：短経路は途中の${pc(sp.dark)}%が夜、長経路は${pc(lp.dark)}%が夜。ローバンドは` +
+    (sp.dark >= 0.7 && lp.dark >= 0.7 ? '両方の経路が通り得る時間帯です。' : sp.dark >= 0.7 ? '短経路が通り得る時間帯です。' : lp.dark >= 0.7 ? '<b>長経路</b>が通り得る時間帯です。' : 'どちらの経路も昼側が多く、厳しい時間帯です。');
+  const rows = [];
+  if (ed) for (const b of ['160m', '80m', '40m']) {
+    const x = ed[b]; if (!x || !x.pl) continue;
+    const [n, so, lo, bo, no] = x.pl, hs = [...(x.plh || '')].map((c, h) => B36.indexOf(c) > 0 ? h : -1).filter(h => h >= 0);
+    const verdict = so + lo === 0 ? '' : lo >= so * 2 && lo >= 3 ? '　→ <b>長経路で届いていた可能性が高い</b>' : so >= lo * 2 ? '　→ 主に短経路' : '　→ 短経路・長経路の両方';
+    rows.push(`<b>${b}</b>　受信できた${n}回：短経路だけが夜 ${so}回／長経路だけが夜 ${lo}回${lo && hs.length ? `（${gWindows(hs)}）` : ''}／両方 ${bo}回／どちらも昼 ${no}回${verdict}`);
+  }
+  const cl = [];
+  if (cd) for (const b of G_BANDS) {
+    const x = cd[b]; if (!x) continue;
+    const hs = [...x.lph].map((c, h) => B36.indexOf(c) > 0 ? h : -1).filter(h => h >= 0);
+    cl.push(`<b>${b}</b>　スポット ${x.n}件のうち LP の記載 ${x.lp}件${x.lp && hs.length ? `（${gWindows(hs)}）` : ''}、SP ${x.sp}件、skew ${x.sk}件`);
+  }
+  const body = `<p class="gtxt">${nowTxt}</p>
+    <div class="gsub" style="font-size:.88em">PSK の受信の時刻から見た経路（直近${SUMMARY.days}日間）</div>
+    <div class="gtxt" style="font-size:.85em">${rows.length ? rows.join('<br>') : 'この相手のローバンドの受信の記録が、まだ少なく判別できません。'}</div>
+    <div class="gsub" style="font-size:.88em">DXクラスターの日本の局のスポット（コメントの LP・SP・skew）</div>
+    <div class="gtxt" style="font-size:.85em">${cl.length ? cl.join('<br>') : 'この相手のスポットは、まだ集まっていません（2026年11月から収集）。'}</div>
+    <details class="gdet" data-k="plHow"${gOpen('plHow')}><summary>この手がかりの見方</summary><p class="gfine">FT8 などの受信の報告からは、電波がどちらの経路で届いたかは分かりません。そこで、受信できた時刻に、短経路と長経路のそれぞれの途中（両端1,000kmを除く）の7割以上が夜だったかを計算しました。ローバンドは昼側で吸収が強いので、片方の経路だけが夜なら、その経路で届いた可能性が高いと考えます。日本側は東京付近、相手側はエンティティの代表位置で計算しており、オーロラ帯の影響は含めていません。DXクラスターは、日本の局がスポットしたもののうち、コメントに LP（ロングパス）・SP（ショートパス）・skew の記載があったものを数えています。人がアンテナを向けて確かめた情報なので、上の推定の答え合わせに使えますが、件数はまだわずかです。</p></details>`;
+  return `<details class="gdet" data-k="pl"${gOpen('pl')}><summary>短経路・長経路の手がかり（ローバンド）<span style="color:#d64545;font-size:.85em">（検証中）</span></summary>${body}</details>`;
+}
+function recHTML(g, now) {
+  const h = new Date(now).getUTCHours(), title = `いまお勧めのバンド（UTC ${h}時台・日本時間 ${(h + 9) % 24}時台）`;
+  const wrap = body => `<details class="gdet grec" data-k="rec"${gOpen('rec')}><summary>${title}<span style="color:#d64545;font-size:.85em">（検証中）</span></summary>${body}</details>`;
+  if (!SUMMARY) return wrap(`<p class="gfine">${SUMMARY_P ? '実績のデータを読み込んでいます…' : '実績のデータを読み込めませんでした。'}</p>`);
+  let data = null, isEnt = false, label = '';
+  if (TARGET.ent && CTY) { const i = CTY.ent.findIndex(e => e[0] === TARGET.ent); if (i >= 0 && SUMMARY.e[String(i)]) { data = SUMMARY.e[String(i)]; isEnt = true; } }
+  if (!data) { const f = llToGrid(TARGET.lat, TARGET.lon).slice(0, 2); if (SUMMARY.f[f]) { data = SUMMARY.f[f]; label = `（相手の周辺・大区画 ${f} の記録のため、最高でも○）`; } }
+  const win = [(h + 23) % 24, h, (h + 1) % 24], nWin = win.reduce((a, w) => a + (SUMMARY.n[w] || 0), 0);
+  const how = `<details class="gdet" data-k="recHow"${gOpen('recHow')}><summary>この判定の見方</summary><p class="gfine">いまの時刻の前後1時間（UTC ${win[0]}〜${(h + 2) % 24}時）について、直近${SUMMARY.days}日間の抜き取りのうち、日本の局がこの相手の信号を受信できた回の割合で判定します。◎は5割以上、○は2割以上（△：1割以上、×：1割未満は表示しません）。前後1時間の抜き取りが10回未満のときは判定しません。一時的な運用（DXペディションなど）に引っ張られないよう、受信できた日が3日以上あれば◎まで、2日なら○まで、1日だけなら表示しません。相手そのものの記録がなく周辺の大区画の記録で代用するときは、最高でも○とします。さらに、いまの条件で一段下げます：ローバンドで経路の大半が昼側のとき、ハイバンドで経路の大半が夜側または SFI が低いとき、短経路がオーロラ帯の濃い部分（30%以上）を通るときのローバンド、Bz の注意が出ていて経路がオーロラ帯の近くを通るときのロー・ミドルバンド。しきい値は出発点としての案で、実際の交信の結果と照らし合わせて見直していきます。</p></details>`;
+  if (!data) return wrap(`<p class="gtxt">この相手（周辺を含む）の受信の記録が、まだありません。</p>${how}`);
+  if (nWin < 10) return wrap(`<p class="gtxt">この時刻の抜き取りがまだ少なく（${nWin}回）、判定できません。</p>${how}`);
+  const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
+  const sfi = SFI_NOW ?? 100, near = Math.abs(sp.mag) >= 55 || (sp.aur != null && sp.aur >= 10), bz = gBzActive();
+  const out = [];
+  for (const b of G_BANDS) {
+    const d = data[b]; if (!d) continue;
+    let rate, days = null;
+    if (isEnt && d.wr) { rate = B36.indexOf(d.wr[h]) * 5; days = B36.indexOf(d.wd[h]); }
+    else if (d.r) { const lv = win.map(w => gLv(d.r[w])), nn = win.map(w => SUMMARY.n[w] || 0); rate = Math.round(lv.reduce((a, v, k) => a + v * 10 * nn[k], 0) / nWin); }
+    else continue;
+    let gr = rate >= 50 ? 2 : rate >= 20 ? 1 : rate >= 10 ? 0 : -1;
+    const why = [];
+    if (days != null) { if (days <= 1) gr = Math.min(gr, 0); else if (days === 2 && gr > 1) { gr = 1; why.push('受信できた日が2日のため○まで'); } }
+    if (!isEnt && gr > 1) gr = 1;
+    const grp = G_GROUP[b];
+    if (grp === 'low' && !(sp.dark >= 0.6 || lp.dark >= 0.8)) { gr--; why.push('いま経路の大半が昼側'); }
+    if (grp === 'high' && (sp.dark > 0.4 || sfi < 90)) { gr--; why.push(sp.dark > 0.4 ? 'いま経路の大半が夜側' : 'SFI が低い'); }
+    if (grp === 'low' && sp.aur != null && sp.aur >= 30) { gr--; why.push('短経路がオーロラ帯の濃い部分を通過'); }
+    if (bz && near && (grp === 'low' || grp === 'mid')) { gr--; why.push('Bz の注意'); }
+    if (gr >= 1) out.push({ b, gr, rate, days, why });
+  }
+  const list = out.length
+    ? out.map(x => `<div><b style="font-size:1.1em">${x.gr === 2 ? '◎' : '○'}</b> <b>${x.b}</b>　受信できた割合 ${x.rate}%${x.days != null ? `（${x.days}日）` : ''}${x.why.length ? `<span style="color:var(--sub, var(--muted))">　※${x.why.join('、')}${x.why.some(w => !w.includes('まで')) ? 'のため一段下げ' : ''}</span>` : ''}</div>`).join('')
+    : `<p class="gtxt">いまの時刻は、お勧めできるバンドがありません（記録が少ない、または開いていない時間帯です）。</p>`;
+  return wrap(`<div class="gtxt">${list}</div>${label ? `<p class="gfine">${label}</p>` : ''}<p class="gfine">前後1時間の抜き取り ${nWin}回のうち、この相手の信号が日本で受信できた割合です。</p>${how}`);
+}
+function renderGuide(g, now) {
+  const box = document.getElementById('dxOut'); if (!box || !TARGET) return;
+  box.insertAdjacentHTML('afterbegin', '<div id="dxRec"></div>');
+  { const sp = pathStats(g.az, g.km, now), lp = pathStats((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now);
+    box.insertAdjacentHTML('afterbegin', `<div id="dxLb">${lbHTML(g, sp, lp, now)}</div>`); lbWire(); }
+  box.insertAdjacentHTML('beforeend', '<div id="dxGuide"></div>');
+  const fill = () => { const el = document.getElementById('dxGuide'); if (el) { el.innerHTML = guideHTML(g, now); gWatch(el); }
+    const er = document.getElementById('dxRec'); if (er) { er.innerHTML = recHTML(g, now); gWatch(er); } };
+  if (SUMMARY) fill(); else { fill(); loadSummary().then(fill).catch(fill); }
+}
+
+// ---- 届く強さの見込み（送信電力・アンテナ利得・周波数から。簡易な回線計算。検証中）
+var LB_F = { '160m': 1.85, '80m': 3.6, '60m': 5.36, '40m': 7.1, '30m': 10.13, '20m': 14.1, '17m': 18.1, '15m': 21.1, '12m': 24.93, '10m': 28.1, '6m': 50.2 };
+// 受信地点の外来雑音（ITU-R P.372 の郊外と田園の中間程度の目安）。雑音指数 Fa [dB]
+var LB_FA = { '160m': 55, '80m': 48, '60m': 44, '40m': 40, '30m': 36, '20m': 31, '17m': 28, '15m': 26, '12m': 24, '10m': 22, '6m': 14 };
+var LB = (() => { try { return Object.assign({ w: 100, g: 7, b: '20m' }, JSON.parse(localStorage.getItem('lb') || '{}')); } catch (e) { return { w: 100, g: 7, b: '20m' }; } })();
+var LB_ON = (() => { try { return localStorage.getItem('lbOn') === '1'; } catch (e) { return false; } })();
+var LB_CAT = [{ min: 6, name: '強く届く（SSB・CW でも）', a: 1 }, { min: -10, name: '届く（CW・FT8）', a: 0.72 }, { min: -21, name: '弱く届く（FT8 なら）', a: 0.42 }, { min: -999, name: '届かない見込み', a: 0.12 }];
+function lbCalc(az, km, t, band, aur) {
+  const f = LB_F[band], Re = EARTH, h = 300, n = Math.max(1, Math.ceil(km / 3500)), d = km / n;
+  const s = 2 * Math.sqrt((Re + h) ** 2 + Re ** 2 - 2 * Re * (Re + h) * Math.cos(d / 2 / Re)), S = n * s;   // 電波が実際に進む道のり
+  const fsl = 32.45 + 20 * Math.log10(f) + 20 * Math.log10(S), refl = 2 * (n - 1);
+  const sfi = SFI_NOW ?? 100, R12 = Math.max(0, (sfi - 67) / 0.97);
+  let abs = 0, muf = 1e9;
+  for (let i = 0; i < n; i++) {
+    // D層の吸収：各ホップで電離層に出入りする2か所（両端から200km内側）の太陽天頂角で計算（George の式を簡略化）。夜もわずかに残る吸収を加える
+    for (const x of [i * d + Math.min(200, d / 4), (i + 1) * d - Math.min(200, d / 4)]) {
+      const [la, lo] = dest(STATION.lat, STATION.lon, az, x), chi = 90 - sunElev(la, lo, t);
+      const I = (1 + 0.0037 * R12) * Math.pow(Math.max(0, Math.cos(0.881 * chi * Math.PI / 180)), 1.3);
+      abs += 0.8 * 677.2 * I / (Math.pow(f + 1.2, 1.98) + 10.2) + 0.15 * Math.pow(10 / f, 2);
+    }
+    // MUF の推定：反射点の昼夜と SFI から foF2 を大まかに見積もり、ホップの長さに応じて倍率を掛ける
+    // F層は日没後すぐには弱まらないので、1.5時間前・3時間前の昼の度合いも少し残す
+    const [la, lo] = dest(STATION.lat, STATION.lon, az, (i + 0.5) * d), dayAt = tt => Math.max(0, Math.min(1, (sunElev(la, lo, tt) + 6) / 36));
+    const day = Math.max(dayAt(t), 0.7 * dayAt(t - 5400e3), 0.4 * dayAt(t - 10800e3));
+    const foN = 0.02 * sfi + 2.5, foD = 0.065 * sfi + 2.5, fo = foN + (foD - foN) * Math.sqrt(day);
+    muf = Math.min(muf, fo * Math.min(3.2, 1 + 2.2 * d / 3000));
+  }
+  const aurDb = aur == null ? 0 : Math.min(30, (aur >= 30 ? 12 : aur >= 10 ? 5 : 0) * Math.pow(14 / f, 1.5));
+  const loss = fsl + refl + abs + aurDb;
+  let snr = 10 * Math.log10(LB.w) + LB.g - loss - (-170 + LB_FA[band]);   // 受信側のアンテナは 0 dBi、帯域 2.5kHz
+  const why = [];
+  if (f > muf) { snr = -99; why.push(`推定 MUF ${muf.toFixed(0)} MHz を超える`); }
+  else if (f > 0.9 * muf) { snr -= 6; why.push('推定 MUF に近い'); }
+  if (aurDb >= 3) why.push(`オーロラ帯の吸収 約${aurDb.toFixed(0)} dB`);
+  const cat = LB_CAT.find(c => snr >= c.min);
+  return { snr, cat, muf, n, fsl, refl, abs, aurDb, why };
+}
+function lbHTML(g, sp, lp, now) {
+  const opt = Object.keys(LB_F).map(b => `<option${b === LB.b ? ' selected' : ''}>${b}</option>`).join('');
+  const r1 = lbCalc(g.az, g.km, now, LB.b, sp.aur), r2 = lbCalc((g.az + 180) % 360, 2 * Math.PI * EARTH - g.km, now, LB.b, lp.aur);
+  const line = (n, az, r) => `<div><b>${n} ${az.toFixed(0)}°</b>　推定 SNR ${r.snr <= -99 ? '―' : (r.snr >= 0 ? '+' : '') + r.snr.toFixed(0) + ' dB'} → <b>${r.cat.name}</b><br><span style="color:var(--muted);font-size:.9em">　損失 ${(r.fsl + r.refl + r.abs + r.aurDb).toFixed(0)} dB（距離 ${r.fsl.toFixed(0)}・地面反射 ${r.refl.toFixed(0)}・D層の吸収 ${r.abs.toFixed(0)}${r.aurDb >= 1 ? '・オーロラ帯 ' + r.aurDb.toFixed(0) : ''}）、推定 MUF ${r.muf.toFixed(0)} MHz、${r.n}ホップ${r.why.length ? '。' + r.why.join('、') : ''}</span></div>`;
+  return `<details class="gdet grec" id="lbBox"${LB_ON ? ' open' : ''}><summary>届く強さの見込み（送信電力・アンテナ・周波数）<span style="color:#d64545;font-size:.85em">（検証中）</span></summary>
+    <div class="gtxt" style="display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin:6px 0">
+      <label>送信電力 <input id="lbW" type="number" min="1" max="1500" step="1" value="${LB.w}" style="width:5em"> W</label>
+      <label>アンテナ利得 <input id="lbG" type="number" min="-10" max="25" step="0.5" value="${LB.g}" style="width:4em"> dBi</label>
+      <label>バンド <select id="lbB">${opt}</select></label></div>
+    <div class="gtxt">${line('短経路', g.az, r1)}${line('長経路', (g.az + 180) % 360, r2)}</div>
+    <p class="gfine">開いている間は、地図の短経路・長経路の線が、届く強さに応じて相手に近づくほど薄くなります（強く届く：濃いまま、届く・弱く届く：中くらい・薄く、届かない見込み：ほぼ消える）。アンテナ利得の目安：ダイポール 2 dBi、3エレ八木 7〜8 dBi、4エレ八木 8〜9 dBi、垂直系 0〜2 dBi。</p>
+    <details class="gdet" data-k="lbHow"${gOpen('lbHow')}><summary>この見込みの見方</summary><p class="gfine">送信電力とアンテナ利得から、経路の損失（距離による広がり、地面・海面での反射、D層の吸収、オーロラ帯の吸収）を差し引き、相手側の雑音と比べて SNR（2.5kHz 帯域）を見積もります。電離層の反射は高さ300km、1ホップ最大3,500kmとし、D層の吸収は経路上の太陽の高さと SFI から George の式を簡略化して求めます。電離層が反射できる周波数の上限（MUF）は、SFI と反射点の昼夜から大まかに推定しており、ここが最も不確かです。相手側は 0 dBi のアンテナと郊外程度の雑音を仮定しています。実際とは10〜20dB程度ずれることがあり、目安としてご覧ください。今後、PSK Reporter の SNR の記録と比べて、見積もりを確かめ、補正していきます。強く届く：+6dB 以上、届く：−10dB 以上、弱く届く：−21dB 以上（FT8 の解読の限界付近）。</p></details></details>`;
+}
+function lbWire() {
+  const save = () => { try { localStorage.setItem('lb', JSON.stringify(LB)); } catch (e) {} };
+  const w = document.getElementById('lbW'), gg = document.getElementById('lbG'), b = document.getElementById('lbB'), box = document.getElementById('lbBox');
+  if (w) w.onchange = () => { LB.w = Math.max(1, +w.value || 100); save(); targetRender(); };
+  if (gg) gg.onchange = () => { LB.g = +gg.value || 0; save(); targetRender(); };
+  if (b) b.onchange = () => { LB.b = b.value; save(); targetRender(); };
+  if (box) box.addEventListener('toggle', () => { LB_ON = box.open; try { localStorage.setItem('lbOn', LB_ON ? '1' : '0'); } catch (e) {} drawMap(LASTP); });
+}
+function targetRender(){
+  if(!TARGET){drawMap(null);return}
+  const now=Date.now(),e=sunElev(TARGET.lat,TARGET.lon,now),[l,c]=dnState(e),[jl,jc]=dnState(sunElev(STATION.lat,STATION.lon,now));
+  const g=bearingDist(STATION.lat,STATION.lon,TARGET.lat,TARGET.lon);
+  if(g.km<50){$('dxOut').innerHTML='<p class="fn">自局と同じ場所です。</p>';return}
+  const sp=pathStats(g.az,g.km,now),lp=pathStats((g.az+180)%360,2*Math.PI*EARTH-g.km,now);
+  const sk=needSkew(sp)?skewSearch(g,TARGET.lat,TARGET.lon):null;
+  drawMap({sp,lp,az:g.az,km:g.km,label:TARGET.short||'',sk});
+  $('dxOut').innerHTML=`<div class="tgt-who">${TARGET.label}<span class="loc">${TARGET.loc}</span></div>${(()=>{const g=glStatus(now);return g?`<div class="gld ${g.on?'on':''}">${g.html}<span style="color:#d64545;font-size:.85em">（検証中）</span></div>`:''})()}
+  <div class="tbl"><table class="paths-tbl"><thead><tr><th>昼夜<br><span class="th2">相手／自局（${esc(STATION.name)}）</span></th><th>短経路<br><span class="th2">方位・距離・最高地磁気緯度<br>オーロラ確率・経路の暗さ</span></th><th>長経路<br><span class="th2">同左</span></th><th>判定（主にローバンド）</th></tr></thead>
+  <tbody><tr><td><span class="tag ${c}">${l}</span><br><span class="tag ${jc}">${jl}</span></td><td>${pathCell(sp)}</td><td>${pathCell(lp)}</td><td>${advise(sp,lp)}${skewNote(g,sp,sk,true)}</td></tr></tbody></table></div>
+  <p class="fn">1分ごとに計算し直します。宇宙天気（Kp・太陽風・Bz）は上の値と同じで、どの相手でも共通です。国分寺の電離層の値は日本の上空の値で、相手側の電離層の状態ではありません。</p>`;
+  renderGuide(g,now);
+}
+
+/* ---- load */
+
+// ---- いま開いている相手と、これから3時間（propagation の now.json。抜き取りのたびに更新）
+var NOW_URL='https://raw.githubusercontent.com/ja1bbe/propagation/main/data/summary/now.json';
+var NOWJ=null,KPL=[],NOW_TRIED=false;
+var NP_BANDS=['160m','80m','60m','40m','30m','20m','17m','15m','12m','10m','6m'];
+async function loadNow(){try{const r=await fetch(NOW_URL,{cache:'no-store'});if(!r.ok)throw new Error(r.status);NOWJ=await r.json()}catch(e){NOWJ=null}NOW_TRIED=true;
+  try{await loadCty()}catch(e){}nowRender()}
+// 地磁気の乱れの注意：これから3時間の Kp の予報が5以上、いまの Kp が5以上、または Bz の注意
+function npCaution(){const t=Date.now(),f=(KPL||[]).filter(r=>r.t+3*3600e3>t&&r.t<t+3*3600e3).map(r=>r.kp);
+  const kpMax=Math.max(SW_NOW&&SW_NOW.kp!=null?SW_NOW.kp:0,...(f.length?f:[0])),se=stormEdge();
+  return{on:kpMax>=5||!!(se&&se.show),kp:kpMax,bz:!!(se&&se.show)}}
+function npHiLat(i){if(!CTY||!CTY.ent[i])return false;const e=CTY.ent[i],g=bearingDist(STATION.lat,STATION.lon,e[1],e[2]);return Math.abs(pathStats(g.az,g.km,Date.now()).mag)>=60}
+function nowRender(){const R=$('npRecent'),O=$('npOut'),N=$('npNote');if(!R)return;
+  if(!NOWJ){R.textContent=NOW_TRIED?'データを読み込めませんでした。':'読み込み中…';O.textContent='';N.textContent='';return}
+  const cau=npCaution(),mark=i=>cau.on&&npHiLat(i)?' <span class="nphl" title="高緯度を通る経路">▼</span>':'';
+  const rb=NOWJ.recent.bands||{},rec=NOWJ.recent,clean=x=>esc(String(x).replace('Z',''));
+  let h=`<p class="gfine" style="margin:0 0 4px">UTC ${clean(rec.from)}〜${clean(rec.to)}（抜き取り${rec.samples}回）。<span class="npr">★</span>＝最近の日本の記録ではまれ。各バンドで、まれなものを先に、残りを遠い順に最大8つ。括弧の数は、そのバンドで受信できたエンティティの数です。名前にマウスを重ねると、距離・抜き取りの回数・SNR が出ます。</p>`;
+  const lines=NP_BANDS.filter(b=>rb[b]).map(b=>`<div class="npline"><b>${b}</b>（${rb[b].n}）：`+
+    rb[b].top.map(x=>`<span title="${x.km.toLocaleString()} km・抜き取り${x.s}回・SNR ${x.snr??'―'} dB">${x.rare?'<span class="npr">★'+esc(x.name)+'</span>':esc(x.name)}</span>${mark(x.e)}`).join('、')+'</div>');
+  R.innerHTML=h+(lines.join('')||'<div class="npline">この3時間に受信できたエンティティはありませんでした。</div>');
+  const ob=NOWJ.outlook.bands||{},hrs=NOWJ.outlook.hours||[];
+  const hj=hrs.length?`UTC ${hrs[0]}〜${(hrs[hrs.length-1]+1)%24}時（日本時間 ${(hrs[0]+9)%24}〜${(hrs[hrs.length-1]+10)%24}時）`:'';
+  let o=`<p class="gfine" style="margin:0 0 4px">${hj}に、直近${NOWJ.outlook.days??28}日間の記録で受信の割合が3割以上、かつ3日以上受信できたエンティティです。比較的珍しいものを先に最大8つ。数字はその時間帯の受信の割合です。</p>`;
+  if(cau.on)o+=`<div class="gwarn">地磁気が${cau.bz?'乱れる兆し（Bz の注意）':`乱れる予報（Kp ${cau.kp.toFixed(1)}）`}があります。<span class="nphl">▼</span> の付いた相手は、経路が高緯度（地磁気緯度60°以上）を通るため、記録より弱まる可能性があります。</div>`;
+  o+=NP_BANDS.filter(b=>ob[b]).map(b=>`<div class="npline"><b>${b}</b>（${ob[b].n}）：`+ob[b].top.map(x=>`${esc(x.name)} ${x.rate}%${mark(x.e)}`).join('、')+'</div>').join('')||'<div class="npline">見通しを出せる記録がありません。</div>';
+  const sc=NOWJ.score7||{};let n=0,hit=0,pn=0,ph=0;for(const b in sc){n+=sc[b][0];hit+=sc[b][1];pn+=sc[b][2];ph+=sc[b][3]}
+  o+=n>=30?`<p class="gfine" style="margin:6px 0 0">採点（直近7日間）：見通しに挙げた相手のうち、実際に3時間以内に受信できた割合 ${Math.round(hit/n*100)}%（${n}件）。比較のため、「直近3時間に受信できた相手は、次の3時間も受信できる」という単純な見込みでは ${pn?Math.round(ph/pn*100):'―'}%（${pn}件）。</p>`
+    :`<p class="gfine" style="margin:6px 0 0">採点：見通しは3時間後に実際の受信と突き合わせて採点しています。件数がたまったら、ここに的中の割合を表示します。</p>`;
+  O.innerHTML=o;
+  N.textContent=`日本の局が PSK Reporter に報告した受信の記録（20分ごとに8分間の抜き取り、${NOWJ.generated} 時点）。日本全体の記録なので、ご自分の局で聞こえるとは限りません。`}
+['npRecentD','npOutD'].forEach(id=>{const d=document.getElementById(id);if(!d)return;
+  try{if(localStorage.getItem('pc.'+id)==='1')d.open=true}catch(e){}
+  d.addEventListener('toggle',()=>{try{localStorage.setItem('pc.'+id,d.open?'1':'0')}catch(e){}})});
+async function load(){
+  loadDrap();loadNow();if(!SUMMARY){try{loadSummary().then(()=>dayNight()).catch(()=>{})}catch(e){}}
+  const v={};const errs=[];
+  const res=await Promise.allSettled(Object.entries(URLS).map(async([k,u])=>[k,await getJSON(u)]));
+  for(const r of res){if(r.status!=='fulfilled'){errs.push(r.reason);continue}const[k,d]=r.value;
+    try{
+      if(k==='kp'){v.kpHist=parseKp(d);const l=v.kpHist[v.kpHist.length-1];if(l)v.kp=l[1]}
+      if(k==='mag'){const o=parseRtsw(d,{bz:'bz_gsm',bt:'bt'});if(o){Object.assign(v,{bz:o.bz,bz30:o.bz30,bt:o.bt,rtswAt:o.at});v.series=Object.assign(v.series||{},o.series)}}
+      if(k==='wind'){const o=parseRtsw(d,{speed:'proton_speed',density:'proton_density'});if(o)Object.assign(v,{speed:o.speed,speed30:o.speed30,density:o.density,density30:o.density30})}
+      if(k==='scales')Object.assign(v,parseScales(d));
+      if(k==='sfi'){v.sfi=parseSfi(d);SFI_NOW=v.sfi}
+      if(k==='aur'){AUR=parseAur(d);v.aurMax=AUR.nmax}
+      if(k==='kpf')v.kpf=parseKpf(d);
+    }catch(e){errs.push(e)}}
+  if(errs.length===Object.keys(URLS).length){
+    $('msg').style.display='block';$('msg').textContent='NOAAからデータを取得できませんでした。通信環境、または埋め込み先の設定で外部への接続が制限されている可能性があります。「サンプルデータで表示」で画面の構成は確認できます。';
+    $('upd').textContent='取得失敗';
+  }else{$('msg').style.display=errs.length?'block':'none';if(errs.length)$('msg').textContent='一部のデータを取得できませんでした。取得できた値だけを表示しています。';render(v)}
+  dayNight();targetRender();
+}
+function demo(){
+  const now=Date.now(),kh=[];for(let i=15;i>=0;i--)kh.push([now-i*3*3600e3,[1,1.3,2,2.7,4.3,4,3.3,2.3,2,1.7,1.3,1.7,1,0.7,1,1.3][15-i]]);
+  const bzs=[];for(let i=360;i>=0;i-=5)bzs.push([now-i*60e3,2.5*Math.sin(i/40)+1.2]);
+  {const g=new Float32Array(360*181);let nm=0;for(let L=0;L<360;L++)for(let A=-90;A<=90;A++){const m=magLat(A,L>180?L-360:L),a=Math.max(0,55*Math.exp(-Math.pow((Math.abs(m)-66)/3.5,2)));g[L*181+A+90]=a;if(A>0&&a>nm)nm=a}AUR={grid:g,obs:Date.now(),fc:Date.now()+3600e3,nmax:nm}}
+  {const now=Date.now(),rec=[];for(let i=24;i>=0;i--){const t=now-i*15*60e3;rec.push({t,foF2:6.2+0.8*Math.sin(i/6),hF:null,hF2:265+(i<4?(4-i)*12:0)+6*Math.cos(i/5),spreadF:i<2})}IONO={recent:rec,latest:rec[rec.length-1]};}
+  const kpfDemo=[];{const b=Math.floor(Date.now()/(3*3600e3))*3*3600e3;for(let i=-8;i<24;i++){const t=b+i*3*3600e3;kpfDemo.push({t,kp:[2,2.33,1.67,2,2.67,3,2.33,2,1.67,2,2.33,3.67,5.33,4.67,3.33,2.67,2,1.67,2.33,2,2,2.67,3,2.33,2,1.67,2,2.33,2,1.67,2,2][i+8],kind:i<0?'observed':i===0?'estimated':'predicted'})}}
+  render({demo:true,kpf:kpfDemo,aurMax:AUR.nmax,kp:1.3,kpHist:kh,bz:2.1,bz30:1.8,bt:4.6,speed:380,speed30:385,density:3.2,density30:3.5,S:0,Sprob:1,G:0,sfi:93,series:{bz:bzs}});
+  $('msg').style.display='block';$('msg').textContent='サンプルデータで表示しています（実際の値ではありません）。';dayNight();ionoRender();
+}
+$('reload').onclick=load;$('demo').onclick=demo;
+$('dxGo').onclick=findTarget;$('dxClr').onclick=()=>{$('dxIn').value='';TARGET=null;LS('nowcast.dx','');$('dxOut').innerHTML='';drawMap(null)};
+for(const id of['myGrid','dxIn'])$(id).addEventListener('keydown',e=>{if(e.key==='Enter')findTarget()});
+$('myGrid').addEventListener('change',async()=>{await setStation();dayNight();try{glTTRender()}catch(e){}if(TARGET)findTarget();else drawMap(null)});
+loadLand();window.addEventListener('resize',()=>drawMap(LASTP));
+(async()=>{const g=LS('nowcast.myGrid');if(g)$('myGrid').value=g;await setStation();dayNight();const d=LS('nowcast.dx');
+  if(d){$('dxIn').value=d;findTarget()}else{EX_DX=exampleDx();$('dxIn').value=EX_DX;findTarget()}})();
+// 伝搬の見込み（地図と経路）の開閉。最初は開いた状態。開いたときに地図を描き直す
+(()=>{const det=$('propDet');if(!det)return;if(LS('nowcast.propOpen')==='0')det.open=false;
+  det.addEventListener('toggle',()=>{LS('nowcast.propOpen',det.open?'1':'0');if(det.open){targetRender();drawMap(LASTP)}})})();
+load();loadIono();setInterval(load,5*60e3);setInterval(loadIono,15*60e3);setInterval(()=>{dayNight();bandGuide(lastV);targetRender()},60e3);
+})();
+</script>
+<p style="text-align:center;color:#666;font-size:.72rem;margin:18px 0 8px">版：2026-11-26</p>
+</body>
+</html>
