@@ -838,7 +838,7 @@ function glTTRec(w){const jaHome=bearingDist(STATION.lat,STATION.lon,35.68,139.7
   return txt}
 async function glTTRender(){const box=$('glTT'),d=$('glTTD');if(!box||!d||!d.open)return;try{await loadCty()}catch(e){}try{await loadOps()}catch(e){}try{if(!SUMMARY)await loadSummary()}catch(e){}const t0=Math.floor(Date.now()/6e5)*6e5,L=glTTCalc(t0);
   const hm=t=>{const x=new Date(t+9*3600e3);return String(x.getUTCHours()).padStart(2,'0')+':'+String(x.getUTCMinutes()).padStart(2,'0')};
-  box.innerHTML=`<p class="gfine" style="margin:0 0 6px">自局（${esc(STATION.name)}）から見て、主な相手との間で「グレイラインダクト：あり」（自局か相手局が薄明で、経路の 7割以上が夜）になる時間帯です。いまから24時間、日本時間。時間帯は太陽の位置（物理の条件）で決まり、宇宙天気では変わりません。「記録（PSK）」は、その時間帯に日本の局がその地域を 160m・80m で受信できた割合（PSK Reporter の抜き取り、直近28日間）で、物理の条件と実際の受信の両方から見られます。「地図で見る」を押すと、その相手を伝搬レーダーに描きます。</p>`+
+  box.innerHTML=`<p class="g1" style="margin:0 0 4px">自局と主な相手の間で、グレイラインダクトが開く時間帯の一覧です（いまから24時間、日本時間）。</p><p class="gfine" style="margin:0 0 4px"><span class="glab">詳しく</span>時間帯は太陽の位置（物理の条件）で決まり、宇宙天気では変わりません。「記録（PSK）」を合わせて見ると、物理の条件と実際の受信の両方から確かめられます。「地図で見る」を押すと、その相手を伝搬レーダーに描きます。</p><p class="gfine" style="margin:0 0 6px"><span class="glab">データと計算の条件</span>「グレイラインダクト：あり」は、自局（${esc(STATION.name)}）か相手局が薄明（太陽高度 −18°〜+3°）で、経路の 7割以上が夜（−6° 以下）のときです。「記録（PSK）」は、その時間帯に日本の局がその地域を 160m・80m で受信できた割合（PSK Reporter の抜き取り、直近28日間）です。</p>`+
     (L.length?`<p class="swh">← 横にスライド・窓の中で上下にスクロール →</p><div class="tbl win"><table class="paths-tbl"><thead><tr><th>時間帯（日本時間）</th><th>相手（グリッド）</th><th>経路</th><th>薄明</th><th>記録（PSK）<br><span class="th2">日本の受信の割合 28日間</span></th><th></th></tr></thead><tbody>`+
     L.map(w=>{const nowIn=w.wins.some(x=>x.a<=Date.now()&&Date.now()<=x.b),sides=w.wins.map(x=>x.side).filter((v,i,a)=>!i||v!==a[i-1]);return`<tr${nowIn?' style="background:rgba(90,209,255,.10)"':w.op?' style="background:rgba(224,85,85,.08)"':''}><td style="white-space:nowrap">${w.wins.map(x=>`${hm(x.a)}〜${hm(x.b+6e5)}`).join('<br>')}${nowIn?' <b style="color:#5ad1ff">いま</b>':''}</td><td>${w.op?'<span class="kd kd-dxp" style="margin:0 0 3px">DXペディション</span><br>':''}${esc(w.nm)}${w.op?ndTag(opEntName(w.op)):ndTag(GLTT_ENT[w.gq])}<br><span class="th2">${w.gq}</span></td><td>${w.r==='sp'?'短経路':'長経路'} ${Math.round(w.az)}°<br><span class="th2">${w.hemi}</span></td><td>${sides.join(' →<br>')}</td><td style="white-space:nowrap">${glTTRec(w)}</td><td><button type="button" class="glgo" data-g="${w.op?esc(w.op.call):w.gq}">地図で見る</button></td></tr>`}).join('')+
     `</tbody></table></div>`:'<p class="gfine">この24時間に「あり」になる相手はありません。</p>')}
@@ -1212,7 +1212,7 @@ function gBzWarn(sp) {
        <b>ハイバンド（15・12・10m）</b>：数時間後に電離層嵐で MUF が下がり、開きにくくなることがある（乱れの初めに一時的に良くなることもある）`
     : `この経路の短経路は地磁気緯度 ${Math.abs(sp.mag).toFixed(0)}° までで、極域から離れているため、すぐの影響は小さい見込みです。乱れが長引くと、数時間後にハイバンドが開きにくくなることがあります。`;
   return `<div class="gwarn"><b>注意：${head}</b><span style="color:#d64545;font-size:.85em">（検証中）</span><br>${body}
-    <p class="gfine" style="margin-top:4px">Bz の南向きが強く続くと、太陽風のエネルギーが流れ込んでオーロラ帯が広がり、極域寄りの経路が影響を受けます。30分平均が −10nT 以下、または −5nT 以下が1時間以上続くときに表示します。物理の仕組みにもとづく見込みで、データでの確認はこれからです。</p></div>`;
+    <p class="gfine" style="margin-top:4px"><span class="glab">詳しく</span>Bz の南向きが強く続くと、太陽風のエネルギーが流れ込んでオーロラ帯が広がり、極域寄りの経路が影響を受けます。物理の仕組みにもとづく見込みで、データでの確認はこれからです。</p><p class="gfine"><span class="glab">データと計算の条件</span>Bz の30分平均が −10nT 以下、または −5nT 以下が1時間以上続くときに表示します。続いた時間は、10分平均で −3nT 以下が続いた長さです。短経路の地磁気緯度が 55° 以上か、オーロラ確率が 10% 以上のとき、オーロラ帯の近くを通るとしています。</p></div>`;
 }
 var G_OPEN = (() => { try { return JSON.parse(localStorage.getItem('guide.open') || '{}'); } catch (e) { return {}; } })();
 var gOpen = k => G_OPEN[k] ? ' open' : '';
@@ -1296,8 +1296,8 @@ function guideParts(g, now) {
           : ok - bk >= 0.7 || ov - bv >= 60 ? '　<span style="color:var(--c4)">乱れたとき・速い太陽風のときにも受信できている（参考）</span>' : '') : '';
       return `<b>${b}</b> 受信できた回：Kp ${f1(ok, 1)}・太陽風 ${f1(ov, 0)} km/s・SFI ${f1(of, 0)}（${on}回）／同じ時刻の全体：Kp ${f1(bk, 1)}・${f1(bv, 0)} km/s・SFI ${f1(bf, 0)}（${bn}回）${hint}`;
     });
-    const swPart = swRows.length ? `<details class="gdet" data-k="sw"${gOpen('sw')}><summary>受信できたときの宇宙天気（中央値）</summary><div class="gtxt" style="font-size:.85em">${swRows.join('<br>')}</div>
-      <p class="gfine">受信できた回と、同じ時刻（UTC）の抜き取り全体の宇宙天気を中央値で比べています。受信できた回のほうが Kp が低く、太陽風が遅ければ、静かなときのほうが受信しやすい傾向を示します。差が小さいときは、この期間では宇宙天気による違いが見えていないということです。受信できた回が5回以上のバンドだけ表示し、傾向の表示は10回以上のときだけです。Kp は GFZ の3時間値、SFI は F10.7 の観測値（その日の値）、太陽風の速さは NOAA の1時間平均。Bz は1時間平均するとほぼゼロになり違いが表れにくいため、載せていません。</p></details>` : '';
+    const swPart = swRows.length ? `<details class="gdet" data-k="sw"${gOpen('sw')}><summary>受信できたときの宇宙天気（中央値）</summary><p class="g1">受信できたときの宇宙天気が、ふだん（同じ時刻の全体）より静かだったかを比べています。</p><div class="gtxt" style="font-size:.85em">${swRows.join('<br>')}</div>
+      <p class="gfine"><span class="glab">詳しく</span>受信できた回のほうが Kp が低く、太陽風が遅ければ、静かなときのほうが受信しやすい傾向を示します。差が小さいときは、この期間では宇宙天気による違いが見えていないということです。</p><p class="gfine"><span class="glab">データと計算の条件</span>受信できた回と、同じ時刻（UTC）の抜き取り全体の宇宙天気を中央値で比べています。受信できた回が5回以上のバンドだけ表示し、傾向の表示は10回以上のときだけです。Kp は GFZ の3時間値、SFI は F10.7 の観測値（その日の値）、太陽風の速さは NOAA の1時間平均。Bz は1時間平均するとほぼゼロになり違いが表れにくいため、載せていません。</p></details>` : '';
     const nn = SUMMARY.n.filter(Boolean);
     ePart = `<div class="gsub">実績：${gEsc(eLabel)}の信号を日本で受信できた時間帯（直近${SUMMARY.days}日間、日本全体）</div>${noRx}<details class="gdet" data-k="eTxt"${gOpen('eTxt')}><summary>時間帯を文字で見る</summary><div class="gtxt">${txt}</div>${txTxt}</details>
       <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">日本</th>${headJ}</tr>${rows}</table></div>
@@ -1518,13 +1518,13 @@ function nowRender(){const R=$('npRecent'),O=$('npOut'),N=$('npNote');if(!R)retu
   if(!NOWJ){R.textContent=NOW_TRIED?'データを読み込めませんでした。':'読み込み中…';O.textContent='';N.textContent='';return}
   const cau=npCaution(),mark=i=>cau.on&&npHiLat(i)?' <span class="nphl" title="高緯度を通る経路">▼</span>':'';
   const rb=NOWJ.recent.bands||{},rec=NOWJ.recent,clean=x=>esc(String(x).replace('Z',''));
-  let h=`<p class="gfine" style="margin:0 0 4px">UTC ${clean(rec.from)}〜${clean(rec.to)}（抜き取り${rec.samples}回）。<span class="npr">★</span>＝最近の日本の記録ではまれ。各バンドで、まれなものを先に、残りを遠い順に最大8つ。括弧の数は、そのバンドで受信できたエンティティの数です。名前にマウスを重ねると、距離・抜き取りの回数・SNR が出ます。</p>`;
+  let h=`<p class="g1" style="margin:0 0 4px">直近3時間に、日本の局が実際に受信できたエンティティです。</p><p class="gfine" style="margin:0 0 4px"><span class="glab">詳しく</span><span class="npr">★</span>＝最近の日本の記録ではまれ。各バンドで、まれなものを先に、残りを遠い順に最大8つ。括弧の数は、そのバンドで受信できたエンティティの数です。名前にマウスを重ねると、距離・抜き取りの回数・SNR が出ます。</p><p class="gfine" style="margin:0 0 4px"><span class="glab">データと計算の条件</span>UTC ${clean(rec.from)}〜${clean(rec.to)}（抜き取り${rec.samples}回）。PSK Reporter の受信の報告です。</p>`;
   const lines=NP_BANDS.filter(b=>rb[b]).map(b=>`<div class="npline"><b>${b}</b>（${rb[b].n}）：`+
     rb[b].top.map(x=>`<span title="${x.km.toLocaleString()} km・抜き取り${x.s}回・SNR ${x.snr??'―'} dB">${x.rare?'<span class="npr">★'+esc(x.name)+'</span>':esc(x.name)}</span>${ndIdx(x.e)}${mark(x.e)}`).join('、')+'</div>');
   R.innerHTML=h+(lines.join('')||'<div class="npline">この3時間に受信できたエンティティはありませんでした。</div>');
   const ob=NOWJ.outlook.bands||{},hrs=NOWJ.outlook.hours||[];
   const hj=hrs.length?`UTC ${hrs[0]}〜${(hrs[hrs.length-1]+1)%24}時（日本時間 ${(hrs[0]+9)%24}〜${(hrs[hrs.length-1]+10)%24}時）`:'';
-  let o=`<p class="gfine" style="margin:0 0 4px">${hj}に、直近${NOWJ.outlook.days??28}日間の記録で受信の割合が3割以上、かつ3日以上受信できたエンティティです。比較的珍しいものを先に最大8つ。数字はその時間帯の受信の割合です。</p>`;
+  let o=`<p class="g1" style="margin:0 0 4px">これからの3時間に、過去の記録で日本の局がよく受信できているエンティティです。</p><p class="gfine" style="margin:0 0 4px"><span class="glab">詳しく</span>比較的珍しいものを先に最大8つ。数字はその時間帯の受信の割合です。割合は過去の記録からで、いまの宇宙天気は入っていません。地磁気が乱れる予報や兆しがあるときは、高緯度を通る相手に ▼ を付けて知らせます。</p><p class="gfine" style="margin:0 0 4px"><span class="glab">データと計算の条件</span>${hj}に、直近${NOWJ.outlook.days??28}日間の記録で受信の割合が3割以上、かつ3日以上受信できたものです。▼ は、Kp 5以上（いまの値か、これから3時間の予報）か Bz の注意が出ていて、短経路が地磁気緯度60°以上を通る相手に付けます。</p>`;
   if(cau.on)o+=`<div class="gwarn">地磁気が${cau.bz?'乱れる兆し（Bz の注意）':`乱れる予報（Kp ${cau.kp.toFixed(1)}）`}があります。<span class="nphl">▼</span> の付いた相手は、経路が高緯度（地磁気緯度60°以上）を通るため、記録より弱まる可能性があります。</div>`;
   o+=NP_BANDS.filter(b=>ob[b]).map(b=>`<div class="npline"><b>${b}</b>（${ob[b].n}）：`+ob[b].top.map(x=>`${esc(x.name)}${ndIdx(x.e)} ${x.rate}%${mark(x.e)}`).join('、')+'</div>').join('')||'<div class="npline">見通しを出せる記録がありません。</div>';
   const sc=NOWJ.score7||{};let n=0,hit=0,pn=0,ph=0;for(const b in sc){n+=sc[b][0];hit+=sc[b][1];pn+=sc[b][2];ph+=sc[b][3]}
@@ -1633,6 +1633,6 @@ document.addEventListener('click',e=>{if(!e.target||e.target.id!=='resetView')re
 load();loadIono();setInterval(load,5*60e3);setInterval(loadIono,15*60e3);setInterval(()=>{dayNight();bandGuide(lastV);targetRender()},60e3);
 })();
 </script>
-<p style="text-align:center;color:#666;font-size:.72rem;margin:18px 0 8px">版：2026-11-27d</p>
+<p style="text-align:center;color:#666;font-size:.72rem;margin:18px 0 8px">版：2026-11-27e</p>
 </body>
 </html>
