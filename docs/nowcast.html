@@ -20,6 +20,8 @@
 .gt th.gb{padding:1px 6px;text-align:left;white-space:nowrap;color:var(--ink);font-weight:700}
 .gt .gj{color:var(--muted)}
 .gfine{font-size:12px;color:var(--muted);line-height:1.6;margin:6px 0 0}
+.g1{font-size:.88em;color:var(--ink);line-height:1.6;margin:4px 0 0}
+.glab{display:block;font-weight:700;color:var(--ink);font-size:11.5px}
 #dxLb input,#dxLb select{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:2px 4px;font:inherit}
 .grec{margin:4px 0 10px;padding:6px 10px;border:1px solid #c9971f;border-radius:8px;background:rgba(216,177,74,.08)}
 .grec>summary{font-size:.95em}
@@ -295,7 +297,7 @@ h4.stp span{flex:none;white-space:nowrap;font-size:.75rem;font-weight:700;color:
 </div>
 <p class="fn" id="jaSun" style="margin-top:8px"></p>
 <p class="fn" id="aurInfo"></p>
-<details class="gdet"><summary>この一覧の見方</summary><p class="gfine">方位は真北を0°とした大圏方位で、自局のグリッドロケータ（既定はPM95）の中心を基準に計算しています。4桁のグリッドは東西約180km・南北約110kmの範囲なので、6桁（例：PM95ve）で入れると、より正確になります。ローテーターが磁北基準の場合は、日本付近の磁気偏角（西へ約7〜9°）の分だけ補正してください。「経路の暗さ」は、経路上の地点のうち太陽高度が-6°以下の割合です。「最高地磁気緯度」は地磁気を双極子で近似した計算値で、北米上空は地磁気の極に近いため、地理的な緯度より高くなります。オーロラ確率は、NOAAのOVATIONモデルによる30〜90分先の推定値を、経路上で最も高い地点で示しています（30%以上を「通過」、10〜30%を「縁」としています）。オーロラ帯ではD層・E層への電子の降り込みにより吸収が強まり、特に160m・80mで信号が大きく弱まることがあります。</p></details>
+<details class="gdet"><summary>この一覧の見方</summary><p class="g1">方位はアンテナを向ける向き、「経路の暗さ」と「オーロラ」は、その経路の通りやすさの手がかりです。</p><p class="gfine"><span class="glab">詳しく</span>ローバンドは昼側の D層で吸収されるため、経路の暗さ（夜になっている割合）が大きいほど届きやすくなります。オーロラ帯ではD層・E層への電子の降り込みにより吸収が強まり、特に160m・80mで信号が大きく弱まることがあります。北米上空は地磁気の極に近いため、「最高地磁気緯度」は地理的な緯度より高くなります。ローテーターが磁北基準の場合は、日本付近の磁気偏角（西へ約7〜9°）の分だけ補正してください。</p><p class="gfine"><span class="glab">データと計算の条件</span>方位は真北を0°とした大圏方位で、自局のグリッドロケータ（既定はPM95）の中心を基準に計算しています。4桁のグリッドは東西約180km・南北約110kmの範囲なので、6桁（例：PM95ve）で入れると、より正確になります。「経路の暗さ」は、経路上の地点のうち太陽高度が-6°以下の割合です。「最高地磁気緯度」は地磁気を双極子で近似した計算値です。オーロラ確率は、NOAAのOVATIONモデルによる30〜90分先の推定値を、経路上で最も高い地点で示しています（30%以上を「通過」、10〜30%を「縁」としています）。</p></details>
 <h3 class="sub">グレイラインダクトの時刻表<span class="kd kd-phy">物理</span><span class="kd kd-obs">実測</span></h3>
   <details class="gdet" id="glTTD"><summary>いまから24時間の一覧を開く<span style="color:#d64545;font-size:.85em">（検証中）</span></summary><div id="glTT" class="gtxt">計算中…</div></details>
 
@@ -1300,7 +1302,7 @@ function guideParts(g, now) {
     ePart = `<div class="gsub">実績：${gEsc(eLabel)}の信号を日本で受信できた時間帯（直近${SUMMARY.days}日間、日本全体）</div>${noRx}<details class="gdet" data-k="eTxt"${gOpen('eTxt')}><summary>時間帯を文字で見る</summary><div class="gtxt">${txt}</div>${txTxt}</details>
       <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">日本</th>${headJ}</tr>${rows}</table></div>
       ${swPart}
-      <details class="gdet" data-k="howE"${gOpen('howE')}><summary>この目安の見方</summary><p class="gfine">PSK Reporter のリアルタイム配信を、20分ごとに8分間（1時間あたり24分）受信して集めた記録です。${SUMMARY.since}以降の抜き取り${SUMMARY.samples}回（時刻ごとに${Math.min(...nn)}〜${Math.max(...nn)}回）のうち、日本の局がこの相手の信号を受信した報告があった回の割合を色で示します（濃い黄：6割以上、青緑：3割以上、薄い青緑：まれ）。送信の届き方は出力やアンテナ（ミドル・ハイバンドの3〜4エレ八木、ローバンドの1エレなど）で大きく変わるため、局の設備に左右されにくい受信を中心にしています。件数ではなく回数で数えるので、一つの局の運用で大きく振れることは避けられますが、FT8などデジタルモードの記録で、相手の地域で運用している局の多さにも左右されます。毎日お昼ごろ（11:50）に更新。</p></details>`;
+      <details class="gdet" data-k="howE"${gOpen('howE')}><summary>この目安の見方</summary><p class="g1">色が濃い時間帯ほど、日本の局がこの相手の信号をよく受信できています。</p><p class="gfine"><span class="glab">詳しく</span>送信の届き方は出力やアンテナ（ミドル・ハイバンドの3〜4エレ八木、ローバンドの1エレなど）で大きく変わるため、局の設備に左右されにくい受信を中心にしています。件数ではなく回数で数えるので、一つの局の運用で大きく振れることは避けられますが、FT8などデジタルモードの記録で、相手の地域で運用している局の多さにも左右されます。</p><p class="gfine"><span class="glab">データと計算の条件</span>PSK Reporter のリアルタイム配信を、20分ごとに8分間（1時間あたり24分）受信して集めた記録です。${SUMMARY.since}以降の抜き取り${SUMMARY.samples}回（時刻ごとに${Math.min(...nn)}〜${Math.max(...nn)}回）のうち、日本の局がこの相手の信号を受信した報告があった回の割合を色で示します（濃い黄：6割以上、青緑：3割以上、薄い青緑：まれ）。毎日お昼ごろ（11:50）に更新。</p></details>`;
   }
   // 物理の目安
   const pw = k => gWindows(phys[k].map((x, h) => x.v === 2 ? h : -1).filter(h => h >= 0));
@@ -1311,7 +1313,7 @@ function guideParts(g, now) {
   const pRows = [['ロー', 'low'], ['ミドル', 'mid'], ['ハイ', 'high']].map(([n, k]) => `<tr><th class="gb">${n}</th>${phys[k].map(x => cellP(x)).join('')}</tr>`).join('');
   const pPart = `<div class="gsub">物理の目安：これから24時間（経路の昼夜・いまのオーロラ帯・SFI ${SFI_NOW != null ? SFI_NOW.toFixed(0) : '―'}）</div><details class="gdet" data-k="pTxt"${gOpen('pTxt')}><summary>時間帯を文字で見る</summary><div class="gtxt">${pTxt}</div></details>
     <div class="gtbl"><table class="gt"><tr><th class="gb">UTC</th>${head}</tr><tr><th class="gb gj">日本</th>${headJ}</tr>${pRows}</table></div>
-    <details class="gdet" data-k="howP"${gOpen('howP')}><summary>この目安の見方</summary><p class="gfine">ローバンドは短経路（夜側にならなければ長経路）の大半が夜（太陽高度−6°以下）になる時刻、ミドルは経路に昼と夜が混ざる時刻、ハイバンドは経路の大半が昼で SFI が十分な時刻を、濃い紫で示します。電離層の詳しい計算（MUFの予測）ではなく、昼夜にもとづく目安です。オーロラ帯はいまの状態で計算しているので、数時間先は変わることがあります。</p></details>`;
+    <details class="gdet" data-k="howP"${gOpen('howP')}><summary>この目安の見方</summary><p class="g1">経路の昼と夜から見て、各バンドが開きやすい時間帯を濃い紫で示します。</p><p class="gfine"><span class="glab">詳しく</span>ローバンドは昼の D層の吸収を避けられるよう経路の大半が夜になる時刻、ミドルは経路に昼と夜が混ざる時刻、ハイバンドは太陽に照らされた F層で反射できるよう経路の大半が昼で SFI が十分な時刻を選んでいます。電離層の詳しい計算（MUFの予測）ではなく、昼夜にもとづく目安です。</p><p class="gfine"><span class="glab">データと計算の条件</span>夜は太陽高度−6°以下。ローバンドは短経路を見て、夜側にならなければ長経路を見ます。オーロラ帯はいまの状態で計算しているので、数時間先は変わることがあります。</p></details>`;
   const aPart = agree.length ? `<details class="gdet gagree" data-k="agree"${gOpen('agree')}><summary>実績と物理の目安がそろう時間帯（${agree.length}バンド）</summary>${agree.join('<br>')}</details>` : '';
   const eState = !SUMMARY ? (SUMMARY_P ? 'loading' : 'fail') : !eData ? 'none' : 'ok';
   return { bz: gBzWarn(pathStats(g.az, g.km, now)), agree, eState, pl: plHTML(g, now),
@@ -1350,7 +1352,7 @@ function plHTML(g, now) {
     <div class="gtxt" style="font-size:.85em">${rows.length ? rows.join('<br>') : 'この相手のローバンドの受信の記録が、まだ少なく判別できません。'}</div>
     <div class="gsub" style="font-size:.88em">DXクラスターの日本の局のスポット（コメントの LP・SP・skew）</div>
     <div class="gtxt" style="font-size:.85em">${cl.length ? cl.join('<br>') : 'この相手のスポットは、まだ集まっていません（2026年11月から収集）。'}</div>
-    <details class="gdet" data-k="plHow"${gOpen('plHow')}><summary>この手がかりの見方</summary><p class="gfine">FT8 などの受信の報告からは、電波がどちらの経路で届いたかは分かりません。そこで、受信できた時刻に、短経路と長経路のそれぞれの途中（両端1,000kmを除く）の7割以上が夜だったかを計算しました。ローバンドは昼側で吸収が強いので、片方の経路だけが夜なら、その経路で届いた可能性が高いと考えます。日本側は東京付近、相手側はエンティティの代表位置で計算しており、オーロラ帯の影響は含めていません。DXクラスターは、日本の局がスポットしたもののうち、コメントに LP（ロングパス）・SP（ショートパス）・skew の記載があったものを数えています。人がアンテナを向けて確かめた情報なので、上の推定の答え合わせに使えますが、件数はまだわずかです。</p></details>`;
+    <details class="gdet" data-k="plHow"${gOpen('plHow')}><summary>この手がかりの見方</summary><p class="g1">ローバンドの信号が、短経路と長経路のどちらで届いたらしいかの手がかりです（推定）。</p><p class="gfine"><span class="glab">詳しく</span>FT8 などの受信の報告からは、電波がどちらの経路で届いたかは分かりません。ローバンドは昼側で吸収が強いので、受信できた時刻に片方の経路だけが夜なら、その経路で届いた可能性が高いと考えます。DXクラスターの記載は、人がアンテナを向けて確かめた情報なので、この推定の答え合わせに使えますが、件数はまだわずかです。</p><p class="gfine"><span class="glab">データと計算の条件</span>短経路と長経路のそれぞれの途中（両端1,000kmを除く）の7割以上が夜だったかを計算しています。日本側は東京付近、相手側はエンティティの代表位置で計算しており、オーロラ帯の影響は含めていません。DXクラスターは、日本の局がスポットしたもののうち、コメントに LP（ロングパス）・SP（ショートパス）・skew の記載があったものを数えています。</p></details>`;
   return `<details class="gdet" data-k="pl"${gOpen('pl')}><summary>短経路・長経路の手がかり（ローバンド）<span style="color:#d64545;font-size:.85em">（検証中）</span></summary>${body}</details>`;
 }
 var REC_SUM = '';
@@ -1363,7 +1365,7 @@ function recHTML(g, now) {
   if (TARGET.ent && CTY) { const i = CTY.ent.findIndex(e => e[0] === TARGET.ent); if (i >= 0 && SUMMARY.e[String(i)]) { data = SUMMARY.e[String(i)]; isEnt = true; } }
   if (!data) { const f = llToGrid(TARGET.lat, TARGET.lon).slice(0, 2); if (SUMMARY.f[f]) { data = SUMMARY.f[f]; label = `（相手の周辺・大区画 ${f} の記録のため、最高でも○）`; } }
   const win = [(h + 23) % 24, h, (h + 1) % 24], nWin = win.reduce((a, w) => a + (SUMMARY.n[w] || 0), 0);
-  const how = `<details class="gdet" data-k="recHow"${gOpen('recHow')}><summary>この判定の見方</summary><p class="gfine">いまの時刻の前後1時間（UTC ${win[0]}〜${(h + 2) % 24}時）について、直近${SUMMARY.days}日間の抜き取りのうち、日本の局がこの相手の信号を受信できた回の割合で判定します。◎は5割以上、○は2割以上（△：1割以上、×：1割未満は表示しません）。前後1時間の抜き取りが10回未満のときは判定しません。一時的な運用（DXペディションなど）に引っ張られないよう、受信できた日が3日以上あれば◎まで、2日なら○まで、1日だけなら表示しません。相手そのものの記録がなく周辺の大区画の記録で代用するときは、最高でも○とします。さらに、いまの条件で一段下げます：ローバンドで経路の大半が昼側のとき、ハイバンドで経路の大半が夜側または SFI が低いとき、短経路がオーロラ帯の濃い部分（30%以上）を通るときのローバンド、Bz の注意が出ていて経路がオーロラ帯の近くを通るときのロー・ミドルバンド。しきい値は出発点としての案で、実際の交信の結果と照らし合わせて見直していきます。</p></details>`;
+  const how = `<details class="gdet" data-k="recHow"${gOpen('recHow')}><summary>この判定の見方</summary><p class="g1">◎・○は、いまの時刻にこの相手の信号が日本でよく受信できているかの目安です。</p><p class="gfine"><span class="glab">詳しく</span>過去の受信の割合をもとに、いまの条件で届きにくい場合は一段下げます。一時的な運用（DXペディションなど）に引っ張られないよう、受信できた日数で上限を決めています。しきい値は出発点としての案で、実際の交信の結果と照らし合わせて見直していきます。</p><p class="gfine"><span class="glab">データと計算の条件</span>いまの時刻の前後1時間（UTC ${win[0]}〜${(h + 2) % 24}時）について、直近${SUMMARY.days}日間の抜き取りのうち、日本の局がこの相手の信号を受信できた回の割合で判定します。◎は5割以上、○は2割以上（△：1割以上、×：1割未満は表示しません）。前後1時間の抜き取りが10回未満のときは判定しません。受信できた日が3日以上あれば◎まで、2日なら○まで、1日だけなら表示しません。相手そのものの記録がなく周辺の大区画の記録で代用するときは、最高でも○とします。一段下げるのは、ローバンドで経路の大半が昼側のとき、ハイバンドで経路の大半が夜側または SFI が低いとき、短経路がオーロラ帯の濃い部分（30%以上）を通るときのローバンド、Bz の注意が出ていて経路がオーロラ帯の近くを通るときのロー・ミドルバンドです。</p></details>`;
   if (!data) { REC_SUM = 'この相手（周辺を含む）の受信の記録が、まだありません'; return wrap(`<p class="gtxt">この相手（周辺を含む）の受信の記録が、まだありません。</p>${how}`); }
   if (nWin < 10) REC_SUM = `この時刻の抜き取りがまだ少なく（${nWin}回）、判定できません`;
   if (nWin < 10) return wrap(`<p class="gtxt">この時刻の抜き取りがまだ少なく（${nWin}回）、判定できません。</p>${how}`);
@@ -1467,7 +1469,7 @@ function lbHTML(g, sp, lp, now) {
       <label>バンド <select id="lbB">${opt}</select></label></div>
     <div class="gtxt">${line('短経路', g.az, r1)}${line('長経路', (g.az + 180) % 360, r2)}</div>
     <p class="gfine">開いている間は、地図の短経路・長経路の線が、届く強さに応じて相手に近づくほど薄くなります（強く届く：濃いまま、届く・弱く届く：中くらい・薄く、届かない見込み：ほぼ消える）。アンテナ利得の目安：ダイポール 2 dBi、3エレ八木 7〜8 dBi、4エレ八木 8〜9 dBi、垂直系 0〜2 dBi。</p>
-    <details class="gdet" data-k="lbHow"${gOpen('lbHow')}><summary>この見込みの見方</summary><p class="gfine">送信電力とアンテナ利得から、経路の損失（距離による広がり、地面・海面での反射、D層の吸収、オーロラ帯の吸収）を差し引き、相手側の雑音と比べて SNR（2.5kHz 帯域）を見積もります。電離層の反射は高さ300km、1ホップ最大3,500kmとし、D層の吸収は経路上の太陽の高さと SFI から George の式を簡略化して求めます。電離層が反射できる周波数の上限（MUF）は、SFI と反射点の昼夜から大まかに推定しており、ここが最も不確かです。相手側は 0 dBi のアンテナと郊外程度の雑音を仮定しています。実際とは10〜20dB程度ずれることがあり、目安としてご覧ください。今後、PSK Reporter の SNR の記録と比べて、見積もりを確かめ、補正していきます。強く届く：+6dB 以上、届く：−10dB 以上、弱く届く：−21dB 以上（FT8 の解読の限界付近）。</p></details></details>`;
+    <details class="gdet" data-k="lbHow"${gOpen('lbHow')}><summary>この見込みの見方</summary><p class="g1">あなたの送信電力とアンテナで、相手にどのくらいの強さで届きそうかの見積もりです。実際とは10〜20dB程度ずれることがあります。</p><p class="gfine"><span class="glab">詳しく</span>送信電力とアンテナ利得から、経路の損失（距離による広がり、地面・海面での反射、D層の吸収、オーロラ帯の吸収）を差し引き、相手側の雑音と比べて SNR を見積もります。最も不確かなのは、電離層が反射できる周波数の上限（MUF）の推定です。今後、PSK Reporter の SNR の記録と比べて、見積もりを確かめ、補正していきます。</p><p class="gfine"><span class="glab">データと計算の条件</span>SNR は 2.5kHz 帯域。電離層の反射は高さ300km、1ホップ最大3,500km。D層の吸収は経路上の太陽の高さと SFI から George の式を簡略化して求めます。MUF は SFI と反射点の昼夜から大まかに推定します。相手側は 0 dBi のアンテナと郊外程度の雑音を仮定しています。強く届く：+6dB 以上、届く：−10dB 以上、弱く届く：−21dB 以上（FT8 の解読の限界付近）。</p></details></details>`;
 }
 function lbWire() {
   const save = () => { try { localStorage.setItem('lb', JSON.stringify(LB)); } catch (e) {} };
@@ -1631,6 +1633,6 @@ document.addEventListener('click',e=>{if(!e.target||e.target.id!=='resetView')re
 load();loadIono();setInterval(load,5*60e3);setInterval(loadIono,15*60e3);setInterval(()=>{dayNight();bandGuide(lastV);targetRender()},60e3);
 })();
 </script>
-<p style="text-align:center;color:#666;font-size:.72rem;margin:18px 0 8px">版：2026-11-27c</p>
+<p style="text-align:center;color:#666;font-size:.72rem;margin:18px 0 8px">版：2026-11-27d</p>
 </body>
 </html>
