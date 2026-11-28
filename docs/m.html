@@ -201,7 +201,7 @@ details.tier[open]>summary{margin-bottom:16px}
 .trend .tnote{margin:4px 0 0;font-size:.92rem;line-height:1.6}
 .rel a{color:var(--gold);margin-right:8px}
 .swh{display:none;margin:4px 0 0;font-size:.72rem;color:var(--muted);text-align:center}
-.win{max-height:70vh;overflow:auto;border:1px solid var(--line);border-radius:8px;-webkit-overflow-scrolling:touch}
+.win{max-height:min(70vh,640px);overflow:auto;border:1px solid var(--line);border-radius:8px;-webkit-overflow-scrolling:touch}
 .win thead th{position:sticky;top:0;z-index:2;background:var(--panel2,#1b1f26)}
 .win td:first-child,.win th:first-child{position:sticky;left:0;z-index:1;background:var(--bg,#0f1114)}
 .win thead th:first-child{z-index:3}
@@ -1633,6 +1633,6 @@ document.addEventListener('click',e=>{if(!e.target||e.target.id!=='resetView')re
 load();loadIono();setInterval(load,5*60e3);setInterval(loadIono,15*60e3);setInterval(()=>{dayNight();bandGuide(lastV);targetRender()},60e3);
 })();
 </script>
-<p style="text-align:center;color:#666;font-size:.72rem;margin:18px 0 8px">版：2026-11-27e</p>
+<p style="text-align:center;color:#666;font-size:.72rem;margin:18px 0 8px">版：2026-11-28</p>
 </body>
 </html>
